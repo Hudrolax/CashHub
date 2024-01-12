@@ -51,15 +51,13 @@ const CurrencySelector = ({ style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // marginTop: 50,
-    // width: 200,
-    // alignSelf: 'center',
+    width: 60,
   },
   button: {
     // padding: 10,
     // backgroundColor: '#dddddd',
     height: 30,
-    width: 50,
+    width: '100%',
     borderWidth: 1,
     borderColor: "grey",
     justifyContent: "center",
@@ -72,6 +70,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     zIndex: 3000,
+    width: '100%'
   },
   option: {
     padding: 10,

@@ -19,6 +19,10 @@ export const setExInItems = (payload) => ({
   type: "SET_ExInItems",
   payload: payload,
 });
+export const setTrzExInItems = (payload) => ({
+  type: "SET_TRZ_ExInItems",
+  payload: payload,
+});
 export const setTransactions = (payload) => ({
   type: "SET_TRANSACTIONS",
   payload: payload,
@@ -55,9 +59,15 @@ export const setSymbols = (payload) => ({
   payload: payload,
 });
 
-const fetchData = async (token, dispatch, endpoint) => {
+const fetchData = async (token, dispatch, endpoint, queryParams) => {
   try {
-    const response = await fetch(baseEndpoint + endpoint, {
+    let url = baseEndpoint + endpoint;
+    if (queryParams && queryParams.ids) {
+      const idsParams = queryParams.ids.map(id => `ids=${encodeURIComponent(id)}`).join('&');
+      url += `?${idsParams}`;
+    }
+
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -74,25 +84,19 @@ const fetchData = async (token, dispatch, endpoint) => {
       throw new Error(data.detail);
     }
 
-    dispatch(setConnectionError(false))
+    dispatch(setConnectionError(false));
     return data;
   } catch (error) {
-    dispatch(setConnectionError(true))
-    // showAlert(
-    //   (title = "Ошибка"),
-    //   (text =
-    //     "Ошибка соединения с сервером. Проверьте подключение к интернету.")
-    // );
-    // console.error(error.message);
+    dispatch(setConnectionError(true));
     return [];
   }
 };
 
-const updateData = (currencies, symbols, wallets, exInItems, transactions) => {
+const updateData = (currencies, symbols, wallets, exInItems, trzExInItems, transactions) => {
   return (dispatch) => {
     dispatch({
       type: "UPDATE_ALL_DATA",
-      payload: { currencies, symbols, wallets, exInItems, transactions },
+      payload: { currencies, symbols, wallets, exInItems, trzExInItems, transactions },
     });
   };
 };
@@ -100,14 +104,18 @@ const updateData = (currencies, symbols, wallets, exInItems, transactions) => {
 const fetchHomeData = (token) => {
   return async (dispatch) => {
     // Выполнение всех запросов параллельно
-    const [currencies, symbols, _wallets, exInItems, transactions] =
-      await Promise.all([
-        fetchData(token, dispatch, "/currencies/"),
-        fetchData(token, dispatch, "/symbols/"),
-        fetchData(token, dispatch, "/wallets/"),
-        fetchData(token, dispatch, "/exin_items/"),
-        fetchData(token, dispatch, "/wallet_transactions/"),
-      ]);
+    const transactions = await fetchData(token, dispatch, "/wallet_transactions/");
+    const exInItemsIds = [
+      ...new Set(transactions.map((trz) => trz.exin_item_id)),
+    ];
+
+    const [currencies, symbols, _wallets, exInItems, trzExInItems] = await Promise.all([
+      fetchData(token, dispatch, "/currencies/"),
+      fetchData(token, dispatch, "/symbols/"),
+      fetchData(token, dispatch, "/wallets/"),
+      fetchData(token, dispatch, "/exin_items/"),
+      fetchData(token, dispatch, "/exin_items/", {ids: exInItemsIds}),
+    ]);
 
     // preprocessing wallets
     const wallets = _wallets.map((wallet) => {
@@ -119,7 +127,7 @@ const fetchHomeData = (token) => {
       };
     });
 
-    dispatch(updateData(currencies, symbols, wallets, exInItems, transactions));
+    dispatch(updateData(currencies, symbols, wallets, exInItems, trzExInItems, transactions));
   };
 };
 

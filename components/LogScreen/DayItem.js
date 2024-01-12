@@ -1,9 +1,27 @@
-import { Text, View, StyleSheet, TouchableHighlight, Vibration } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableHighlight,
+  Vibration,
+} from "react-native";
 import { useDispatch } from "react-redux";
 
 import { greenColor, redColor, orangeColor } from "../colors";
 import { formatNumber } from "../util";
 import { setEditDocId } from "../actions";
+
+const Separator = () => {
+  return (
+    <View
+      style={{
+        backgroundColor: "#4b4c4d",
+        height: 1,
+        width: "100%",
+      }}
+    />
+  );
+};
 
 const ColorCircle = ({ style, color, text }) => {
   return (
@@ -37,45 +55,48 @@ const ExchangeDayItem = ({
   const dispatch = useDispatch();
   const onPress = () => {
     Vibration.vibrate(2);
-    dispatch(setEditDocId(doc_id))
+    dispatch(setEditDocId(doc_id));
   };
 
   return (
-    <TouchableHighlight onPress={onPress}>
-      <View style={styles.itemContainer}>
-        {/* left side */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <ColorCircle
-            style={{ marginLeft: 10 }}
-            color={orangeColor}
-            text={"⇄"}
-          />
-          <View style={{ marginLeft: 5 }}>
-            <Text style={styles.exInItemText}>{`Перевод (${userName})`}</Text>
-            {comment ? (
-              <Text style={styles.commentText}>{comment}</Text>
-            ) : undefined}
+    <View>
+      <TouchableHighlight onPress={onPress} style={{ paddingVertical: 5 }}>
+        <View style={styles.itemContainer}>
+          {/* left side */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <ColorCircle
+              style={{ marginLeft: 10 }}
+              color={orangeColor}
+              text={"⇄"}
+            />
+            <View style={{ marginLeft: 5 }}>
+              <Text style={styles.exInItemText}>{`Перевод (${userName})`}</Text>
+              {comment ? (
+                <Text style={styles.commentText}>{comment}</Text>
+              ) : undefined}
+            </View>
+          </View>
+          {/* right side */}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 10,
+            }}
+          >
+            <Text style={styles.exchangeTrzAmount}>
+              {formatNumber(amount1.slice(1), wallet1.currency.name) +
+                " ⇄ " +
+                formatNumber(amount2, wallet2.currency.name)}
+            </Text>
+            <Text style={styles.exchangeTrzWallets}>
+              {wallet1.name + " ⇄ " + wallet2.name}
+            </Text>
           </View>
         </View>
-        {/* right side */}
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginRight: 10,
-          }}
-        >
-          <Text style={styles.exchangeTrzAmount}>
-            {formatNumber(amount1.slice(1), wallet1.currency.name, true) +
-              " ⇄ " +
-              formatNumber(amount2, wallet2.currency.name, true)}
-          </Text>
-          <Text style={styles.exchangeTrzWallets}>
-            {wallet1.name + " ⇄ " + wallet2.name}
-          </Text>
-        </View>
-      </View>
-    </TouchableHighlight>
+      </TouchableHighlight>
+      <Separator />
+    </View>
   );
 };
 
@@ -85,31 +106,41 @@ const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
 
   const onPress = () => {
     Vibration.vibrate(2);
-    dispatch(setEditDocId(doc_id))
+    dispatch(setEditDocId(doc_id));
   };
 
   return (
-    <TouchableHighlight onPress={onPress}>
-      <View style={styles.itemContainer}>
-        {/* left side */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <ColorCircle style={{ marginLeft: 10 }} color={trzColor} />
-          <View style={{ marginLeft: 5, justifyContent: "center" }}>
-            <Text style={styles.exInItemText}>{exInItem.name}</Text>
-            <Text style={styles.walletText}>
-              {wallet.name + ` (${userName})`}
+    <View>
+      <TouchableHighlight onPress={onPress} style={{ paddingVertical: 5 }}>
+        <View style={styles.itemContainer}>
+          {/* left side */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <ColorCircle style={{ marginLeft: 10 }} color={trzColor} />
+            <View style={{ marginLeft: 5, justifyContent: "center" }}>
+              <Text style={styles.exInItemText}>{exInItem.name}</Text>
+
+              {/* wallet and name */}
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={styles.walletText}>{wallet.name + "("}</Text>
+                <Text style={styles.userName}>{userName}</Text>
+                <Text style={styles.walletText}>)</Text>
+              </View>
+
+              {comment ? (
+                <Text style={styles.commentText}>{comment}</Text>
+              ) : null}
+            </View>
+          </View>
+          {/* right side */}
+          <View style={{ justifyContent: "center", marginRight: 10 }}>
+            <Text style={{ ...styles.transactionAmount, color: trzColor }}>
+              {amount}
             </Text>
-            {comment ? (
-              <Text style={styles.commentText}>{comment}</Text>
-            ) : undefined}
           </View>
         </View>
-        {/* right side */}
-        <View style={{ justifyContent: "center", marginRight: 10 }}>
-          <Text style={{...styles.transactionAmount, color: trzColor}}>{amount}</Text>
-        </View>
-      </View>
-    </TouchableHighlight>
+      </TouchableHighlight>
+      <Separator />
+    </View>
   );
 };
 
@@ -126,20 +157,24 @@ const styles = StyleSheet.create({
   },
   walletText: {
     color: "#fff",
+    fontSize: 14,
+  },
+  userName: {
+    color: "#b4d4ff",
     fontSize: 12,
   },
   commentText: {
-    color: "grey",
+    color: orangeColor,
     fontSize: 12,
   },
   transactionAmount: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 18,
+    // fontWeight: "bold",
   },
   exchangeTrzAmount: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 18,
+    // fontWeight: "bold",
   },
   exchangeTrzWallets: {
     color: "#fff",

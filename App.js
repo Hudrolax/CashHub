@@ -8,7 +8,7 @@ import MainScreenWrapper from "./components/MainScreenWrapper";
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
         <Provider store={store}>
           <NavigationContainer>
             <MainScreenWrapper />

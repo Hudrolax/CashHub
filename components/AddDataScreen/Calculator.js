@@ -8,17 +8,20 @@ import {
   TextInput,
   Keyboard,
   Vibration,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import isEmptyObject, {
-  formatNumber,
+  formatNumberLight,
   getRate,
   formatDateShort,
   formatDate,
+  addCurrencySymbol,
 } from "../util";
 import { fetchRequest } from "./actions";
 import { greenColor } from "../colors";
+
 
 export default function Calculator({ navigation, trz }) {
   const dispatch = useDispatch();
@@ -51,7 +54,7 @@ export default function Calculator({ navigation, trz }) {
   const pickRate = () => {
     if (trz && trz.wallet2) {
       return Math.abs(trz.amount2 / trz.amount1);
-    } else if (trz) {
+    } else if (trz || isEmptyObject(wallet2)) {
       return 1;
     } else {
       return getRate(wallet1.currency.name, wallet2.currency.name, symbols);
@@ -73,25 +76,19 @@ export default function Calculator({ navigation, trz }) {
       case "display1":
         try {
           setExpression((prev) => prev + value);
-          setExpression2(
-            formatNumber((expression + value) * rate),
-            wallet1.currency.name
-          );
+          setExpression2((expression + value) * rate);
         } catch {}
         break;
       case "display2":
         try {
           setExpression2((prev) => prev + value);
-          setExpression(
-            formatNumber((expression2 + value) / rate),
-            wallet2.currency.name
-          );
+          setExpression((expression2 + value) / rate);
         } catch {}
         break;
       case "rate":
         try {
           setRate((prev) => prev + value);
-          setExpression2(formatNumber(expression * (rate + value)), undefined);
+          setExpression2(expression * (rate + value));
         } catch {}
         break;
     }
@@ -103,17 +100,11 @@ export default function Calculator({ navigation, trz }) {
       switch (activeField) {
         case "display1":
           setExpression(eval(expression).toString());
-          setExpression2(
-            formatNumber(eval(expression) * rate),
-            wallet1.currency.name
-          );
+          setExpression2(eval(expression) * rate);
           break;
         case "display2":
           setExpression2(eval(expression2).toString());
-          setExpression(
-            formatNumber(eval(expression2) / rate),
-            wallet2.currency.name
-          );
+          setExpression(eval(expression2) / rate);
           break;
       }
       return true;
@@ -124,51 +115,26 @@ export default function Calculator({ navigation, trz }) {
     }
   };
 
-  const handleDelete = (long) => {
+  const handleDelete = () => {
     Vibration.vibrate(2);
-    try {
-      if (long) {
-        setExpression("");
-        if (exchangeMode) {
-          setExpression2("");
-        }
-      } else {
-        setExpression((prev) => prev.slice(0, -1));
-        if (exchangeMode) {
-          setExpression2(
-            formatNumber(eval(expression.slice(0, -1)) * rate),
-            wallet2.currency.name
-          );
-        }
-      }
-    } catch {}
+    setExpression("");
+    if (exchangeMode) {
+      setExpression2("");
+    }
   };
 
-  const handleDelete2 = (long) => {
+  const handleDelete2 = () => {
     Vibration.vibrate(2);
-    try {
-      if (long) {
-        setExpression("");
-        if (exchangeMode) {
-          setExpression2("");
-        }
-      } else {
-        setExpression2((prev) => prev.slice(0, -1));
-        if (exchangeMode) {
-          setExpression(
-            formatNumber(eval(expression2.slice(0, -1)) / rate),
-            wallet1.currency.name
-          );
-        }
-      }
-    } catch {}
+    setExpression("");
+    if (exchangeMode) {
+      setExpression2("");
+    }
   };
 
   const handleDeleteRate = () => {
     Vibration.vibrate(2);
     setRate("");
-    setExpression2("");
-    setActiveField("rate");
+    handleResult();
   };
 
   const handleOk = async () => {
@@ -243,12 +209,19 @@ export default function Calculator({ navigation, trz }) {
   }, []);
 
   const getDynamicStyles = () => {
-    return keyboardVisible
-      ? { backgroundColor: "black" }
-      : {
-          flex: !exchangeMode ? 1 : 1.2,
-          backgroundColor: "black",
-        };
+    if (Platform.OS === "ios") {
+      return {
+        flex: !exchangeMode ? 1 : 1.2,
+        backgroundColor: "black",
+      };
+    } else {
+      return keyboardVisible
+        ? { backgroundColor: "black" }
+        : {
+            flex: !exchangeMode ? 1 : 1.2,
+            backgroundColor: "black",
+          };
+    }
   };
 
   const buttonsStyle = () => {
@@ -284,8 +257,10 @@ export default function Calculator({ navigation, trz }) {
           justifyContent: "space-between",
           flexDirection: "row",
           alignItems: "center",
-          borderBottomWidth: 2,
-          borderColor: "#fff",
+          backgroundColor: "#041515",
+          // borderBottomWidth: 2,
+          borderTopWidth: 1,
+          borderColor: "#797979",
         }}
       >
         <TextInput
@@ -299,11 +274,11 @@ export default function Calculator({ navigation, trz }) {
           onPress={() => setComment("")}
           style={{ marginHorizontal: 10 }}
         >
-          <Text style={{ color: "black", fontSize: 10 }}>✖️</Text>
+          <Text style={{ fontSize: 10 }}>✖️</Text>
         </TouchableOpacity>
       </View>
 
-      {!keyboardVisible && (
+      {(!keyboardVisible || Platform.OS === 'ios') && (
         <View style={{ flex: 1 }}>
           {exchangeMode ? (
             <View style={{ flex: 1 }}>
@@ -313,11 +288,13 @@ export default function Calculator({ navigation, trz }) {
               >
                 <View style={displayStyle()}>
                   <Text style={displayTextStyle("display1")}>
-                    {formatNumber(expression, wallet1.currency.name, true)}
+                    {addCurrencySymbol(expression, wallet1.currency.name)}
                   </Text>
                   <TouchableOpacity
-                    onPress={handleDelete}
-                    onLongPress={() => handleDelete(true)}
+                    onPress={() => {
+                      handleDelete();
+                      setActiveField("display1");
+                    }}
                     style={styles.cancelButton}
                   >
                     <Text style={styles.cancelButtonText}>⌫</Text>
@@ -331,9 +308,14 @@ export default function Calculator({ navigation, trz }) {
               <TouchableWithoutFeedback onPress={() => setActiveField("rate")}>
                 <View style={styles.convertDisplay}>
                   <View style={styles.convertDisplayBorder}>
-                    <Text style={rateDisplayStyle()}>{rate}</Text>
+                    <Text style={rateDisplayStyle()}>
+                      {rate ? formatNumberLight(rate) : ""}
+                    </Text>
                     <TouchableOpacity
-                      onPress={handleDeleteRate}
+                      onPress={() => {
+                        handleDeleteRate();
+                        setActiveField("rate");
+                      }}
                       style={{ justifyContent: "flex-end" }}
                     >
                       <Text style={{ color: "black", fontSize: 10 }}>✖️</Text>
@@ -348,11 +330,13 @@ export default function Calculator({ navigation, trz }) {
               >
                 <View style={displayStyle()}>
                   <Text style={displayTextStyle("display2")}>
-                    {formatNumber(expression2, wallet2.currency.name, true)}
+                    {addCurrencySymbol(expression2, wallet2.currency.name)}
                   </Text>
                   <TouchableOpacity
-                    onPress={handleDelete2}
-                    onLongPress={() => handleDelete2(true)}
+                    onPress={() => {
+                      handleDelete2();
+                      setActiveField("display2");
+                    }}
                     style={styles.cancelButton}
                   >
                     <Text style={styles.cancelButtonText}>⌫</Text>
@@ -364,7 +348,7 @@ export default function Calculator({ navigation, trz }) {
             // one display variante
             <View style={styles.display}>
               <Text style={styles.displayText}>
-                {formatNumber(expression, wallet1.currency.name, true)}
+                {addCurrencySymbol(expression, wallet1.currency.name)}
               </Text>
               <TouchableOpacity
                 onPress={handleDelete}
@@ -433,7 +417,8 @@ const styles = StyleSheet.create({
   commentInput: {
     color: "#fff",
     fontSize: 18,
-    height: 40,
+    height: 50,
+    width: "90%",
   },
   convertDisplay: {
     position: "absolute",

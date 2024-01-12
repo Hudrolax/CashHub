@@ -23,6 +23,7 @@ const CircleItem = ({
   circleColor,
   circleText,
   subtitle,
+  subtitleColor,
   object,
   object_type,
   pressible,
@@ -54,7 +55,7 @@ const CircleItem = ({
   ]);
 
   const handlePress = () => {
-    if (!pressible) return
+    if (!pressible) return;
     Vibration.vibrate(2);
     if (isPressed) {
       animationRef.current && animationRef.current.stop();
@@ -134,6 +135,14 @@ const CircleItem = ({
     }
   }, [pressedWallet1, pressedWallet2, pressedExInItem, pressedDate]);
 
+  const sybtitleStyle = () => {
+    if (!subtitleColor) {
+      return styles.subtitle;
+    } else {
+      return {...styles.subtitle, color: subtitleColor}
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.itemContainer}>
@@ -149,7 +158,7 @@ const CircleItem = ({
         >
           <Text style={styles.circleText}>{circleText}</Text>
         </Animated.View>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        <Text style={sybtitleStyle()}>{subtitle}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -177,7 +186,7 @@ const styles = StyleSheet.create({
     color: "#fff", // Text color inside the circle
   },
   subtitle: {
-    fontSize: 12, // Adjust your font size
+    fontSize: 16, // Adjust your font size
     color: "#fff", // Adjust your color
     marginTop: 5, // Space between circle and subtitle
   },

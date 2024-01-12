@@ -5,7 +5,7 @@ import { StyleSheet, ScrollView } from "react-native";
 import { redColor, greenColor } from "../colors";
 import { formatNumber, calculateTotalAmountExInItem } from "../util";
 
-export default function ExInItems() {
+export default function ExInItems({navigation}) {
   const _exInItems = useSelector((state) => state.mainState.exInItems);
   const transactions = useSelector((state) => state.mainState.transactions);
   const isIncome = useSelector((state) => state.mainState.isIncome);
@@ -37,7 +37,7 @@ export default function ExInItems() {
             title={item.name}
             circleColor={isIncome ? greenColor : redColor}
             circleText={item.name[0].toUpperCase()}
-            subtitle={formatNumber(item.monthAmount, mainCurrency, true)}
+            subtitle={formatNumber(item.monthAmount, mainCurrency)}
             // subtitle={item.monthAmount}
             object={item}
             object_type={"exInItem"}

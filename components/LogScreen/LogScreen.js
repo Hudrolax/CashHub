@@ -5,20 +5,19 @@ import { StyleSheet, ScrollView } from "react-native";
 
 import DayLog from "./DayLog";
 import { View } from "react-native-animatable";
-import CurrencySelector from "../HomeScreen/CurrencySelector";
 import { prepareTrzs, groupTransactionsByDay } from "../util";
 import { fetchHomeData } from "../HomeScreen/actions";
 
 export default function LogScreen() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.login_screen.token);
-  const exInItems = useSelector((state) => state.mainState.exInItems);
+  const trzExInItems = useSelector((state) => state.mainState.trzExInItems);
   const wallets = useSelector((state) => state.mainState.wallets);
   const transactions = useSelector((state) => state.mainState.transactions);
   const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
 
   const preparedTrzs = groupTransactionsByDay(
-    prepareTrzs(transactions, exInItems, wallets)
+    prepareTrzs(transactions, trzExInItems, wallets)
   );
 
   useFocusEffect(
@@ -31,7 +30,6 @@ export default function LogScreen() {
 
   return (
     <View style={styles.container}>
-      <CurrencySelector style={styles.currencySelector} />
       <View style={styles.header}></View>
       <ScrollView>
         {preparedTrzs.map((trzDay) => (
@@ -54,11 +52,5 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 40,
-  },
-  currencySelector: {
-    position: "absolute",
-    top: ".5%",
-    right: "3%",
-    zIndex: 3000,
   },
 });

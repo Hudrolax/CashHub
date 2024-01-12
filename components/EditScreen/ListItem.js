@@ -8,13 +8,14 @@ import {
 import { useDispatch } from "react-redux";
 
 import { setEditItem } from "../actions";
+import { formatNumber } from "../util";
 
-export default function ListItem({navigation, item }) {
+export default function ListItem({ navigation, item }) {
   const dispatch = useDispatch();
 
   const onPress = () => {
     Vibration.vibrate(2);
-    dispatch(setEditItem(item))
+    dispatch(setEditItem(item));
     navigation.navigate("EditItem");
   };
 
@@ -24,6 +25,11 @@ export default function ListItem({navigation, item }) {
         <Text style={{ color: "#fff", fontSize: 16, marginLeft: 10 }}>
           {item.name}
         </Text>
+        {item.balance ? (
+          <Text style={{ color: "#fff", fontSize: 16, marginRight: 10 }}>
+            {formatNumber(item.balance, item.currency.name)}
+          </Text>
+        ) : null}
       </View>
     </TouchableHighlight>
   );
@@ -33,6 +39,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: 'space-between',
     height: 60,
     borderBottomWidth: 1,
     borderBottomColor: "grey",

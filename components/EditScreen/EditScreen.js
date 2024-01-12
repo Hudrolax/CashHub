@@ -12,12 +12,18 @@ import React, { useEffect } from "react";
 import { orangeColor, greenColor, redColor } from "../colors";
 import ListItem from "./ListItem";
 import { setEditContentType } from "../actions";
+import { CancelBtn } from "./CancelBtn";
+import { AddBtn } from "./AddBtn";
+import { setEditItem } from "../actions";
+import { fetchHomeData } from "../HomeScreen/actions";
+
 
 export default function EditScreen({ navigation }) {
   const dispatch = useDispatch();
   const contentType = useSelector((state) => state.mainState.editContentType);
   const wallets = useSelector((state) => state.mainState.wallets);
   const exInItems = useSelector((state) => state.mainState.exInItems);
+  const token = useSelector((state) => state.login_screen.token);
 
   let headerStyle;
   let headerText;
@@ -37,6 +43,23 @@ export default function EditScreen({ navigation }) {
     Vibration.vibrate(2);
     navigation.navigate("Tabs");
     return true;
+  };
+
+  const onAdd = () => {
+    Vibration.vibrate(2);
+    let payload = {}
+    if (contentType === "wallets") {
+      payload.id = undefined
+      payload.name = ""
+      payload.balance = "0"
+      payload.currency = {}
+      payload.currency_id = undefined
+    } else if (contentType === "income") {
+    } else if (contentType === "outcome") {
+    }
+    dispatch(setEditItem(payload));
+    dispatch(fetchHomeData(token));
+    navigation.navigate("EditItem");
   };
 
   useEffect(() => {
@@ -70,10 +93,22 @@ export default function EditScreen({ navigation }) {
           ? wallets.map((item) => (
               <ListItem key={item.id} navigation={navigation} item={item} />
             ))
-          : exInItems.map((item) => (
-              <ListItem key={item.id} navigation={navigation} item={item} />
-            ))}
+          : exInItems.map((item) => {
+              if (contentType === "income" && item.income) {
+                return (
+                  <ListItem key={item.id} navigation={navigation} item={item} />
+                );
+              } else if (contentType === "outcome" && !item.income) {
+                return (
+                  <ListItem key={item.id} navigation={navigation} item={item} />
+                );
+              }
+            })}
+        <AddBtn style={{ margin: 20 }} onPress={onAdd} />
       </ScrollView>
+      <View style={styles.footer}>
+        <CancelBtn text={"Назад"} onPress={onCancel} />
+      </View>
     </View>
   );
 }
@@ -88,5 +123,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+  },
+  footer: {
+    backgroundColor: "#242221",
+    height: 40,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 });

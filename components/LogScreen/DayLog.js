@@ -4,30 +4,18 @@ import { DayItem, ExchangeDayItem } from "./DayItem";
 import { DayHeader } from "./DayHeader";
 import { calculateTotalAmount, formatNumber } from "../util";
 
-const Separator = () => {
-  return (
-    <View
-      style={{
-        backgroundColor: "black",
-        height: 2,
-        width: "100%",
-      }}
-    />
-  );
-};
-
 export default function DayLog({ dayTransactions, date, mainCurrency }) {
   const totalAmount = calculateTotalAmount(dayTransactions, mainCurrency);
 
   const getAmount = (trz, walletNum) =>
-    formatNumber(trz[`amount${mainCurrency}${walletNum}`], mainCurrency, true);
+    formatNumber(trz[`amount${mainCurrency}${walletNum}`], mainCurrency);
 
   return (
     <View>
       <DayHeader
         date={date}
         trzCount={dayTransactions.length}
-        totalAmount={formatNumber(totalAmount, mainCurrency, true)}
+        totalAmount={formatNumber(totalAmount, mainCurrency)}
       />
       {dayTransactions.map((item) => {
         if (item.exInItem) {
@@ -57,7 +45,6 @@ export default function DayLog({ dayTransactions, date, mainCurrency }) {
           );
         }
       })}
-      <Separator />
     </View>
   );
 }

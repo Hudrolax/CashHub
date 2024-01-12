@@ -24,24 +24,51 @@ const showAlert = (title, text, btnText = "OK") => {
   }
 };
 
-const addCurrencySymbol = (number, currencyName) => {
+export const addCurrencySymbol = (expression, currencyName) => {
   switch (currencyName) {
     case "USD":
-      return "$ " + number;
+      return `$ ${expression}`;
     case "ARS":
-      return number + " $";
+      return `${expression} $`;
     case "RUB":
-      return number + " ₽";
+      return `${expression} ₽`;
     case "BTC":
-      return number + " ₿";
+      return `${expression} ₿`;
+    case "ETH":
+      return `${expression} ♢`;
+    default:
+      return expression;
   }
 };
 
-const formatNumber = (number, currencyName, addSymbol = false) => {
+export const formatNumberLight = (number) => {
   let formattedNumber = number;
-  if (number === ""){
-    formattedNumber = "0"
-  } else if (currencyName && currencyName !== "BTC") {
+
+  if (number === "") {
+    formattedNumber = "0";
+  } else if (number >= 1) {
+    formattedNumber = parseFloat(number).toFixed(2);
+  } else {
+    formattedNumber = parseFloat(number).toFixed(4);
+  }
+  // Удаляем несущественные нули и, возможно, десятичную точку
+  formattedNumber = formattedNumber
+    .replace(/(\.\d*?[1-9])0+$/, "$1")
+    .replace(/\.$/, "");
+
+  // Форматируем целую часть, добавляя пробелы
+  if (formatNumber > 999) {
+    formattedNumber = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }
+  formattedNumber = formattedNumber.replace(/\.00$/, "");
+  return formattedNumber;
+};
+
+const formatNumber = (number, currencyName, addSymbol = true) => {
+  let formattedNumber = number;
+  if (number === "") {
+    formattedNumber = "0";
+  } else if (currencyName && currencyName !== "BTC" && currencyName !== "ETH") {
     formattedNumber = parseFloat(number).toFixed(2);
   } else {
     formattedNumber = parseFloat(number).toFixed(6);
@@ -100,18 +127,22 @@ function calculateTotalAmountExInItem(transactions, exinItemId, currency_name) {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  return transactions.reduce((sum, transaction) => {
-    if (
-      isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
-      transaction.exin_item_id === exinItemId
-    ) {
-      const amountFloat = parseFloat(
-        transaction[`amount${currency_name}`] || transaction.amount
-      );
-      return sum + (isNaN(amountFloat) ? 0 : amountFloat);
-    }
-    return sum;
-  }, 0);
+  try {
+    return transactions.reduce((sum, transaction) => {
+      if (
+        isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
+        transaction.exin_item_id === exinItemId
+      ) {
+        const amountFloat = parseFloat(
+          transaction[`amount${currency_name}`] || transaction.amount
+        );
+        return sum + (isNaN(amountFloat) ? 0 : amountFloat);
+      }
+      return sum;
+    }, 0);
+  } catch {
+    return 0;
+  }
 }
 
 function isTransactionInCurrentMonth(transaction, currentMonth, currentYear) {
@@ -140,22 +171,34 @@ const getRate = (cur1, cur2, symbols) => {
   };
 
   const rateMap = {
-    "ARSUSD": () => 1 / getSymbolRate("USDTARS"),
-    "ARSRUB": () => getSymbolRate("USDTRUB") * (1 / getSymbolRate("USDTARS")),
-    "ARSBTC": () => 1 / getSymbolRate("BTCARS"),
-    "USDARS": () => getSymbolRate("USDTARS"),
-    "USDBTC": () => 1 / getSymbolRate("BTCUSDT"),
-    "USDRUB": () => getSymbolRate("USDTRUB"),
-    "BTCUSD": () => getSymbolRate("BTCUSDT"),
-    "BTCRUB": () => getSymbolRate("BTCRUB"),
-    "BTCARS": () => getSymbolRate("BTCARS"),
-    "RUBUSD": () => 1 / getSymbolRate("USDTRUB"),
-    "RUBARS": () => getSymbolRate("USDTARS") * (1 / getSymbolRate("USDTRUB")),
-    "RUBBTC": () => 1 / getSymbolRate("BTCRUB"),
+    ARSUSD: () => 1 / getSymbolRate("USDTARS"),
+    ARSRUB: () => getSymbolRate("USDTRUB") * (1 / getSymbolRate("USDTARS")),
+    ARSBTC: () => 1 / getSymbolRate("BTCARS"),
+    ARSETH: () => (1 / getSymbolRate("BTCARS")) / getSymbolRate("ETHBTC"),
+
+    USDARS: () => getSymbolRate("USDTARS"),
+    USDBTC: () => 1 / getSymbolRate("BTCUSDT"),
+    USDRUB: () => getSymbolRate("USDTRUB"),
+    USDETH: () => 1 / getSymbolRate("ETHUSDT"),
+
+    BTCUSD: () => getSymbolRate("BTCUSDT"),
+    BTCRUB: () => getSymbolRate("BTCRUB"),
+    BTCARS: () => getSymbolRate("BTCARS"),
+    BTCETH: () => 1 / getSymbolRate("ETHBTC"),
+
+    RUBUSD: () => 1 / getSymbolRate("USDTRUB"),
+    RUBARS: () => getSymbolRate("USDTARS") * (1 / getSymbolRate("USDTRUB")),
+    RUBBTC: () => 1 / getSymbolRate("BTCRUB"),
+    RUBETH: () => (1 / getSymbolRate("BTCRUB")) / getSymbolRate("ETHBTC"),
+
+    ETHUSD: () => getSymbolRate("ETHUSDT"),
+    ETHRUB: () => getSymbolRate("ETHBTC") * getSymbolRate("BTCRUB"),
+    ETHARS: () => getSymbolRate("ETHBTC") * getSymbolRate("BTCARS"),
+    ETHBTC: () => getSymbolRate("ETHBTC"),
   };
 
   const key = cur1 + cur2;
-  return formatNumber(rateMap[key] ? rateMap[key]() : 1);
+  return rateMap[key] ? rateMap[key]() : 1;
 };
 
 export const prepareTrzs = (transactions, exInItems, wallets) => {

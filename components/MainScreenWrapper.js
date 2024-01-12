@@ -10,7 +10,7 @@ import MainScreen from "./MainScreen";
 import { setLogin, setUsername } from "./LoginScreen/actions";
 import LoadingOverlay from "./loadingOverlay";
 import { setIsLoadin, setMainCurrency } from "./actions";
-import { statusBarStyle } from "./colors";
+// import { statusBarStyle } from "./colors";
 
 export default function MainScreenWrapper() {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -24,9 +24,7 @@ export default function MainScreenWrapper() {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (appState.match(/inactive|background/) && nextAppState === "active") {
-        console.log("App has come to the foreground!");
       } else if (nextAppState.match(/inactive|background/)) {
-        console.log("App has gone to the background!");
       }
       setAppState(nextAppState);
     });
@@ -55,9 +53,9 @@ export default function MainScreenWrapper() {
   }, [dispatch]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'black' }}>
+      <StatusBar barStyle="light-content" backgroundColor="black"/>
       {token ? <MainScreen /> : <LoginScreen />}
-      <StatusBar style={statusBarStyle} />
       <LoadingOverlay
         visible={isLoading || isConnectionError}
         connectionError={isConnectionError}

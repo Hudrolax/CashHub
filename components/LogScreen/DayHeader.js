@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet } from "react-native";
 
 import { formatDate } from "../util";
+import { redColor, greenColor } from "../colors";
 
 const DayHeader = ({date, trzCount, totalAmount}) => {
   function getDayOfWeek(dateString) {
@@ -10,6 +11,8 @@ const DayHeader = ({date, trzCount, totalAmount}) => {
   
     return daysOfWeek[dayOfWeek];
   }
+
+  const totalAmountColor = totalAmount[0] === '-' ? redColor : greenColor
 
   return (
     <View style={styles.container}>
@@ -30,9 +33,9 @@ const DayHeader = ({date, trzCount, totalAmount}) => {
 
         {/* right side */}
         <View style={{ justifyContent: "flex-end", alignItems: 'flex-start', marginRight: 5 }}>
-          {/* Totoal summ */}
+          {/* Total amount */}
           <View>
-            <Text style={{ color: "#cb1357", fontSize: 18, fontWeight: 'bold' }}>{totalAmount}</Text>
+            <Text style={{ color: totalAmountColor, fontSize: 20, fontWeight: 'bold' }}>{totalAmount}</Text>
           </View>
           {/* transactions count */}
           <View>
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
   },
   headerDateText: {
     color: "#d2d4db",
-    fontSize: 14,
+    fontSize: 16,
   },
 });
 

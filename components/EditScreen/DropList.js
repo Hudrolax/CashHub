@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export const DropList = ({ style, value, options, setValue }) => {
+export const DropList = ({ style, hint, value, options, setValue }) => {
   //   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -17,7 +17,7 @@ export const DropList = ({ style, value, options, setValue }) => {
   return (
     <View>
       <View style={{ ...styles.container, ...style }}>
-        <Text style={styles.fieldHint}>Валюта:</Text>
+        <Text style={styles.fieldHint}>{hint}</Text>
         <TouchableOpacity onPress={toggleDropdown} style={styles.field}>
           <Text style={styles.fieldInput}>{value}</Text>
           <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold", marginBottom: 6 }}>
@@ -44,7 +44,6 @@ export const DropList = ({ style, value, options, setValue }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     width: 200,
     borderBottomWidth: 1,
     borderBottomColor: "#fff",

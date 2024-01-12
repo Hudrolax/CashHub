@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   Vibration,
+  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -20,13 +21,35 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.login_screen.token);
 
-  const onPress = () => {
+  const deleteAndReturn = () => {
     Vibration.vibrate(2);
     dispatch(
       fetchRequest(token, null, `/wallet_transactions/${doc_id}`, "DELETE")
     );
     navigation.navigate("Tabs");
-    onDelete()
+    onDelete();
+  };
+
+  const onPress = () => {
+    Vibration.vibrate(2);
+
+    Alert.alert(
+      "Подтверждение действия", // Заголовок
+      "Вы уверены, что хотите удалить транзакцию?", // Сообщение или вопрос
+      [
+        {
+          text: "Отмена",
+          onPress: () => Vibration.vibrate(2),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: deleteAndReturn,
+        },
+      ],
+      { cancelable: false } // Пользователь должен явно нажать на одну из кнопок
+    );
+
     return true;
   };
 
@@ -37,13 +60,13 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
         borderColor: "red",
         justifyContent: "center",
         alignItems: "center",
-        width: 30,
+        width: 110,
         height: 30,
         ...style,
       }}
     >
       <TouchableOpacity onPress={onPress}>
-        <Text style={{ fontSize: 16 }}>❌</Text>
+        <Text style={{ fontSize: 18, color: "red" }}>❌ Удалить</Text>
       </TouchableOpacity>
     </View>
   );
@@ -95,7 +118,14 @@ export default function AddHeader({ navigation, trz, onDelete }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {trz ? <DelBtn navigation={navigation} doc_id={trz.doc_id} style={styles.delBtn} onDelete={onDelete} /> : null}
+        {trz ? (
+          <DelBtn
+            navigation={navigation}
+            doc_id={trz.doc_id}
+            style={styles.delBtn}
+            onDelete={onDelete}
+          />
+        ) : null}
         <CancelBtn navigation={navigation} style={styles.cancelBtn} />
       </View>
 
@@ -103,7 +133,7 @@ export default function AddHeader({ navigation, trz, onDelete }) {
         <View style={styles.confIcons}>
           <CircleItem
             key={2}
-            title={formatNumber(wallet1.balance, wallet1.currency.name, true)}
+            title={formatNumber(wallet1.balance, wallet1.currency.name)}
             circleColor={orangeColor}
             circleText={wallet1.currency.name}
             subtitle={wallet1.name}
@@ -115,7 +145,7 @@ export default function AddHeader({ navigation, trz, onDelete }) {
           </View>
           <CircleItem
             key={3}
-            title={formatNumber(wallet2.balance, wallet2.currency.name, true)}
+            title={formatNumber(wallet2.balance, wallet2.currency.name)}
             circleColor={orangeColor}
             circleText={wallet2.currency.name}
             subtitle={wallet2.name}
@@ -127,7 +157,7 @@ export default function AddHeader({ navigation, trz, onDelete }) {
         <View style={styles.confIcons}>
           <CircleItem
             key={2}
-            title={formatNumber(wallet1.balance, wallet1.currency.name, true)}
+            title={formatNumber(wallet1.balance, wallet1.currency.name)}
             circleColor={orangeColor}
             circleText={wallet1.currency.name}
             subtitle={wallet1.name}

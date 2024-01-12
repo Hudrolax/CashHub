@@ -22,3 +22,7 @@ export const setEditItem = (payload) => ({
   type: "SET_EDIT_ITEM",
   payload: payload,
 });
+export const setWalletsInMainCurrency = (payload) => ({
+  type: "SET_WALLETS_IN_MAIN_CURRENCY",
+  payload: payload,
+});

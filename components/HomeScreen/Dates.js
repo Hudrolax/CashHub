@@ -64,7 +64,6 @@ export default function Dates() {
     React.useCallback(() => {
       dates = makeDates();
       dispatch(setDates(dates));
-      // console.log("Компонент Dates был отрендерен");
 
       return () => {
         // Опционально: Ваш код здесь - выполняется при потере фокуса экрана

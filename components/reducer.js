@@ -4,6 +4,7 @@ const initialState = {
   symbols: [],
   wallets: [],
   exInItems: [],
+  trzExInItems: [],
   transactions: [],
   dates: [],
   fetchTimer: {},
@@ -17,6 +18,7 @@ const initialState = {
   editDocId: undefined,
   editContentType: undefined,
   editItem: undefined,
+  walletsInMainCurrency: false
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -29,6 +31,8 @@ const mainReducer = (state = initialState, action) => {
       return { ...state, wallets: action.payload };
     case "SET_ExInItems":
       return { ...state, exInItems: action.payload };
+    case "SET_TRZ_ExInItems":
+      return { ...state, trzExInItems: action.payload };
     case "SET_TRANSACTIONS":
       return { ...state, transactions: action.payload };
     case "SET_DATES":
@@ -57,6 +61,8 @@ const mainReducer = (state = initialState, action) => {
       return { ...state, editContentType: action.payload };
     case "SET_EDIT_ITEM":
       return { ...state, editItem: action.payload };
+    case "SET_WALLETS_IN_MAIN_CURRENCY":
+      return { ...state, walletsInMainCurrency: action.payload };
     case "RESET_ALL_PRESS_STATES":
       return {
         ...state,
@@ -72,6 +78,7 @@ const mainReducer = (state = initialState, action) => {
         symbols: action.payload.symbols,
         wallets: action.payload.wallets,
         exInItems: action.payload.exInItems,
+        trzExInItems: action.payload.trzExInItems,
         transactions: action.payload.transactions,
       };
     default:

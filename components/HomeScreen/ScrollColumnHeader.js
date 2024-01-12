@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ElipseItem from "./Elipseitem";
 import { setIncome } from "./actions";
-import { setEditContentType } from "../actions";
+import { setEditContentType, setWalletsInMainCurrency } from "../actions";
+import { walletsInMainCurColor } from "../colors";
 
 export default function ScrollColumnHeader({ navigation }) {
   const dispatch = useDispatch();
   const isIncome = useSelector((state) => state.mainState.isIncome);
+  const walletsInMainCurrency = useSelector((state) => state.mainState.walletsInMainCurrency);
 
   const onChangeIncome = () => {
     Vibration.vibrate(2);
@@ -18,7 +20,8 @@ export default function ScrollColumnHeader({ navigation }) {
     <View style={styles.container}>
       <ElipseItem
         title={"Счета"}
-        itemColor={"#f9a60a"}
+        itemColor={walletsInMainCurrency ? walletsInMainCurColor : "#f9a60a"}
+        onPress={() => dispatch(setWalletsInMainCurrency(!walletsInMainCurrency))}
         onLongPress={() => {
           Vibration.vibrate(2);
           dispatch(setEditContentType("wallets"));

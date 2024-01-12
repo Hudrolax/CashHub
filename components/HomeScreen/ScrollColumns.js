@@ -5,12 +5,12 @@ import ExInItems from "./ExInItems";
 import Dates from "./Dates";
 
 
-export default function ScrollColumns() {
+export default function ScrollColumns({navigation}) {
     return (
       <View style={styles.container}>
-        <Wallets/>
+        <Wallets navigation={navigation}/>
         <View style={styles.separator} />
-        <ExInItems/>
+        <ExInItems navigation={navigation}/>
         <View style={styles.separator} />
         <Dates/>
       </View>

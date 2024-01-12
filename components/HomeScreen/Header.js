@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 import HamburgerMenu from "../MenuBtn/MenuBtn";
 import { getRate, formatNumber } from "../util";
-import CurrencySelector from "./CurrencySelector";
 
 const Header = ({ navigation, style }) => {
   const username = useSelector((state) => state.login_screen.username);
@@ -16,7 +15,7 @@ const Header = ({ navigation, style }) => {
     let totalBalance = 0;
     wallets.map((item) => {
       const rate = getRate(item.currency.name, mainCurrency, symbols);
-      totalBalance += parseFloat(item.balance) * rate;
+      totalBalance += item.balance * rate;
     });
     return totalBalance
   };
@@ -26,13 +25,12 @@ const Header = ({ navigation, style }) => {
   return (
     <View style={{ ...styles.container, ...style }}>
       <HamburgerMenu navigation={navigation} style={styles.hamburger}/>
-      <CurrencySelector style={styles.currencySelector}/>
 
       {/* top */}
       <View style={styles.top}>
         <Text style={styles.username}>{username}</Text>
         <Text style={styles.totalBalance}>
-          {formatNumber(totalBalance, mainCurrency, true)}
+          {formatNumber(totalBalance, mainCurrency)}
         </Text>
       </View>
 
@@ -48,11 +46,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: "#1f1e1b",
-  },
-  currencySelector: {
-    position: "absolute",
-    top: '8%',
-    right: '3%',
   },
   hamburger: {
     position: "absolute",

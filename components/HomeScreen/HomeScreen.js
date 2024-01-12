@@ -33,10 +33,8 @@ export default function HomeScreen({ navigation }) {
         () => dispatch(fetchHomeData(token)),
         10000
       );
-      console.log("home screen фокус. Запуск таймера");
 
       return () => {
-        console.log("home screen фокус потерян. остановка таймера");
         if (fetchTimerRef.current) {
           clearInterval(fetchTimerRef.current);
         }
@@ -64,9 +62,9 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} style={{minHeight: '40%'}} />
+      <Header navigation={navigation} style={{minHeight: '30%'}} />
       <ScrollColumnHeader navigation={navigation}/>
-      <ScrollColumns />
+      <ScrollColumns navigation={navigation} />
     </View>
   );
 }
