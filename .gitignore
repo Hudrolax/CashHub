@@ -8,6 +8,7 @@ node_modules/
 dist/
 web-build/
 
+# local builds
 android/
 ios/
 
@@ -36,3 +37,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# .apk
+*.apk
