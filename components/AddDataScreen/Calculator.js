@@ -36,6 +36,7 @@ const getDisplayFontSize = (_expression) => {
   }
 }
 
+
 export default function Calculator({ navigation, trz }) {
   const dispatch = useDispatch();
   const pressedWallet1 = useSelector((state) => state.mainState.pressedWallet1);
@@ -89,7 +90,7 @@ export default function Calculator({ navigation, trz }) {
       case "display1":
         try {
           setExpression((prev) => prev + value);
-          setExpression2((expression + value) * rate);
+          setExpression2(eval(expression + value) * rate);
         } catch {}
         break;
       case "display2":

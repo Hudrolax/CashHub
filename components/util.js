@@ -7,12 +7,12 @@ export function isEmpty(value) {
   }
 
   // Проверка на пустой объект
-  if (typeof value === 'object' && !Array.isArray(value)) {
+  if (typeof value === "object" && !Array.isArray(value)) {
     return Object.keys(value).length === 0;
   }
 
   // Проверка на пустой массив или пустую строку
-  if (Array.isArray(value) || typeof value === 'string') {
+  if (Array.isArray(value) || typeof value === "string") {
     return value.length === 0;
   }
 
@@ -40,20 +40,33 @@ const showAlert = (title, text, btnText = "OK") => {
   }
 };
 
+const roundNumber = (number, currencyName) => {
+  try {
+    if (currencyName && (currencyName === "BTC" || currencyName === "ETH")) {
+      return parseFloat(number.toFixed(6));
+    } else {
+      return parseFloat(number.toFixed(2));
+    }
+  } catch {
+    return number
+  }
+};
+
 export const addCurrencySymbol = (expression, currencyName) => {
+  let _expression = roundNumber(expression)
   switch (currencyName) {
     case "USD":
-      return `$ ${expression}`;
+      return `$ ${_expression}`;
     case "ARS":
-      return `${expression} $`;
+      return `${_expression} $`;
     case "RUB":
-      return `${expression} ₽`;
+      return `${_expression} ₽`;
     case "BTC":
-      return `${expression} ₿`;
+      return `${_expression} ₿`;
     case "ETH":
-      return `${expression} ♢`;
+      return `${_expression} ♢`;
     default:
-      return expression;
+      return _expression;
   }
 };
 
@@ -190,7 +203,7 @@ const getRate = (cur1, cur2, symbols) => {
     ARSUSD: () => 1 / getSymbolRate("USDTARS"),
     ARSRUB: () => getSymbolRate("USDTRUB") * (1 / getSymbolRate("USDTARS")),
     ARSBTC: () => 1 / getSymbolRate("BTCARS"),
-    ARSETH: () => (1 / getSymbolRate("BTCARS")) / getSymbolRate("ETHBTC"),
+    ARSETH: () => 1 / getSymbolRate("BTCARS") / getSymbolRate("ETHBTC"),
 
     USDARS: () => getSymbolRate("USDTARS"),
     USDBTC: () => 1 / getSymbolRate("BTCUSDT"),
@@ -205,7 +218,7 @@ const getRate = (cur1, cur2, symbols) => {
     RUBUSD: () => 1 / getSymbolRate("USDTRUB"),
     RUBARS: () => getSymbolRate("USDTARS") * (1 / getSymbolRate("USDTRUB")),
     RUBBTC: () => 1 / getSymbolRate("BTCRUB"),
-    RUBETH: () => (1 / getSymbolRate("BTCRUB")) / getSymbolRate("ETHBTC"),
+    RUBETH: () => 1 / getSymbolRate("BTCRUB") / getSymbolRate("ETHBTC"),
 
     ETHUSD: () => getSymbolRate("ETHUSDT"),
     ETHRUB: () => getSymbolRate("ETHBTC") * getSymbolRate("BTCRUB"),
