@@ -15,8 +15,7 @@ import { ExInItemEdit } from "./ExInItemEdit";
 import { CancelBtn } from "./CancelBtn";
 import { DeleteBtn } from "./DeleteBtn";
 import { greenColor, orangeColor, redColor } from "../colors";
-import { fetchRequest } from "../AddDataScreen/actions";
-import { fetchHomeData } from "../HomeScreen/actions";
+import { fetchHomeData, dispatchedFetchRequest } from "../dataUpdater";
 
 export default function EditItemScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -39,9 +38,9 @@ export default function EditItemScreen({ navigation }) {
 
   const deleteAndReturn = () => {
     if (editItem.balance) {
-      dispatch(fetchRequest(token, null, `/wallets/${editItem.id}`, "DELETE"));
+      dispatch(dispatchedFetchRequest(token, null, `/wallets/${editItem.id}`, "DELETE"));
     } else {
-      dispatch(fetchRequest(token, null, `/exin_items/${editItem.id}`, "DELETE"));
+      dispatch(dispatchedFetchRequest(token, null, `/exin_items/${editItem.id}`, "DELETE"));
     }
     dispatch(fetchHomeData(token));
     navigation.navigate("EditScreen");

@@ -1,7 +1,23 @@
 import { Alert } from "react-native";
 
-export default function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0;
+export function isEmpty(value) {
+  // Проверка на null и undefined
+  if (value == null) {
+    return true;
+  }
+
+  // Проверка на пустой объект
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    return Object.keys(value).length === 0;
+  }
+
+  // Проверка на пустой массив или пустую строку
+  if (Array.isArray(value) || typeof value === 'string') {
+    return value.length === 0;
+  }
+
+  // Для всех остальных типов данных возвращаем false
+  return false;
 }
 
 let isAlertShown = false;
@@ -270,14 +286,20 @@ function createAmountFields(trz, suffix) {
     [`amountARS${suffix}`]: trz.amountARS,
     [`amountUSD${suffix}`]: trz.amountUSD,
     [`amountBTC${suffix}`]: trz.amountBTC,
+    [`amountETH${suffix}`]: trz.amountETH,
     [`amountRUB${suffix}`]: trz.amountRUB,
   };
 }
 
 export function groupTransactionsByDay(preparedTrzs) {
+  const trzs = preparedTrzs.sort((a, b) => {
+    let dateA = new Date(a.date);
+    let dateB = new Date(b.date);
+    return dateB - dateA;
+  });
   const groupedByDay = {};
 
-  preparedTrzs.forEach((transaction) => {
+  trzs.forEach((transaction) => {
     // Извлекаем дату из объекта транзакции
     const date = new Date(transaction.date);
     const dayKey = date.toISOString().split("T")[0]; // формат YYYY-MM-DD

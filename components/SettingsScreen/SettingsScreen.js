@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useDispatch } from "react-redux";
 
 import MenuItem from './MenuItem';
-import { setLogin } from "../LoginScreen/actions";
+import { setLogin } from '../actions';
 
 
 export default function SettingsScreen() {

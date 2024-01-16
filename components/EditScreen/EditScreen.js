@@ -15,7 +15,7 @@ import { setEditContentType } from "../actions";
 import { CancelBtn } from "./CancelBtn";
 import { AddBtn } from "./AddBtn";
 import { setEditItem } from "../actions";
-import { fetchHomeData } from "../HomeScreen/actions";
+import { fetchHomeData } from "../dataUpdater";
 
 
 export default function EditScreen({ navigation }) {

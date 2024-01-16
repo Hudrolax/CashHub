@@ -2,7 +2,7 @@ import { View } from "react-native";
 
 import { DayItem, ExchangeDayItem } from "./DayItem";
 import { DayHeader } from "./DayHeader";
-import { calculateTotalAmount, formatNumber } from "../util";
+import { calculateTotalAmount, formatNumber, isEmpty } from "../util";
 
 export default function DayLog({ dayTransactions, date, mainCurrency }) {
   const totalAmount = calculateTotalAmount(dayTransactions, mainCurrency);
@@ -18,7 +18,7 @@ export default function DayLog({ dayTransactions, date, mainCurrency }) {
         totalAmount={formatNumber(totalAmount, mainCurrency)}
       />
       {dayTransactions.map((item) => {
-        if (item.exInItem) {
+        if (isEmpty(item.wallet2)) {
           return (
             <DayItem
               key={item.doc_id}

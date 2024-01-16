@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableHighlight,
   Vibration,
+  Platform,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -24,6 +25,11 @@ const Separator = () => {
 };
 
 const ColorCircle = ({ style, color, text }) => {
+  let adFontStyle = {};
+  if (Platform.OS !== "ios") {
+    adFontStyle = { position: "absolute", top: -3 };
+  }
+
   return (
     <View
       style={{
@@ -31,14 +37,12 @@ const ColorCircle = ({ style, color, text }) => {
         width: 20,
         borderRadius: 60,
         backgroundColor: color,
+        justifyContent: "center",
+        alignItems: "center",
         ...style,
       }}
     >
-      <Text
-        style={{ fontSize: 20, position: "absolute", zIndex: 10, top: -5.5 }}
-      >
-        {text}
-      </Text>
+      <Text style={{ fontSize: 16, ...adFontStyle }}>{text}</Text>
     </View>
   );
 };
@@ -60,7 +64,7 @@ const ExchangeDayItem = ({
 
   return (
     <View>
-      <TouchableHighlight onPress={onPress} style={{ paddingVertical: 5 }}>
+      <TouchableHighlight onLongPress={onPress} style={{ paddingVertical: 5 }}>
         <View style={styles.itemContainer}>
           {/* left side */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -111,7 +115,7 @@ const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
 
   return (
     <View>
-      <TouchableHighlight onPress={onPress} style={{ paddingVertical: 5 }}>
+      <TouchableHighlight onLongPress={onPress} style={{ paddingVertical: 5 }}>
         <View style={styles.itemContainer}>
           {/* left side */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -120,7 +124,7 @@ const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
               <Text style={styles.exInItemText}>{exInItem.name}</Text>
 
               {/* wallet and name */}
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={styles.walletText}>{wallet.name + "("}</Text>
                 <Text style={styles.userName}>{userName}</Text>
                 <Text style={styles.walletText}>)</Text>

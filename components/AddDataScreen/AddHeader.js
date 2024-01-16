@@ -8,14 +8,15 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
-import isEmptyObject, {
+import {
+  isEmpty,
   formatDate,
   formatDateShort,
   formatNumber,
 } from "../util";
 import CircleItem from "../HomeScreen/CircleItem";
 import { blueColor, greenColor, orangeColor, redColor } from "../colors";
-import { fetchRequest } from "./actions";
+import { dispatchedFetchRequest, fetchHomeData } from "../dataUpdater";
 
 const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const dispatch = useDispatch();
@@ -24,9 +25,10 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const deleteAndReturn = () => {
     Vibration.vibrate(2);
     dispatch(
-      fetchRequest(token, null, `/wallet_transactions/${doc_id}`, "DELETE")
+      dispatchedFetchRequest(token, null, `/wallet_transactions/${doc_id}`, "DELETE")
     );
     navigation.navigate("Tabs");
+    dispatch(fetchHomeData(token))
     onDelete();
   };
 
@@ -101,7 +103,7 @@ export default function AddHeader({ navigation, trz, onDelete }) {
   const pressedDate = useSelector((state) => state.mainState.pressedDate);
   const _isIncome = useSelector((state) => state.mainState.isIncome);
 
-  const exchangeMode = !isEmptyObject(pressedWallet2) || (trz && trz.wallet2);
+  const exchangeMode = !isEmpty(pressedWallet2) || (trz && !isEmpty(trz.wallet2));
   const wallet1 = trz ? trz.wallet1 : pressedWallet1;
   const wallet2 = trz ? trz.wallet2 : pressedWallet2;
   const exInItem = trz ? trz.exInItem : pressedExInItem;
@@ -114,7 +116,8 @@ export default function AddHeader({ navigation, trz, onDelete }) {
         date: trz.date,
       }
     : pressedDate;
-
+  
+  if (isEmpty(wallet1)) return null
   return (
     <View style={styles.container}>
       <View style={styles.header}>

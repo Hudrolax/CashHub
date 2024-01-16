@@ -14,9 +14,9 @@ import {
   setPressWallet2,
   setPressExInItem,
   setPressDate,
-} from "./actions";
+} from "../actions";
 
-import isEmptyObject from "../util";
+import {isEmpty} from "../util";
 
 const CircleItem = ({
   title,
@@ -64,7 +64,7 @@ const CircleItem = ({
 
       switch (object_type) {
         case "wallet":
-          if (isEmptyObject(pressedWallet2)) {
+          if (isEmpty(pressedWallet2)) {
             dispatch(setPressWallet1({}));
           } else {
             dispatch(setPressWallet2({}));
@@ -81,11 +81,11 @@ const CircleItem = ({
       switch (object_type) {
         case "wallet":
           if (
-            !isEmptyObject(pressedWallet2) ||
-            (!isEmptyObject(pressedExInItem) && !isEmptyObject(pressedWallet1))
+            !isEmpty(pressedWallet2) ||
+            (!isEmpty(pressedExInItem) && !isEmpty(pressedWallet1))
           )
             return;
-          if (isEmptyObject(pressedWallet1)) {
+          if (isEmpty(pressedWallet1)) {
             dispatch(setPressWallet1(object));
           } else {
             dispatch(setPressWallet2(object));
@@ -93,15 +93,15 @@ const CircleItem = ({
           break;
         case "exInItem":
           if (
-            (!isEmptyObject(pressedExInItem) &&
+            (!isEmpty(pressedExInItem) &&
               pressedExInItem.name !== title) ||
-            !isEmptyObject(pressedWallet2)
+            !isEmpty(pressedWallet2)
           )
             return;
           dispatch(setPressExInItem(object));
           break;
         case "date":
-          if (!isEmptyObject(pressedDate) && pressedDate.date !== object.date)
+          if (!isEmpty(pressedDate) && pressedDate.date !== object.date)
             return;
           dispatch(setPressDate(object));
           break;
@@ -124,9 +124,9 @@ const CircleItem = ({
 
   useEffect(() => {
     if (
-      ((!isEmptyObject(pressedWallet1) && !isEmptyObject(pressedExInItem)) ||
-        (!isEmptyObject(pressedWallet1) && !isEmptyObject(pressedWallet2))) &&
-      !isEmptyObject(pressedDate) &&
+      ((!isEmpty(pressedWallet1) && !isEmpty(pressedExInItem)) ||
+        (!isEmpty(pressedWallet1) && !isEmpty(pressedWallet2))) &&
+      !isEmpty(pressedDate) &&
       animationRef.current
     ) {
       animationRef.current.stop();

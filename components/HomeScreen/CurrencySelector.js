@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import * as SecureStore from "expo-secure-store";
 
 import { setMainCurrency } from "../actions";
 import { greenColor } from "../colors";
+import { storeData } from "../data";
 
 const CurrencySelector = ({ style }) => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const CurrencySelector = ({ style }) => {
   };
 
   const selectOption = async (option) => {
-    await SecureStore.setItemAsync("mainCurrency", option);
+    await storeData("mainCurrency", option);
     dispatch(setMainCurrency(option));
     setIsOpen(false);
   };

@@ -7,10 +7,10 @@ import { AppState } from "react-native";
 
 import LoginScreen from "./LoginScreen/LoginScreen";
 import MainScreen from "./MainScreen";
-import { setLogin, setUsername } from "./LoginScreen/actions";
+import { setLogin, setUsername, setIsLoadin, setMainCurrency } from "./actions";
 import LoadingOverlay from "./loadingOverlay";
-import { setIsLoadin, setMainCurrency } from "./actions";
-// import { statusBarStyle } from "./colors";
+import { getData } from "./data";
+import { updateData } from "./actions";
 
 export default function MainScreenWrapper() {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -35,21 +35,39 @@ export default function MainScreenWrapper() {
   }, [appState]);
 
   useEffect(() => {
-    const loadToken = async () => {
+    const loadData = async () => {
       dispatch(setIsLoadin(true));
-      try {
+
+      // load token
         const token = await SecureStore.getItemAsync("userToken");
         const username = await SecureStore.getItemAsync("username");
-        const mainCurrency = await SecureStore.getItemAsync("mainCurrency");
-        dispatch(setLogin(token));
-        dispatch(setUsername(username));
-        dispatch(setMainCurrency(mainCurrency ? mainCurrency : 'USD'));
-      } catch {
-        dispatch(setLogin(""));
-      }
+        dispatch(setLogin(token ? token : ""));
+        dispatch(setUsername(username ? username : ""));
+
+      // load main currency
+      const mainCurrency = await getData("mainCurrency");
+      dispatch(setMainCurrency(mainCurrency ? mainCurrency : 'USD'));
+
+      // load data
+      const currencies = await getData("currencies");
+      const symbols = await getData("symbols");
+      const wallets = await getData("wallets");
+      const exInItems = await getData("exInItems");
+      const trzExInItems = await getData("trzExInItems");
+      const transactions = await getData("transactions");
+
+      dispatch(updateData(
+        currencies ? currencies : [],
+        symbols ? symbols : [],
+        wallets ? wallets : [],
+        exInItems ? exInItems : [],
+        trzExInItems ? trzExInItems : [],
+        transactions ? transactions : []
+      ))
+
       dispatch(setIsLoadin(false));
     };
-    loadToken();
+    loadData();
   }, [dispatch]);
 
   return (

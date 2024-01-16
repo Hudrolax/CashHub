@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { StyleSheet, ScrollView } from "react-native";
@@ -6,7 +6,7 @@ import { StyleSheet, ScrollView } from "react-native";
 import DayLog from "./DayLog";
 import { View } from "react-native-animatable";
 import { prepareTrzs, groupTransactionsByDay } from "../util";
-import { fetchHomeData } from "../HomeScreen/actions";
+import { fetchHomeData } from "../dataUpdater";
 
 export default function LogScreen() {
   const dispatch = useDispatch();
@@ -15,10 +15,7 @@ export default function LogScreen() {
   const wallets = useSelector((state) => state.mainState.wallets);
   const transactions = useSelector((state) => state.mainState.transactions);
   const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
-
-  const preparedTrzs = groupTransactionsByDay(
-    prepareTrzs(transactions, trzExInItems, wallets)
-  );
+  const [preparedTrzs, setPreparedTrzs] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -27,6 +24,18 @@ export default function LogScreen() {
       return () => {};
     }, [dispatch, token]) // зависимости dispatch и token
   );
+
+  useEffect(() => {
+    let preparedTrzs = groupTransactionsByDay(
+      prepareTrzs(transactions, trzExInItems, wallets)
+    );
+    preparedTrzs = preparedTrzs.sort((a, b) => {
+      let dateA = new Date(a.date);
+      let dateB = new Date(b.date);
+      return dateA - dateB;
+    });
+    setPreparedTrzs(preparedTrzs);
+  }, [transactions, trzExInItems, wallets]);
 
   return (
     <View style={styles.container}>

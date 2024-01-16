@@ -3,16 +3,27 @@ import { Text, View, StyleSheet } from "react-native";
 import { formatDate } from "../util";
 import { redColor, greenColor } from "../colors";
 
-const DayHeader = ({date, trzCount, totalAmount}) => {
+const DayHeader = ({ date, trzCount, totalAmount }) => {
   function getDayOfWeek(dateString) {
-    const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+    const daysOfWeek = [
+      "Воскресенье",
+      "Понедельник",
+      "Вторник",
+      "Среда",
+      "Четверг",
+      "Пятница",
+      "Суббота",
+    ];
     const date = new Date(dateString);
     const dayOfWeek = date.getDay();
-  
+
     return daysOfWeek[dayOfWeek];
   }
 
-  const totalAmountColor = totalAmount[0] === '-' ? redColor : greenColor
+  const totalAmountColor =
+    totalAmount[0] === "-" || (totalAmount[0] === "$" && totalAmount[2] === "-")
+      ? redColor
+      : greenColor;
 
   return (
     <View style={styles.container}>
@@ -32,10 +43,24 @@ const DayHeader = ({date, trzCount, totalAmount}) => {
         </View>
 
         {/* right side */}
-        <View style={{ justifyContent: "flex-end", alignItems: 'flex-start', marginRight: 5 }}>
+        <View
+          style={{
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+            marginRight: 5,
+          }}
+        >
           {/* Total amount */}
           <View>
-            <Text style={{ color: totalAmountColor, fontSize: 20, fontWeight: 'bold' }}>{totalAmount}</Text>
+            <Text
+              style={{
+                color: totalAmountColor,
+                fontSize: 20,
+                fontWeight: "bold",
+              }}
+            >
+              {totalAmount}
+            </Text>
           </View>
           {/* transactions count */}
           <View>
@@ -49,7 +74,7 @@ const DayHeader = ({date, trzCount, totalAmount}) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center'
+    alignItems: "center",
   },
   dayHeader: {
     height: 50,

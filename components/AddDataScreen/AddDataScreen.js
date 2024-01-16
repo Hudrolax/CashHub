@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Calculator from "./Calculator";
 import AddHeader from "./AddHeader";
-import { resetAllPressStates } from "../HomeScreen/actions";
+import { resetAllPressStates } from "../actions";
 import { prepareTrzs } from "../util";
 import { setEditDocId } from "../actions";
 

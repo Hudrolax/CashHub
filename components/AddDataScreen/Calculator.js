@@ -10,18 +10,31 @@ import {
   Vibration,
   Platform,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
-import isEmptyObject, {
+import {
+  isEmpty,
   formatNumberLight,
   getRate,
   formatDateShort,
   formatDate,
   addCurrencySymbol,
+  showAlert,
 } from "../util";
-import { fetchRequest } from "./actions";
 import { greenColor } from "../colors";
+import { dispatchedFetchRequest, fetchHomeData } from "../dataUpdater";
 
+const getDisplayFontSize = (_expression) => {
+  if (_expression.length > 21) {
+    return 16
+  } else if (_expression.length > 16) {
+    return 19
+  } else if (_expression.length > 10) {
+    return 22
+  } else {
+    return 32
+  }
+}
 
 export default function Calculator({ navigation, trz }) {
   const dispatch = useDispatch();
@@ -54,7 +67,7 @@ export default function Calculator({ navigation, trz }) {
   const pickRate = () => {
     if (trz && trz.wallet2) {
       return Math.abs(trz.amount2 / trz.amount1);
-    } else if (trz || isEmptyObject(wallet2)) {
+    } else if (trz || isEmpty(wallet2)) {
       return 1;
     } else {
       return getRate(wallet1.currency.name, wallet2.currency.name, symbols);
@@ -67,7 +80,7 @@ export default function Calculator({ navigation, trz }) {
   const [comment, setComment] = useState(trz ? trz.comment : "");
   const [activeField, setActiveField] = useState("display1");
 
-  const exchangeMode = !isEmptyObject(pressedWallet2) || (trz && trz.wallet2);
+  const exchangeMode = !isEmpty(wallet2);
 
   const handlePress = (value) => {
     Vibration.vibrate(2);
@@ -99,11 +112,11 @@ export default function Calculator({ navigation, trz }) {
       Vibration.vibrate(2);
       switch (activeField) {
         case "display1":
-          setExpression(eval(expression).toString());
+          setExpression(eval(expression));
           setExpression2(eval(expression) * rate);
           break;
         case "display2":
-          setExpression2(eval(expression2).toString());
+          setExpression2(eval(expression2));
           setExpression(eval(expression2) / rate);
           break;
       }
@@ -138,8 +151,24 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleOk = async () => {
-    if (!handleResult()) return;
     Vibration.vibrate(10);
+    let _rate = rate;
+    let _expression = expression;
+    try {
+      _expression = eval(_expression);
+    } catch {
+      showAlert('Ошибка:', 'Ошибка в выражении суммы!', 'Ok')
+      return
+    }
+
+    if (exchangeMode) {
+      try {
+        _rate = eval(_rate);
+      } catch {
+        showAlert('Ошибка:', 'Ошибка в обменном курсе!', 'Ok')
+        return
+      }
+    }
 
     // console.log(eval(expression).toString());
     // console.log(JSON.stringify(pressedDate, null, 2));
@@ -150,16 +179,16 @@ export default function Calculator({ navigation, trz }) {
         wallet_to_id: null,
         exchange_rate: null,
         exin_item_id: exInItem.id,
-        amount: (exInItem.income ? "" : "-") + expression,
+        amount: (exInItem.income ? "" : "-") + _expression,
         comment: comment,
       };
     } else {
       payload = {
         wallet_from_id: wallet1.id,
         wallet_to_id: wallet2.id,
-        exchange_rate: rate,
+        exchange_rate: _rate,
         exin_item_id: null,
-        amount: expression,
+        amount: _expression,
         comment: comment,
       };
     }
@@ -168,7 +197,7 @@ export default function Calculator({ navigation, trz }) {
     }
     if (trz) {
       dispatch(
-        fetchRequest(
+        dispatchedFetchRequest(
           token,
           payload,
           `/wallet_transactions/${trz.doc_id}`,
@@ -176,8 +205,12 @@ export default function Calculator({ navigation, trz }) {
         )
       );
     } else {
-      dispatch(fetchRequest(token, payload, "/wallet_transactions/", "POST"));
+      dispatch(
+        dispatchedFetchRequest(token, payload, "/wallet_transactions/", "POST")
+      );
     }
+
+    dispatch(fetchHomeData(token))
 
     navigation.navigate("Tabs");
   };
@@ -234,21 +267,36 @@ export default function Calculator({ navigation, trz }) {
       : { ...styles.display, marginVertical: 0 };
   };
 
+
   const displayTextStyle = (display) => {
+    let style = styles.displayText
     if (activeField === display) {
-      return { ...styles.displayText, textDecorationLine: "underline" };
-    } else {
-      return styles.displayText;
+      style = { ...style, textDecorationLine: "underline" };
     }
+    if (display === 'display1' && expression) {
+      style = {...style, fontSize: getDisplayFontSize(expression.toString())}
+    } else if (expression2) {
+      style = {...style, fontSize: getDisplayFontSize(expression2.toString())}
+    }
+
+    return style
   };
 
   const rateDisplayStyle = () => {
+    let style = {color: "black", fontSize: 18}
     if (activeField === "rate") {
-      return { color: "black", fontSize: 18, textDecorationLine: "underline" };
-    } else {
-      return { color: "black", fontSize: 18 };
+      style = { ...style, textDecorationLine: "underline" };
+    }  
+
+    if (rate && rate.toString().length > 7) {
+      style = {...style, fontSize: 12}
+    } else if (rate && rate.toString().length > 5) {
+      style = {...style, fontSize: 16}
     }
+    return style
   };
+
+  if (isEmpty(wallet1)) return null;
 
   return (
     <View style={getDynamicStyles()}>
@@ -278,7 +326,7 @@ export default function Calculator({ navigation, trz }) {
         </TouchableOpacity>
       </View>
 
-      {(!keyboardVisible || Platform.OS === 'ios') && (
+      {(!keyboardVisible || Platform.OS === "ios") && (
         <View style={{ flex: 1 }}>
           {exchangeMode ? (
             <View style={{ flex: 1 }}>
@@ -347,7 +395,7 @@ export default function Calculator({ navigation, trz }) {
           ) : (
             // one display variante
             <View style={styles.display}>
-              <Text style={styles.displayText}>
+              <Text style={displayTextStyle("display1")}>
                 {addCurrencySymbol(expression, wallet1.currency.name)}
               </Text>
               <TouchableOpacity

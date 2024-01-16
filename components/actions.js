@@ -26,3 +26,68 @@ export const setWalletsInMainCurrency = (payload) => ({
   type: "SET_WALLETS_IN_MAIN_CURRENCY",
   payload: payload,
 });
+export const setFetchTimer = (payload) => ({
+  type: "SET_FETCH_TIMER",
+  payload: payload,
+});
+export const setCurrencies = (payload) => ({
+  type: "SET_CURRENCIES",
+  payload: payload,
+});
+export const setWallets = (payload) => ({
+  type: "SET_WALLETS",
+  payload: payload,
+});
+export const setExInItems = (payload) => ({
+  type: "SET_ExInItems",
+  payload: payload,
+});
+export const setTrzExInItems = (payload) => ({
+  type: "SET_TRZ_ExInItems",
+  payload: payload,
+});
+export const setTransactions = (payload) => ({
+  type: "SET_TRANSACTIONS",
+  payload: payload,
+});
+export const setDates = (payload) => ({
+  type: "SET_DATES",
+  payload: payload,
+});
+export const setPressWallet1 = (payload) => ({
+  type: "SET_PRESS_WALLET1",
+  payload: payload,
+});
+export const setPressWallet2 = (payload) => ({
+  type: "SET_PRESS_WALLET2",
+  payload: payload,
+});
+export const setPressExInItem = (payload) => ({
+  type: "SET_PRESS_EXINITEM",
+  payload: payload,
+});
+export const setPressDate = (payload) => ({
+  type: "SET_PRESS_DATE",
+  payload: payload,
+});
+export const resetAllPressStates = () => ({
+  type: "RESET_ALL_PRESS_STATES",
+});
+export const setIncome = (payload) => ({
+  type: "SET_INCOME",
+  payload: payload,
+});
+export const setSymbols = (payload) => ({
+  type: "SET_SYMBOLS",
+  payload: payload,
+});
+export const updateData = (currencies, symbols, wallets, exInItems, trzExInItems, transactions) => {
+  return (dispatch) => {
+    dispatch({
+      type: "UPDATE_ALL_DATA",
+      payload: { currencies, symbols, wallets, exInItems, trzExInItems, transactions },
+    });
+  };
+};
+export const setLogin = (payload) => ({ type: "LOGIN", payload: payload });
+export const setUsername = (payload) => ({ type: "SET_USERNAME", payload: payload });

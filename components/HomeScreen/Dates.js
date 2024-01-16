@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from "react-redux";
 import { StyleSheet, ScrollView } from "react-native";
 
-import { setDates } from "./actions";
+import { setDates } from "../actions";
 import { blueColor } from "../colors";
 import { formatDateShort } from "../util";
 

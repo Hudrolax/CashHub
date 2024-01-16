@@ -1,11 +1,10 @@
 import { View, TextInput, Button, StyleSheet, Text } from "react-native";
 import { useDispatch } from "react-redux";
 import React, { useState } from "react";
-import { setLogin, setUsername } from "./actions";
 import * as SecureStore from "expo-secure-store";
 
 import { baseEndpoint } from "../requests";
-import { setIsLoadin } from "../actions";
+import { setIsLoadin, setLogin, setUsername } from "../actions";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();

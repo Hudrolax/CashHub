@@ -2,8 +2,7 @@ import { StyleSheet, View, Vibration } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import ElipseItem from "./Elipseitem";
-import { setIncome } from "./actions";
-import { setEditContentType, setWalletsInMainCurrency } from "../actions";
+import { setEditContentType, setWalletsInMainCurrency, setIncome } from "../actions";
 import { walletsInMainCurColor } from "../colors";
 
 export default function ScrollColumnHeader({ navigation }) {
