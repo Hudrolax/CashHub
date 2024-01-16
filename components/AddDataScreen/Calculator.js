@@ -47,6 +47,7 @@ export default function Calculator({ navigation, trz }) {
   const pressedDate = useSelector((state) => state.mainState.pressedDate);
   const symbols = useSelector((state) => state.mainState.symbols);
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
 
   const wallet1 = trz ? trz.wallet1 : pressedWallet1;
   const wallet2 = trz ? trz.wallet2 : pressedWallet2;
@@ -211,7 +212,7 @@ export default function Calculator({ navigation, trz }) {
       );
     }
 
-    dispatch(fetchHomeData(token))
+    dispatch(fetchHomeData(token, user))
 
     navigation.navigate("Tabs");
   };

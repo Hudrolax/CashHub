@@ -16,7 +16,7 @@ import {
   setPressDate,
 } from "../actions";
 
-import {isEmpty} from "../util";
+import { isEmpty } from "../util";
 
 const CircleItem = ({
   title,
@@ -93,16 +93,14 @@ const CircleItem = ({
           break;
         case "exInItem":
           if (
-            (!isEmpty(pressedExInItem) &&
-              pressedExInItem.name !== title) ||
+            (!isEmpty(pressedExInItem) && pressedExInItem.name !== title) ||
             !isEmpty(pressedWallet2)
           )
             return;
           dispatch(setPressExInItem(object));
           break;
         case "date":
-          if (!isEmpty(pressedDate) && pressedDate.date !== object.date)
-            return;
+          if (!isEmpty(pressedDate) && pressedDate.date !== object.date) return;
           dispatch(setPressDate(object));
           break;
       }
@@ -139,25 +137,44 @@ const CircleItem = ({
     if (!subtitleColor) {
       return styles.subtitle;
     } else {
-      return {...styles.subtitle, color: subtitleColor}
+      return { ...styles.subtitle, color: subtitleColor };
     }
   };
+
+  const borderStyle = () => {
+    let style = {
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: "#fff",
+      borderRadius: 50,
+      aspectRatio: 1,
+    }
+    if (isPressed) {
+      style = {...style, height: 70, borderColor: '#fff', borderWidth: 2}
+    }
+    return style
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.itemContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Animated.View
-          style={[
-            styles.circle,
-            {
-              backgroundColor: circleColor,
-              transform: [{ scale: scaleValue }],
-            },
-          ]}
+        <View
+          style={borderStyle()}
         >
-          <Text style={styles.circleText}>{circleText}</Text>
-        </Animated.View>
+          <Animated.View
+            style={[
+              styles.circle,
+              {
+                backgroundColor: circleColor,
+                transform: [{ scale: scaleValue }],
+              },
+            ]}
+          >
+            <Text style={styles.circleText}>{circleText}</Text>
+          </Animated.View>
+        </View>
         <Text style={sybtitleStyle()}>{subtitle}</Text>
       </View>
     </TouchableWithoutFeedback>

@@ -24,6 +24,7 @@ export default function EditScreen({ navigation }) {
   const wallets = useSelector((state) => state.mainState.wallets);
   const exInItems = useSelector((state) => state.mainState.exInItems);
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
 
   let headerStyle;
   let headerText;
@@ -58,7 +59,7 @@ export default function EditScreen({ navigation }) {
     } else if (contentType === "outcome") {
     }
     dispatch(setEditItem(payload));
-    dispatch(fetchHomeData(token));
+    dispatch(fetchHomeData(token, user));
     navigation.navigate("EditItem");
   };
 

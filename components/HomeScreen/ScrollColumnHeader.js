@@ -45,7 +45,6 @@ export default function ScrollColumnHeader({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "#1f1e1b",
     maxHeight: 40,
     justifyContent: "space-around",
     alignItems: "center",

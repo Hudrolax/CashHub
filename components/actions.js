@@ -81,13 +81,13 @@ export const setSymbols = (payload) => ({
   type: "SET_SYMBOLS",
   payload: payload,
 });
-export const updateData = (currencies, symbols, wallets, exInItems, trzExInItems, transactions) => {
+export const updateData = (currencies, symbols, wallets, exInItems, trzExInItems, transactions, users) => {
   return (dispatch) => {
     dispatch({
       type: "UPDATE_ALL_DATA",
-      payload: { currencies, symbols, wallets, exInItems, trzExInItems, transactions },
+      payload: { currencies, symbols, wallets, exInItems, trzExInItems, transactions, users },
     });
   };
 };
-export const setLogin = (payload) => ({ type: "LOGIN", payload: payload });
-export const setUsername = (payload) => ({ type: "SET_USERNAME", payload: payload });
+export const setToken = (payload) => ({ type: "SET_TOKEN", payload: payload });
+export const setUser = (payload) => ({ type: "SET_USER", payload: payload });

@@ -22,6 +22,7 @@ export default function EditItemScreen({ navigation }) {
   const editItem = useSelector((state) => state.mainState.editItem);
   const currencies = useSelector((state) => state.mainState.currencies);
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
 
   const itemText = editItem && editItem.balance ? "счет" : "статью";
 
@@ -42,7 +43,7 @@ export default function EditItemScreen({ navigation }) {
     } else {
       dispatch(dispatchedFetchRequest(token, null, `/exin_items/${editItem.id}`, "DELETE"));
     }
-    dispatch(fetchHomeData(token));
+    dispatch(fetchHomeData(token, user));
     navigation.navigate("EditScreen");
   };
 

@@ -275,6 +275,7 @@ function createTransactionStructure(trz, wallet, exInItem) {
     comment: trz.comment,
     date: trz.date,
     user_name: trz.user_name,
+    user_id: trz.user_id,
     doc_id: trz.doc_id,
   };
 }
@@ -289,6 +290,7 @@ function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2) {
     comment: trz1.comment,
     date: trz1.date,
     user_name: trz1.user_name,
+    user_id: trz1.user_id,
     doc_id: trz1.doc_id,
   };
 }

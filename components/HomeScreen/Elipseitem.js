@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     alignItems: "center",
     marginVertical: 10, // Adjust as needed for spacing
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 30,
   },
   circleText: {
     fontSize: 16, // Adjust your font size

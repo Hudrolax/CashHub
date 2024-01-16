@@ -11,6 +11,7 @@ import { fetchHomeData } from "../dataUpdater";
 export default function LogScreen() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
   const trzExInItems = useSelector((state) => state.mainState.trzExInItems);
   const wallets = useSelector((state) => state.mainState.wallets);
   const transactions = useSelector((state) => state.mainState.transactions);
@@ -19,7 +20,7 @@ export default function LogScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(fetchHomeData(token));
+      dispatch(fetchHomeData(token, user));
 
       return () => {};
     }, [dispatch, token]) // зависимости dispatch и token

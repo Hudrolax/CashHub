@@ -7,7 +7,7 @@ import { AppState } from "react-native";
 
 import LoginScreen from "./LoginScreen/LoginScreen";
 import MainScreen from "./MainScreen";
-import { setLogin, setUsername, setIsLoadin, setMainCurrency } from "./actions";
+import { setToken, setUser, setIsLoadin, setMainCurrency } from "./actions";
 import LoadingOverlay from "./loadingOverlay";
 import { getData } from "./data";
 import { updateData } from "./actions";
@@ -40,9 +40,9 @@ export default function MainScreenWrapper() {
 
       // load token
         const token = await SecureStore.getItemAsync("userToken");
-        const username = await SecureStore.getItemAsync("username");
-        dispatch(setLogin(token ? token : ""));
-        dispatch(setUsername(username ? username : ""));
+        const user = JSON.parse(await SecureStore.getItemAsync("user"));
+        dispatch(setToken(token ? token : ""));
+        dispatch(setUser(user));
 
       // load main currency
       const mainCurrency = await getData("mainCurrency");
@@ -55,6 +55,7 @@ export default function MainScreenWrapper() {
       const exInItems = await getData("exInItems");
       const trzExInItems = await getData("trzExInItems");
       const transactions = await getData("transactions");
+      const users = await getData("users");
 
       dispatch(updateData(
         currencies ? currencies : [],
@@ -62,7 +63,8 @@ export default function MainScreenWrapper() {
         wallets ? wallets : [],
         exInItems ? exInItems : [],
         trzExInItems ? trzExInItems : [],
-        transactions ? transactions : []
+        transactions ? transactions : [],
+        users ? users : [],
       ))
 
       dispatch(setIsLoadin(false));

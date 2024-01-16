@@ -6,7 +6,7 @@ import {
   Vibration,
   Platform,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { greenColor, redColor, orangeColor } from "../colors";
 import { formatNumber } from "../util";
@@ -23,6 +23,14 @@ const Separator = () => {
     />
   );
 };
+
+const nameStyle = (my_user, user) => {
+  let style = styles.userName
+  if (user.id !== my_user.id) {
+    style = {...style, color: '#ff51ff'}
+  }
+  return style
+}
 
 const ColorCircle = ({ style, color, text }) => {
   let adFontStyle = {};
@@ -52,11 +60,13 @@ const ExchangeDayItem = ({
   wallet2,
   amount1,
   amount2,
-  userName,
+  user,
   comment,
   doc_id,
 }) => {
   const dispatch = useDispatch();
+  const my_user = useSelector((state) => state.login_screen.user);
+
   const onPress = () => {
     Vibration.vibrate(2);
     dispatch(setEditDocId(doc_id));
@@ -73,8 +83,10 @@ const ExchangeDayItem = ({
               color={orangeColor}
               text={"⇄"}
             />
-            <View style={{ marginLeft: 5 }}>
-              <Text style={styles.exInItemText}>{`Перевод (${userName})`}</Text>
+            <View style={{ marginLeft: 5, flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.exInItemText}>{"Перевод ("}</Text>
+              <Text style={nameStyle(my_user, user)}>{user.name}</Text>
+              <Text style={styles.exInItemText}>{")"}</Text>
               {comment ? (
                 <Text style={styles.commentText}>{comment}</Text>
               ) : undefined}
@@ -90,11 +102,11 @@ const ExchangeDayItem = ({
           >
             <Text style={styles.exchangeTrzAmount}>
               {formatNumber(amount1.slice(1), wallet1.currency.name) +
-                " ⇄ " +
+                " → " +
                 formatNumber(amount2, wallet2.currency.name)}
             </Text>
             <Text style={styles.exchangeTrzWallets}>
-              {wallet1.name + " ⇄ " + wallet2.name}
+              {wallet1.name + " → " + wallet2.name}
             </Text>
           </View>
         </View>
@@ -104,14 +116,17 @@ const ExchangeDayItem = ({
   );
 };
 
-const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
+const DayItem = ({ exInItem, wallet, amount, user, comment, doc_id }) => {
   const dispatch = useDispatch();
-  const trzColor = exInItem.income ? greenColor : redColor;
+  const my_user = useSelector((state) => state.login_screen.user);
+
+  const trzColor = () => exInItem.income ? greenColor : redColor;
 
   const onPress = () => {
     Vibration.vibrate(2);
     dispatch(setEditDocId(doc_id));
   };
+
 
   return (
     <View>
@@ -119,14 +134,14 @@ const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
         <View style={styles.itemContainer}>
           {/* left side */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <ColorCircle style={{ marginLeft: 10 }} color={trzColor} />
+            <ColorCircle style={{ marginLeft: 10 }} color={trzColor()} />
             <View style={{ marginLeft: 5, justifyContent: "center" }}>
               <Text style={styles.exInItemText}>{exInItem.name}</Text>
 
               {/* wallet and name */}
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={styles.walletText}>{wallet.name + "("}</Text>
-                <Text style={styles.userName}>{userName}</Text>
+                <Text style={nameStyle(my_user, user)}>{user.name}</Text>
                 <Text style={styles.walletText}>)</Text>
               </View>
 
@@ -137,7 +152,7 @@ const DayItem = ({ exInItem, wallet, amount, userName, comment, doc_id }) => {
           </View>
           {/* right side */}
           <View style={{ justifyContent: "center", marginRight: 10 }}>
-            <Text style={{ ...styles.transactionAmount, color: trzColor }}>
+            <Text style={{ ...styles.transactionAmount, color: trzColor() }}>
               {amount}
             </Text>
           </View>

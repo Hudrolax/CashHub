@@ -5,7 +5,8 @@ import { baseEndpoint } from "./requests";
 import {
   updateData,
   setIsLoadin,
-  setLogin,
+  setToken,
+  setUser,
   setConnectionError,
 } from "./actions";
 import { showAlert } from "./util";
@@ -46,7 +47,9 @@ export const dispatchedFetchRequest = (
 
       if (response.status === 401) {
         await SecureStore.setItemAsync("userToken", "");
-        dispatch(setLogin(""));
+        await SecureStore.setItemAsync("user", undefined);
+        dispatch(setToken(""));
+        dispatch(setUser(undefined));
         throw new Error("Ошибка авторизации");
       } else if (response.status !== 200) {
         throw new Error(JSON.stringify(data, null, 2));
@@ -59,7 +62,7 @@ export const dispatchedFetchRequest = (
   };
 };
 
-const fetchRequest = async (
+export const fetchRequest = async (
   dispatch,
   token,
   payload,
@@ -112,7 +115,9 @@ const fetchRequest = async (
 
     if (response.status === 401) {
       await SecureStore.setItemAsync("userToken", "");
-      dispatch(setLogin(""));
+      await SecureStore.setItemAsync("user", undefined);
+      dispatch(setToken(""));
+      dispatch(setUser(undefined));
       throw new Error("Ошибка авторизации");
     } else if (response.status !== 200) {
       throw new Error(JSON.stringify(data, null, 2));
@@ -128,7 +133,7 @@ const fetchRequest = async (
   }
 };
 
-export const fetchHomeData = (token) => {
+export const fetchHomeData = (token, user) => {
   return async (dispatch) => {
     // get data from DB
     let transactions = [];
@@ -149,7 +154,7 @@ export const fetchHomeData = (token) => {
       ...new Set(transactions.map((trz) => trz.exin_item_id)),
     ];
 
-    const [currencies, symbols, _wallets, exInItems, trzExInItems] =
+    const [currencies, symbols, _wallets, exInItems, trzExInItems, users] =
       await Promise.all([
         fetchRequest(dispatch, token, null, "/currencies/", "GET"),
         fetchRequest(dispatch, token, null, "/symbols/", "GET"),
@@ -158,6 +163,7 @@ export const fetchHomeData = (token) => {
         fetchRequest(dispatch, token, null, "/exin_items/", "GET", 
           [{ids: exInItemsIds}],
         ),
+        fetchRequest(dispatch, token, null, "/users/", "GET", {family_group: user.family_group}),
       ]);
 
     // preprocessing wallets
@@ -177,6 +183,7 @@ export const fetchHomeData = (token) => {
     await storeData("exInItems", exInItems);
     await storeData("trzExInItems", trzExInItems);
     await storeData("transactions", transactions);
+    await storeData("users", users);
 
     dispatch(
       updateData(
@@ -185,7 +192,8 @@ export const fetchHomeData = (token) => {
         wallets,
         exInItems,
         trzExInItems,
-        transactions
+        transactions,
+        users
       )
     );
   };

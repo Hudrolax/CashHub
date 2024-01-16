@@ -41,19 +41,20 @@ function TabScreen() {
 export default function MainScreen() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
   const fetchTimerRef = useRef();
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(fetchHomeData(token));
+      dispatch(fetchHomeData(token, user));
 
       if (fetchTimerRef.current) {
         clearInterval(fetchTimerRef.current);
       }
 
       fetchTimerRef.current = setInterval(
-        () => dispatch(fetchHomeData(token)),
-        5000
+        () => dispatch(fetchHomeData(token, user)),
+        10000
       );
 
       return () => {

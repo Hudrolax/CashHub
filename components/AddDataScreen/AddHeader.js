@@ -21,6 +21,7 @@ import { dispatchedFetchRequest, fetchHomeData } from "../dataUpdater";
 const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.login_screen.token);
+  const user = useSelector((state) => state.login_screen.user);
 
   const deleteAndReturn = () => {
     Vibration.vibrate(2);
@@ -28,7 +29,7 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
       dispatchedFetchRequest(token, null, `/wallet_transactions/${doc_id}`, "DELETE")
     );
     navigation.navigate("Tabs");
-    dispatch(fetchHomeData(token))
+    dispatch(fetchHomeData(token, user))
     onDelete();
   };
 

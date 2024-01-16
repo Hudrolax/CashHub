@@ -1,10 +1,14 @@
 import { View } from "react-native";
+import { useSelector } from "react-redux";
 
 import { DayItem, ExchangeDayItem } from "./DayItem";
 import { DayHeader } from "./DayHeader";
 import { calculateTotalAmount, formatNumber, isEmpty } from "../util";
 
 export default function DayLog({ dayTransactions, date, mainCurrency }) {
+  const user = useSelector((state) => state.login_screen.user);
+  const users = useSelector((state) => state.mainState.users);
+
   const totalAmount = calculateTotalAmount(dayTransactions, mainCurrency);
 
   const getAmount = (trz, walletNum) =>
@@ -18,6 +22,12 @@ export default function DayLog({ dayTransactions, date, mainCurrency }) {
         totalAmount={formatNumber(totalAmount, mainCurrency)}
       />
       {dayTransactions.map((item) => {
+        let trzUser = { name: "неизвестный", username: 'неизвестный' };
+        if (!isEmpty(users)) {
+          let _user = users.find((u) => u.id === item.user_id)
+          trzUser = _user ? _user : trzUser;
+        }
+
         if (isEmpty(item.wallet2)) {
           return (
             <DayItem
@@ -25,7 +35,7 @@ export default function DayLog({ dayTransactions, date, mainCurrency }) {
               exInItem={item.exInItem}
               wallet={item.wallet1}
               amount={getAmount(item, 1)}
-              userName={item.user_name}
+              user={trzUser}
               comment={item.comment}
               doc_id={item.doc_id}
             />
@@ -38,7 +48,7 @@ export default function DayLog({ dayTransactions, date, mainCurrency }) {
               wallet2={item.wallet2}
               amount1={item.amount1}
               amount2={item.amount2}
-              userName={item.user_name}
+              user={trzUser}
               comment={item.comment}
               doc_id={item.doc_id}
             />

@@ -18,7 +18,8 @@ const initialState = {
   editDocId: undefined,
   editContentType: undefined,
   editItem: undefined,
-  walletsInMainCurrency: false
+  walletsInMainCurrency: false,
+  users: []
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -63,6 +64,8 @@ const mainReducer = (state = initialState, action) => {
       return { ...state, editItem: action.payload };
     case "SET_WALLETS_IN_MAIN_CURRENCY":
       return { ...state, walletsInMainCurrency: action.payload };
+    case "SET_USERS":
+      return { ...state, users: action.payload };
     case "RESET_ALL_PRESS_STATES":
       return {
         ...state,
@@ -80,6 +83,7 @@ const mainReducer = (state = initialState, action) => {
         exInItems: action.payload.exInItems,
         trzExInItems: action.payload.trzExInItems,
         transactions: action.payload.transactions,
+        users: action.payload.users
       };
     default:
       return state;

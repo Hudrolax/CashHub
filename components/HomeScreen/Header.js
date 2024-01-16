@@ -6,7 +6,7 @@ import HamburgerMenu from "../MenuBtn/MenuBtn";
 import { getRate, formatNumber } from "../util";
 
 const Header = ({ navigation, style }) => {
-  const username = useSelector((state) => state.login_screen.username);
+  const user = useSelector((state) => state.login_screen.user);
   const wallets = useSelector((state) => state.mainState.wallets);
   const symbols = useSelector((state) => state.mainState.symbols);
   const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
@@ -17,27 +17,27 @@ const Header = ({ navigation, style }) => {
       const rate = getRate(item.currency.name, mainCurrency, symbols);
       totalBalance += item.balance * rate;
     });
-    return totalBalance
+    return totalBalance;
   };
 
   const totalBalance = countTotalBalance(wallets);
 
   return (
     <View style={{ ...styles.container, ...style }}>
-      <HamburgerMenu navigation={navigation} style={styles.hamburger}/>
+          <HamburgerMenu navigation={navigation} style={styles.hamburger} />
 
-      {/* top */}
-      <View style={styles.top}>
-        <Text style={styles.username}>{username}</Text>
-        <Text style={styles.totalBalance}>
-          {formatNumber(totalBalance, mainCurrency)}
-        </Text>
-      </View>
+          {/* top */}
+          <View style={styles.top}>
+            <Text style={styles.username}>{user ? user.name : ''}</Text>
+            <Text style={styles.totalBalance}>
+              {formatNumber(totalBalance, mainCurrency)}
+            </Text>
+          </View>
 
-      {/* bottom */}
-      <View styles={styles.bottom}>
-        {/* <Text style={{}}>Header</Text> */}
-      </View>
+          {/* bottom */}
+          <View styles={styles.bottom}>
+            {/* <Text style={{}}>Header</Text> */}
+          </View>
     </View>
   );
 };
@@ -45,19 +45,18 @@ const Header = ({ navigation, style }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: "#1f1e1b",
   },
   hamburger: {
     position: "absolute",
-    top: '8%',
-    left: '3%',
+    top: "8%",
+    left: "3%",
     zIndex: 3000,
   },
   top: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     alignItems: "center",
-    marginTop: '7%'
+    marginTop: "7%",
   },
   bottom: {
     flex: 1,
