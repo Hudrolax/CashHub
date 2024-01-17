@@ -150,6 +150,8 @@ export const fetchHomeData = (token, user) => {
     } catch {
       return;
     }
+
+
     const exInItemsIds = [
       ...new Set(transactions.map((trz) => trz.exin_item_id)),
     ];
@@ -160,12 +162,15 @@ export const fetchHomeData = (token, user) => {
         fetchRequest(dispatch, token, null, "/symbols/", "GET"),
         fetchRequest(dispatch, token, null, "/wallets/", "GET"),
         fetchRequest(dispatch, token, null, "/exin_items/", "GET"),
-        fetchRequest(dispatch, token, null, "/exin_items/", "GET", 
-          [{ids: exInItemsIds}],
-        ),
-        fetchRequest(dispatch, token, null, "/users/", "GET", {family_group: user.family_group}),
+        fetchRequest(dispatch, token, null, "/exin_items/", "GET", [
+          { ids: exInItemsIds },
+        ]),
+        fetchRequest(dispatch, token, null, "/users/", "GET", {
+          family_group: user.family_group,
+        }),
       ]);
 
+    // const start = Date.now();
     // preprocessing wallets
     const wallets = _wallets.map((wallet) => {
       const currency = currencies.find((c) => c.id === wallet.currency_id);
@@ -196,5 +201,6 @@ export const fetchHomeData = (token, user) => {
         users
       )
     );
+    // console.log(`Время выполнения: ${Date.now() - start} мс`);
   };
 };
