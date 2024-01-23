@@ -8,7 +8,7 @@ import { storeData } from "../data";
 
 const CurrencySelector = ({ style }) => {
   const dispatch = useDispatch();
-  const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
+  const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
   const currencies = useSelector((state) => state.mainState.currencies);
   const [isOpen, setIsOpen] = useState(false);
 

@@ -25,12 +25,12 @@ const Separator = () => {
 };
 
 const nameStyle = (my_user, user) => {
-  let style = styles.userName
+  let style = styles.userName;
   if (user.id !== my_user.id) {
-    style = {...style, color: '#ff51ff'}
+    style = { ...style, color: "#ff51ff" };
   }
-  return style
-}
+  return style;
+};
 
 const ColorCircle = ({ style, color, text }) => {
   let adFontStyle = {};
@@ -63,6 +63,7 @@ const ExchangeDayItem = ({
   user,
   comment,
   doc_id,
+  synchronized,
 }) => {
   const dispatch = useDispatch();
   const my_user = useSelector((state) => state.login_screen.user);
@@ -71,7 +72,6 @@ const ExchangeDayItem = ({
     Vibration.vibrate(2);
     dispatch(setEditDocId(doc_id));
   };
-
   return (
     <View>
       <TouchableHighlight onLongPress={onPress} style={{ paddingVertical: 5 }}>
@@ -83,7 +83,13 @@ const ExchangeDayItem = ({
               color={orangeColor}
               text={"⇄"}
             />
-            <View style={{ marginLeft: 5, flexDirection: 'row', alignItems: 'center' }}>
+            <View
+              style={{
+                marginLeft: 5,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               <Text style={styles.exInItemText}>{"Перевод ("}</Text>
               <Text style={nameStyle(my_user, user)}>{user.name}</Text>
               <Text style={styles.exInItemText}>{")"}</Text>
@@ -93,21 +99,24 @@ const ExchangeDayItem = ({
             </View>
           </View>
           {/* right side */}
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: 10,
-            }}
-          >
-            <Text style={styles.exchangeTrzAmount}>
-              {formatNumber(amount1.slice(1), wallet1.currency.name) +
-                " → " +
-                formatNumber(amount2, wallet2.currency.name)}
-            </Text>
-            <Text style={styles.exchangeTrzWallets}>
-              {wallet1.name + " → " + wallet2.name}
-            </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: 10,
+              }}
+            >
+              <Text style={styles.exchangeTrzAmount}>
+                {formatNumber(amount1.slice(1), wallet1.currency.name) +
+                  " → " +
+                  formatNumber(amount2, wallet2.currency.name)}
+              </Text>
+              <Text style={styles.exchangeTrzWallets}>
+                {wallet1.name + " → " + wallet2.name}
+              </Text>
+            </View>
+            {!synchronized && <Text>⏳</Text>}
           </View>
         </View>
       </TouchableHighlight>
@@ -116,17 +125,24 @@ const ExchangeDayItem = ({
   );
 };
 
-const DayItem = ({ exInItem, wallet, amount, user, comment, doc_id }) => {
+const DayItem = ({
+  exInItem,
+  wallet,
+  amount,
+  user,
+  comment,
+  doc_id,
+  synchronized,
+}) => {
   const dispatch = useDispatch();
   const my_user = useSelector((state) => state.login_screen.user);
 
-  const trzColor = () => exInItem.income ? greenColor : redColor;
+  const trzColor = () => (exInItem.income ? greenColor : redColor);
 
   const onPress = () => {
     Vibration.vibrate(2);
     dispatch(setEditDocId(doc_id));
   };
-
 
   return (
     <View>
@@ -151,10 +167,18 @@ const DayItem = ({ exInItem, wallet, amount, user, comment, doc_id }) => {
             </View>
           </View>
           {/* right side */}
-          <View style={{ justifyContent: "center", marginRight: 10 }}>
+          <View
+            style={{
+              justifyContent: "center",
+              marginRight: 10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <Text style={{ ...styles.transactionAmount, color: trzColor() }}>
               {amount}
             </Text>
+            {!synchronized && <Text>⏳</Text>}
           </View>
         </View>
       </TouchableHighlight>

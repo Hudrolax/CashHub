@@ -20,7 +20,7 @@ import { fetchHomeData } from "../dataUpdater";
 
 export default function EditScreen({ navigation }) {
   const dispatch = useDispatch();
-  const contentType = useSelector((state) => state.mainState.editContentType);
+  const contentType = useSelector((state) => state.stateReducer.editContentType);
   const wallets = useSelector((state) => state.mainState.wallets);
   const exInItems = useSelector((state) => state.mainState.exInItems);
   const token = useSelector((state) => state.login_screen.token);

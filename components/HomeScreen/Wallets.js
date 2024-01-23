@@ -10,9 +10,9 @@ import { getRate } from "../util";
 export default function Wallets({ navigation }) {
   const wallets = useSelector((state) => state.mainState.wallets);
   const walletsInMainCurrency = useSelector(
-    (state) => state.mainState.walletsInMainCurrency
+    (state) => state.stateReducer.walletsInMainCurrency
   );
-  const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
+  const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
   const symbols = useSelector((state) => state.mainState.symbols);
 
   const calculateBalance = (item) => {

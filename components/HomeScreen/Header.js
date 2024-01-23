@@ -9,7 +9,7 @@ const Header = ({ navigation, style }) => {
   const user = useSelector((state) => state.login_screen.user);
   const wallets = useSelector((state) => state.mainState.wallets);
   const symbols = useSelector((state) => state.mainState.symbols);
-  const mainCurrency = useSelector((state) => state.mainState.mainCurrency);
+  const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
 
   const countTotalBalance = (wallets) => {
     let totalBalance = 0;

@@ -26,10 +26,6 @@ export const setWalletsInMainCurrency = (payload) => ({
   type: "SET_WALLETS_IN_MAIN_CURRENCY",
   payload: payload,
 });
-export const setFetchTimer = (payload) => ({
-  type: "SET_FETCH_TIMER",
-  payload: payload,
-});
 export const setCurrencies = (payload) => ({
   type: "SET_CURRENCIES",
   payload: payload,
@@ -40,10 +36,6 @@ export const setWallets = (payload) => ({
 });
 export const setExInItems = (payload) => ({
   type: "SET_ExInItems",
-  payload: payload,
-});
-export const setTrzExInItems = (payload) => ({
-  type: "SET_TRZ_ExInItems",
   payload: payload,
 });
 export const setTransactions = (payload) => ({
@@ -81,13 +73,40 @@ export const setSymbols = (payload) => ({
   type: "SET_SYMBOLS",
   payload: payload,
 });
-export const updateData = (currencies, symbols, wallets, exInItems, trzExInItems, transactions, users) => {
+export const setUsers = (payload) => ({
+  type: "SET_USERS",
+  payload: payload,
+});
+export const updateData = (
+  currencies,
+  symbols,
+  wallets,
+  exInItems,
+  transactions,
+  users,
+) => {
   return (dispatch) => {
     dispatch({
       type: "UPDATE_ALL_DATA",
-      payload: { currencies, symbols, wallets, exInItems, trzExInItems, transactions, users },
+      payload: {
+        currencies,
+        symbols,
+        wallets,
+        exInItems,
+        transactions,
+        users,
+      },
     });
   };
 };
-export const setToken = (payload) => ({ type: "SET_TOKEN", payload: payload });
-export const setUser = (payload) => ({ type: "SET_USER", payload: payload });
+export const setLoginData = (token, user) => {
+  return (dispatch) => {
+    dispatch({
+      type: "SET_LOGIN_DATA",
+      payload: {
+        token,
+        user,
+      },
+    });
+  };
+};

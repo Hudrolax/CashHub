@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
+import { setTransactions } from "../actions";
+import { storeData } from "../data";
 import {
   isEmpty,
   formatDate,
@@ -16,20 +18,18 @@ import {
 } from "../util";
 import CircleItem from "../HomeScreen/CircleItem";
 import { blueColor, greenColor, orangeColor, redColor } from "../colors";
-import { dispatchedFetchRequest, fetchHomeData } from "../dataUpdater";
 
 const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.login_screen.token);
-  const user = useSelector((state) => state.login_screen.user);
+  const transactions = useSelector((state) => state.mainState.transactions);
 
-  const deleteAndReturn = () => {
+  const deleteAndReturn = async () => {
     Vibration.vibrate(2);
-    dispatch(
-      dispatchedFetchRequest(token, null, `/wallet_transactions/${doc_id}`, "DELETE")
-    );
+    const _trzs = transactions.map((trz) => trz.doc_id === doc_id ? {...trz, deleted: true} : trz)
+    storeData("transactions", _trzs)
+    dispatch(setTransactions(_trzs))
+    
     navigation.navigate("Tabs");
-    dispatch(fetchHomeData(token, user))
     onDelete();
   };
 
@@ -96,13 +96,13 @@ const CancelBtn = ({ navigation, style }) => {
 };
 
 export default function AddHeader({ navigation, trz, onDelete }) {
-  const pressedWallet1 = useSelector((state) => state.mainState.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.mainState.pressedWallet2);
+  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
+  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
   const pressedExInItem = useSelector(
-    (state) => state.mainState.pressedExInItem
+    (state) => state.stateReducer.pressedExInItem
   );
-  const pressedDate = useSelector((state) => state.mainState.pressedDate);
-  const _isIncome = useSelector((state) => state.mainState.isIncome);
+  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
+  const _isIncome = useSelector((state) => state.stateReducer.isIncome);
 
   const exchangeMode = !isEmpty(pressedWallet2) || (trz && !isEmpty(trz.wallet2));
   const wallet1 = trz ? trz.wallet1 : pressedWallet1;

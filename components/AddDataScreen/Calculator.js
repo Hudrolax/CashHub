@@ -1,3 +1,4 @@
+import * as SecureStore from "expo-secure-store";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -22,32 +23,30 @@ import {
   showAlert,
 } from "../util";
 import { greenColor } from "../colors";
-import { dispatchedFetchRequest, fetchHomeData } from "../dataUpdater";
+import { storeData, getData } from "../data";
+import { setTransactions, setWallets } from "../actions";
 
 const getDisplayFontSize = (_expression) => {
   if (_expression.length > 21) {
-    return 16
+    return 16;
   } else if (_expression.length > 16) {
-    return 19
+    return 19;
   } else if (_expression.length > 10) {
-    return 22
+    return 22;
   } else {
-    return 32
+    return 32;
   }
-}
-
+};
 
 export default function Calculator({ navigation, trz }) {
   const dispatch = useDispatch();
-  const pressedWallet1 = useSelector((state) => state.mainState.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.mainState.pressedWallet2);
+  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
+  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
   const pressedExInItem = useSelector(
-    (state) => state.mainState.pressedExInItem
+    (state) => state.stateReducer.pressedExInItem
   );
-  const pressedDate = useSelector((state) => state.mainState.pressedDate);
+  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
   const symbols = useSelector((state) => state.mainState.symbols);
-  const token = useSelector((state) => state.login_screen.token);
-  const user = useSelector((state) => state.login_screen.user);
 
   const wallet1 = trz ? trz.wallet1 : pressedWallet1;
   const wallet2 = trz ? trz.wallet2 : pressedWallet2;
@@ -65,6 +64,7 @@ export default function Calculator({ navigation, trz }) {
     trz ? (trz.amount1[0] === "-" ? trz.amount1.slice(1) : trz.amount1) : ""
   );
   const [expression2, setExpression2] = useState(trz ? trz.amount2 : "");
+  const [okPressed, setOkPressed] = useState(false);
 
   const pickRate = () => {
     if (trz && trz.wallet2) {
@@ -154,65 +154,148 @@ export default function Calculator({ navigation, trz }) {
 
   const handleOk = async () => {
     Vibration.vibrate(10);
+    setOkPressed(true);
     let _rate = rate;
     let _expression = expression;
+    let _expression2 = expression2;
     try {
       _expression = eval(_expression);
     } catch {
-      showAlert('Ошибка:', 'Ошибка в выражении суммы!', 'Ok')
-      return
+      showAlert("Ошибка:", "Ошибка в выражении суммы!", "Ok");
+      return;
     }
 
     if (exchangeMode) {
       try {
+        _expression2 = eval(_expression2);
+      } catch {
+        showAlert("Ошибка:", "Ошибка в выражении суммы!", "Ok");
+        return;
+      }
+      try {
         _rate = eval(_rate);
       } catch {
-        showAlert('Ошибка:', 'Ошибка в обменном курсе!', 'Ok')
-        return
+        showAlert("Ошибка:", "Ошибка в обменном курсе!", "Ok");
+        return;
       }
     }
 
     // console.log(eval(expression).toString());
     // console.log(JSON.stringify(pressedDate, null, 2));
 
+    const user = JSON.parse(await SecureStore.getItemAsync("user"));
+    const amount1 = parseFloat((exInItem && exInItem.income ? "" : "-") + _expression);
+    const amount2 = parseFloat(_expression2);
     if (!exchangeMode) {
       payload = {
-        wallet_from_id: wallet1.id,
-        wallet_to_id: null,
-        exchange_rate: null,
-        exin_item_id: exInItem.id,
-        amount: (exInItem.income ? "" : "-") + _expression,
+        wallet1: wallet1,
+        wallet2: null,
+        exInItem: exInItem,
+        amount1: amount1.toString(),
+        amountARS1: (
+          amount1 * getRate(wallet1.currency.name, "ARS", symbols)
+        ).toString(),
+        amountUSD1: (
+          amount1 * getRate(wallet1.currency.name, "USD", symbols)
+        ).toString(),
+        amountBTC1: (
+          amount1 * getRate(wallet1.currency.name, "BTC", symbols)
+        ).toString(),
+        amountETH1: (
+          amount1 * getRate(wallet1.currency.name, "ETH", symbols)
+        ).toString(),
+        amountRUB1: (
+          amount1 * getRate(wallet1.currency.name, "RUB", symbols)
+        ).toString(),
+        amount2: null,
+        amountARS2: null,
+        amountUSD2: null,
+        amountBTC2: null,
+        amountETH2: null,
+        amountRUB2: null,
         comment: comment,
+        date: date.date,
+        doc_id: trz ? trz.doc_id : date.date,
+        user: user,
+        new: trz ? false : true,
+        modified: true,
+        deleted: trz ? trz.deleted : false,
       };
     } else {
       payload = {
-        wallet_from_id: wallet1.id,
-        wallet_to_id: wallet2.id,
-        exchange_rate: _rate,
-        exin_item_id: null,
-        amount: _expression,
+        wallet1: wallet1,
+        wallet2: wallet2,
+        exInItem: null,
+        amount1: amount1.toString(),
+        amountARS1: (
+          amount1 * getRate(wallet1.currency.name, "ARS", symbols)
+        ).toString(),
+        amountUSD1: (
+          amount1 * getRate(wallet1.currency.name, "USD", symbols)
+        ).toString(),
+        amountBTC1: (
+          amount1 * getRate(wallet1.currency.name, "BTC", symbols)
+        ).toString(),
+        amountETH1: (
+          amount1 * getRate(wallet1.currency.name, "ETH", symbols)
+        ).toString(),
+        amountRUB1: (
+          amount1 * getRate(wallet1.currency.name, "RUB", symbols)
+        ).toString(),
+        amount2: amount2.toString(),
+        amountARS2: (
+          amount2 * getRate(wallet1.currency.name, "ARS", symbols)
+        ).toString(),
+        amountUSD2: (
+          amount2 * getRate(wallet1.currency.name, "USD", symbols)
+        ).toString(),
+        amountBTC2: (
+          amount2 * getRate(wallet1.currency.name, "BTC", symbols)
+        ).toString(),
+        amountETH2: (
+          amount2 * getRate(wallet1.currency.name, "ETH", symbols)
+        ).toString(),
+        amountRUB2: (
+          amount2 * getRate(wallet1.currency.name, "RUB", symbols)
+        ).toString(),
         comment: comment,
+        date: date.date,
+        doc_id: trz ? trz.doc_id : date.date,
+        user: user,
+        new: trz ? false : true,
+        modified: true,
+        deleted: trz ? trz.deleted : false,
       };
     }
-    if (date.title !== "Сегодня") {
-      payload.date = date.date;
-    }
+    // return
+    let new_transactions = await getData("transactions");
     if (trz) {
-      dispatch(
-        dispatchedFetchRequest(
-          token,
-          payload,
-          `/wallet_transactions/${trz.doc_id}`,
-          "PUT"
-        )
-      );
+      new_transactions = new_transactions.map((item) => {
+        if (item.doc_id === payload.doc_id) {
+          return payload;
+        } else {
+          return item;
+        }
+      });
     } else {
-      dispatch(
-        dispatchedFetchRequest(token, payload, "/wallet_transactions/", "POST")
-      );
+      new_transactions.push(payload);
     }
 
-    dispatch(fetchHomeData(token, user))
+    // update wallets
+    let wallets = await getData("wallets");
+    wallets.forEach((item) => {
+      if (item.id === wallet1.id)
+        item.balance = (
+          parseFloat(item.balance) + parseFloat(amount1)
+        ).toString();
+      if (exchangeMode && item.id === wallet2.id)
+        (parseFloat(item.balance) + parseFloat(amount2)).toString();
+    });
+
+    storeData("transactions", new_transactions);
+    storeData("wallets", wallets);
+    dispatch(setTransactions(new_transactions));
+    dispatch(setWallets(wallets));
 
     navigation.navigate("Tabs");
   };
@@ -269,33 +352,35 @@ export default function Calculator({ navigation, trz }) {
       : { ...styles.display, marginVertical: 0 };
   };
 
-
   const displayTextStyle = (display) => {
-    let style = styles.displayText
+    let style = styles.displayText;
     if (activeField === display) {
       style = { ...style, textDecorationLine: "underline" };
     }
-    if (display === 'display1' && expression) {
-      style = {...style, fontSize: getDisplayFontSize(expression.toString())}
+    if (display === "display1" && expression) {
+      style = { ...style, fontSize: getDisplayFontSize(expression.toString()) };
     } else if (expression2) {
-      style = {...style, fontSize: getDisplayFontSize(expression2.toString())}
+      style = {
+        ...style,
+        fontSize: getDisplayFontSize(expression2.toString()),
+      };
     }
 
-    return style
+    return style;
   };
 
   const rateDisplayStyle = () => {
-    let style = {color: "black", fontSize: 18}
+    let style = { color: "black", fontSize: 18 };
     if (activeField === "rate") {
       style = { ...style, textDecorationLine: "underline" };
-    }  
+    }
 
     if (rate && rate.toString().length > 7) {
-      style = {...style, fontSize: 12}
+      style = { ...style, fontSize: 12 };
     } else if (rate && rate.toString().length > 5) {
-      style = {...style, fontSize: 16}
+      style = { ...style, fontSize: 16 };
     }
-    return style
+    return style;
   };
 
   if (isEmpty(wallet1)) return null;
@@ -452,7 +537,7 @@ export default function Calculator({ navigation, trz }) {
             <TouchableOpacity
               onPress={handleOk}
               style={!isEvalFine ? styles.okButtonInactive : styles.okButton}
-              disabled={!isEvalFine}
+              disabled={!isEvalFine || okPressed}
             >
               <Text style={styles.okButtonText}>OK</Text>
             </TouchableOpacity>

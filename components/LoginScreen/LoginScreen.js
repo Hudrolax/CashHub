@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import * as SecureStore from "expo-secure-store";
 
 import { baseEndpoint } from "../requests";
-import { setIsLoadin, setToken, setUser } from "../actions";
-import { fetchRequest } from "../dataUpdater";
+import { setIsLoadin, setLoginData } from "../actions";
+import { fetchRequest } from "../requests";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -38,10 +38,12 @@ const LoginScreen = () => {
       const user = await fetchRequest(dispatch, data.token, null, `/users/${data.user_id}`, 'GET', null, true)
 
       // Сохранение токена в SecureStore
-      await SecureStore.setItemAsync("userToken", data.token);
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
-      dispatch(setToken(data.token));
-      dispatch(setUser(user));
+      await Promise.all([
+        SecureStore.setItemAsync("token", data.token),
+        SecureStore.setItemAsync("user", JSON.stringify(user))
+    ]);
+
+      dispatch(setLoginData(data.token, user))
     } catch (error) {
       setError(error.message);
       console.error(error.message);

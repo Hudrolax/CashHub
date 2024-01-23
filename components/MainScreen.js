@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 
 import HomeScreen from "./HomeScreen/HomeScreen";
@@ -40,33 +40,25 @@ function TabScreen() {
 
 export default function MainScreen() {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.login_screen.token);
-  const user = useSelector((state) => state.login_screen.user);
   const fetchTimerRef = useRef();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(fetchHomeData(token, user));
+  useEffect(() => {
+    // run sync
+    dispatch(fetchHomeData());
+    if (fetchTimerRef.current) {
+      clearInterval(fetchTimerRef.current);
+    }
+    fetchTimerRef.current = setInterval(() => dispatch(fetchHomeData()), 10000);
 
+    return () => {
       if (fetchTimerRef.current) {
         clearInterval(fetchTimerRef.current);
       }
-
-      fetchTimerRef.current = setInterval(
-        () => dispatch(fetchHomeData(token, user)),
-        10000
-      );
-
-      return () => {
-        if (fetchTimerRef.current) {
-          clearInterval(fetchTimerRef.current);
-        }
-      };
-    }, [dispatch, token]) // зависимости dispatch и token
-  );
+    };
+  }, []);
 
   return (
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Stack.Navigator>
         <Stack.Screen
           name="Tabs"

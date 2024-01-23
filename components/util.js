@@ -156,22 +156,18 @@ function calculateTotalAmountExInItem(transactions, exinItemId, currency_name) {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  try {
     return transactions.reduce((sum, transaction) => {
       if (
         isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
-        transaction.exin_item_id === exinItemId
+        transaction.exInItem.id === exinItemId
       ) {
         const amountFloat = parseFloat(
-          transaction[`amount${currency_name}`] || transaction.amount
+          transaction[`amount${currency_name}1`] || transaction.amount1
         );
         return sum + (isNaN(amountFloat) ? 0 : amountFloat);
       }
       return sum;
     }, 0);
-  } catch {
-    return 0;
-  }
 }
 
 function isTransactionInCurrentMonth(transaction, currentMonth, currentYear) {
@@ -187,7 +183,11 @@ function calculateTotalAmount(transactions, currency_name) {
     const amountKey = `amount${currency_name}1`;
     const amountFloat = parseFloat(transaction[amountKey] || 0);
 
-    return sum + (isNaN(amountFloat) ? 0 : amountFloat);
+    if (isEmpty(transaction.wallet2)){
+      return sum + (isNaN(amountFloat) ? 0 : amountFloat);
+    } else {
+      return sum
+    }
   }, 0);
 
   return totalAmount;
@@ -230,7 +230,7 @@ const getRate = (cur1, cur2, symbols) => {
   return rateMap[key] ? rateMap[key]() : 1;
 };
 
-export const prepareTrzs = (transactions, exInItems, wallets) => {
+export const prepareTrzs = (transactions, exInItems, wallets, users) => {
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
@@ -248,8 +248,9 @@ export const prepareTrzs = (transactions, exInItems, wallets) => {
       const trz = group[0];
       const wallet = wallets.find((w) => w.id === trz.wallet_id);
       const exInItem = exInItems.find((e) => e.id === trz.exin_item_id);
+      const user = users.find((u) => u.id === trz.user_id)
 
-      return createTransactionStructure(trz, wallet, exInItem);
+      return createTransactionStructure(trz, wallet, exInItem, user);
     } else {
       // Обработка обмена между кошельками
       let trz1 = group[1];
@@ -260,13 +261,14 @@ export const prepareTrzs = (transactions, exInItems, wallets) => {
       }
       const wallet1 = wallets.find((w) => w.id === trz1.wallet_id);
       const wallet2 = wallets.find((w) => w.id === trz2.wallet_id);
+      const user = users.find((u) => u.id === trz1.user_id)
 
-      return createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2);
+      return createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2, user);
     }
   });
 };
 
-function createTransactionStructure(trz, wallet, exInItem) {
+function createTransactionStructure(trz, wallet, exInItem, user) {
   return {
     wallet1: wallet,
     wallet2: null,
@@ -274,13 +276,15 @@ function createTransactionStructure(trz, wallet, exInItem) {
     ...createAmountFields(trz, "1"),
     comment: trz.comment,
     date: trz.date,
-    user_name: trz.user_name,
-    user_id: trz.user_id,
+    user: user,
     doc_id: trz.doc_id,
+    new: false,
+    medified: false,
+    deleted: false
   };
 }
 
-function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2) {
+function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2, user) {
   return {
     wallet1,
     wallet2,
@@ -289,9 +293,11 @@ function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2) {
     ...createAmountFields(trz2, "2"),
     comment: trz1.comment,
     date: trz1.date,
-    user_name: trz1.user_name,
-    user_id: trz1.user_id,
+    user: user,
     doc_id: trz1.doc_id,
+    new: false,
+    medified: false,
+    deleted: false
   };
 }
 

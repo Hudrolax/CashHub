@@ -29,12 +29,12 @@ const CircleItem = ({
   pressible,
 }) => {
   const dispatch = useDispatch();
-  const pressedWallet1 = useSelector((state) => state.mainState.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.mainState.pressedWallet2);
+  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
+  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
   const pressedExInItem = useSelector(
-    (state) => state.mainState.pressedExInItem
+    (state) => state.stateReducer.pressedExInItem
   );
-  const pressedDate = useSelector((state) => state.mainState.pressedDate);
+  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
   const [isPressed, setIsPressed] = useState(false);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const animationRef = useRef(null);

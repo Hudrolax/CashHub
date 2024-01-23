@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 
 import MenuItem from './MenuItem';
-import { setToken, setUser } from '../actions';
+import { setLoginData } from '../actions';
 
 
 export default function SettingsScreen() {
@@ -12,9 +12,8 @@ export default function SettingsScreen() {
   const items = [
     {id: 1, title: 'Выйти', onPress: async () => {
       await SecureStore.setItemAsync("userToken", "");
-      await SecureStore.setItemAsync("user", undefined);
-      dispatch(setToken(''))
-      dispatch(setUser(undefined))
+      await SecureStore.setItemAsync("user", "");
+      dispatch(setLoginData('', undefined))
     }},
   ]
 

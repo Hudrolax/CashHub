@@ -7,8 +7,8 @@ import { walletsInMainCurColor } from "../colors";
 
 export default function ScrollColumnHeader({ navigation }) {
   const dispatch = useDispatch();
-  const isIncome = useSelector((state) => state.mainState.isIncome);
-  const walletsInMainCurrency = useSelector((state) => state.mainState.walletsInMainCurrency);
+  const isIncome = useSelector((state) => state.stateReducer.isIncome);
+  const walletsInMainCurrency = useSelector((state) => state.stateReducer.walletsInMainCurrency);
 
   const onChangeIncome = () => {
     Vibration.vibrate(2);
