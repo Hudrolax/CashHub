@@ -64,6 +64,7 @@ function CheckList({ navigation, route }) {
         deleted: false,
       };
       let checklist_local = await getData("checklist");
+      if (!checklist_local) checklist_local = []
       checklist_local.push(payload);
       await storeData("checklist", checklist_local);
       dispatch(setCheckList(checklist_local));
