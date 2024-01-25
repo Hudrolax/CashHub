@@ -1,5 +1,30 @@
 import { Alert } from "react-native";
 
+function daysBetween(dateString) {
+  const oneDay = 1000 * 60 * 60 * 24; // Количество миллисекунд в одном дне
+
+  const dateProvided = new Date(dateString);
+  const currentDate = new Date();
+
+  // Обрезаем время, оставляя только дату
+  const dateWithoutTime = new Date(
+    dateProvided.getFullYear(),
+    dateProvided.getMonth(),
+    dateProvided.getDate()
+  );
+  const currentWithoutTime = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate()
+  );
+
+  // Вычисление разницы в днях
+  const diffInTime = currentWithoutTime.getTime() - dateWithoutTime.getTime();
+  const diffInDays = Math.floor(diffInTime / oneDay);
+
+  return diffInDays;
+}
+
 export function isEmpty(value) {
   // Проверка на null и undefined
   if (value == null) {
@@ -345,4 +370,5 @@ export {
   calculateTotalAmountExInItem,
   calculateTotalAmount,
   getRate,
+  daysBetween,
 };

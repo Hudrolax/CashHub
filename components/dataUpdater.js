@@ -9,6 +9,7 @@ import syncSymbols from "./data/symbols";
 import syncUsers from "./data/users";
 import syncWallets from "./data/wallets";
 import syncTransactions from "./data/transactions";
+import syncChecklist from "./data/checklist";
 
 export const dispatchedFetchRequest = (
   token,
@@ -70,5 +71,6 @@ export const fetchHomeData = () => {
     ]);
     await syncWallets(dispatch);
     await syncTransactions(dispatch);
+    await syncChecklist(dispatch)
   };
 };

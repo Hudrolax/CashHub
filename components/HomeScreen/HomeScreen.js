@@ -1,13 +1,16 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { StyleSheet, View, Image } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import Header from "./Header";
 import ScrollColumns from "./ScrollColumns";
 import ScrollColumnHeader from "./ScrollColumnHeader";
 import { isEmpty } from "../util";
+import { setActiveTab } from "../actions";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, route }) {
+  const dispatch = useDispatch();
   const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
   const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
   const pressedExInItem = useSelector(
@@ -15,6 +18,14 @@ export default function HomeScreen({ navigation }) {
   );
   const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
   const editDocId = useSelector((state) => state.stateReducer.editDocId);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(setActiveTab(route.name));
+
+      return () => {};
+    }, [])
+  );
 
   useEffect(() => {
     if (

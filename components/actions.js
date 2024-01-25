@@ -77,6 +77,22 @@ export const setUsers = (payload) => ({
   type: "SET_USERS",
   payload: payload,
 });
+export const setActiveTab = (payload) => ({
+  type: "SET_ACTIVE_TAB",
+  payload: payload,
+});
+export const setCheckList = (payload) => ({
+  type: "SET_CHECKLIST",
+  payload: payload,
+});
+export const setCheckAddMode = (payload) => ({
+  type: "SET_CHECKLIST_ADD_MODE",
+  payload: payload,
+});
+export const setCheckNewItemText = (payload) => ({
+  type: "SET_CHECKLIST_NEWITEM_TEXT",
+  payload: payload,
+});
 export const updateData = (
   currencies,
   symbols,

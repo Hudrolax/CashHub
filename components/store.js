@@ -9,7 +9,10 @@ const store = configureStore({
     mainState: mainReducer,
     stateReducer: stateReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,  // Отключает immutableStateInvariantMiddleware
+    serializableCheck: false,
+  }),
 });
 
 export default store;

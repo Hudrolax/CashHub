@@ -5,7 +5,8 @@ const initialState = {
   exInItems: [],
   transactions: [],
   dates: [],
-  users: []
+  users: [],
+  checklist: [],
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -24,6 +25,8 @@ const mainReducer = (state = initialState, action) => {
       return { ...state, symbols: action.payload };
     case "SET_USERS":
       return { ...state, users: action.payload };
+    case "SET_CHECKLIST":
+      return { ...state, checklist: action.payload };
     case "UPDATE_ALL_DATA":
       return {
         ...state,

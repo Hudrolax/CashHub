@@ -10,6 +10,7 @@ import MainScreen from "./MainScreen";
 import { setLoginData, setIsLoadin, updateData, setMainCurrency, resetAllPressStates } from "./actions";
 import LoadingOverlay from "./loadingOverlay";
 import { getData } from "./data";
+import { setCheckList } from "./actions";
 
 export default function MainScreenWrapper() {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -25,7 +26,6 @@ export default function MainScreenWrapper() {
       if (appState.match(/inactive|background/) && nextAppState === "active") {
       } else if (nextAppState.match(/inactive|background/)) {
         dispatch(resetAllPressStates());
-        console.log('inactive')
       }
       setAppState(nextAppState);
     });
@@ -54,6 +54,7 @@ export default function MainScreenWrapper() {
       const exInItems = await getData("exInItems");
       const transactions = await getData("transactions");
       const users = await getData("users");
+      const checklist = await getData("checklist");
 
       dispatch(
         updateData(
@@ -66,6 +67,7 @@ export default function MainScreenWrapper() {
         )
       );
       dispatch(setMainCurrency(mainCurrency ? mainCurrency : 'USD'))
+      dispatch(setCheckList(checklist ? checklist : []))
 
       dispatch(setIsLoadin(false));
     };

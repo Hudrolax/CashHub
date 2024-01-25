@@ -10,7 +10,10 @@ const initialState = {
   editDocId: undefined,
   editContentType: undefined,
   editItem: undefined,
-  walletsInMainCurrency: false
+  walletsInMainCurrency: false,
+  activeTab: undefined,
+  checklistAddMode: false,
+  checklistNewItemText: "",
 };
 
 const stateReducer = (state = initialState, action) => {
@@ -39,6 +42,12 @@ const stateReducer = (state = initialState, action) => {
         return { ...state, editItem: action.payload };
       case "SET_WALLETS_IN_MAIN_CURRENCY":
         return { ...state, walletsInMainCurrency: action.payload };
+      case "SET_ACTIVE_TAB":
+        return { ...state, activeTab: action.payload };
+      case "SET_CHECKLIST_ADD_MODE":
+        return { ...state, checklistAddMode: action.payload };
+      case "SET_CHECKLIST_NEWITEM_TEXT":
+        return { ...state, checklistNewItemText: action.payload };
       case "RESET_ALL_PRESS_STATES":
         return {
           ...state,

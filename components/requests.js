@@ -63,7 +63,7 @@ export const fetchRequest = async (
         dispatch(setLoginData("", undefined));
         throw new Error("Ошибка авторизации");
       } else if (response.status !== 200) {
-        throw new Error(JSON.stringify(data, null, 2));
+        throw new Error(JSON.stringify({data, status_code: response.status}, null, 2));
       }
   
       // dispatch(setConnectionError(false));
