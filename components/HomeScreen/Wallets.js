@@ -34,7 +34,7 @@ export default function Wallets({ navigation }) {
         <CircleItem
           key={item.id}
           title={item.name}
-          circleColor={orangeColor}
+          circleColor={item.color ? item.color : orangeColor}
           circleText={item.currency.name}
           subtitle={calculateBalance(item)}
           subtitleColor={

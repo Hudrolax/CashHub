@@ -39,7 +39,7 @@ function ArchiveCheckList({ navigation, route }) {
       setChecklist_local(
         _checklist
           .slice() // создаем копию массива для безопасной сортировки
-          .filter((item) => daysBetween(item.date) > 7)
+          .filter((item) => item.checked)
           .sort((a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);

@@ -10,21 +10,27 @@ export const DropList = ({ style, hint, value, options, setValue }) => {
   };
 
   const selectOption = async (option) => {
-    setValue(option)
+    setValue(option);
     setIsOpen(false);
   };
 
   return (
-    <View>
-      <View style={{ ...styles.container, ...style }}>
-        <Text style={styles.fieldHint}>{hint}</Text>
-        <TouchableOpacity onPress={toggleDropdown} style={styles.field}>
-          <Text style={styles.fieldInput}>{value}</Text>
-          <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold", marginBottom: 6 }}>
+    <View style={{ ...styles.container, ...style, zIndex: isOpen ? 999 : 0 }}>
+      <Text style={styles.fieldHint}>{hint}</Text>
+      <TouchableOpacity onPress={toggleDropdown} style={styles.field}>
+        <Text style={styles.fieldInput}>{value}</Text>
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 16,
+            fontWeight: "bold",
+            marginBottom: 6,
+          }}
+        >
           🔽
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </Text>
+      </TouchableOpacity>
+
       {isOpen && (
         <View style={styles.dropdown}>
           {options.map((option, index) => (
@@ -63,7 +69,7 @@ const styles = StyleSheet.create({
   fieldInput: {
     color: "#fff",
     fontSize: 18,
-    marginBottom: 3
+    marginBottom: 3,
   },
   dropdown: {
     backgroundColor: "#242424",
@@ -71,7 +77,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     position: "absolute",
     top: 80,
-    zIndex: 3000,
+    zIndex: 999,
     width: 200,
   },
   option: {

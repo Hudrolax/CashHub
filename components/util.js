@@ -78,7 +78,8 @@ const roundNumber = (number, currencyName) => {
 };
 
 export const addCurrencySymbol = (expression, currencyName) => {
-  let _expression = roundNumber(expression)
+  // let _expression = roundNumber(expression)
+  let _expression = expression
   switch (currencyName) {
     case "USD":
       return `$ ${_expression}`;

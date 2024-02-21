@@ -40,8 +40,12 @@ const getDisplayFontSize = (_expression) => {
 
 export default function Calculator({ navigation, trz }) {
   const dispatch = useDispatch();
-  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
+  const pressedWallet1 = useSelector(
+    (state) => state.stateReducer.pressedWallet1
+  );
+  const pressedWallet2 = useSelector(
+    (state) => state.stateReducer.pressedWallet2
+  );
   const pressedExInItem = useSelector(
     (state) => state.stateReducer.pressedExInItem
   );
@@ -110,24 +114,30 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleResult = () => {
-    try {
-      Vibration.vibrate(2);
-      switch (activeField) {
-        case "display1":
+    Vibration.vibrate(2);
+    switch (activeField) {
+      case "display1":
+        try {
           setExpression(eval(expression));
           setExpression2(eval(expression) * rate);
-          break;
-        case "display2":
+        } catch {
+          Vibration.vibrate(10);
+          setExpression2("Error");
+          return false;
+        }
+        break;
+      case "display2":
+        try {
           setExpression2(eval(expression2));
           setExpression(eval(expression2) / rate);
-          break;
-      }
-      return true;
-    } catch (e) {
-      Vibration.vibrate(50);
-      setExpression("Error");
-      return false;
+        } catch {
+          Vibration.vibrate(10);
+          setExpression("Error");
+          return false;
+        }
+        break;
     }
+    return true;
   };
 
   const handleDelete = () => {
@@ -138,12 +148,16 @@ export default function Calculator({ navigation, trz }) {
     }
   };
 
-  const handleDelete2 = () => {
+  const handleErase = () => {
     Vibration.vibrate(2);
-    setExpression("");
-    if (exchangeMode) {
-      setExpression2("");
-    }
+    console.log(expression)
+    setExpression(expression ? expression.slice(0, -1) : "");
+    console.log(expression)
+  };
+  const handleErase2 = () => {
+    Vibration.vibrate(2);
+    setExpression2(expression2 ? expression2.slice(0, -1) : "");
+    handleResult();
   };
 
   const handleDeleteRate = () => {
@@ -184,7 +198,9 @@ export default function Calculator({ navigation, trz }) {
     // console.log(JSON.stringify(pressedDate, null, 2));
 
     const user = JSON.parse(await SecureStore.getItemAsync("user"));
-    const amount1 = parseFloat((exInItem && exInItem.income ? "" : "-") + _expression);
+    const amount1 = parseFloat(
+      (exInItem && exInItem.income ? "" : "-") + _expression
+    );
     const amount2 = parseFloat(_expression2);
     if (!exchangeMode) {
       payload = {
@@ -469,7 +485,7 @@ export default function Calculator({ navigation, trz }) {
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
-                      handleDelete2();
+                      handleDelete();
                       setActiveField("display2");
                     }}
                     style={styles.cancelButton}
@@ -486,8 +502,8 @@ export default function Calculator({ navigation, trz }) {
                 {addCurrencySymbol(expression, wallet1.currency.name)}
               </Text>
               <TouchableOpacity
-                onPress={handleDelete}
-                onLongPress={() => handleDelete(true)}
+                onPress={handleErase}
+                onLongPress={handleDelete}
                 style={styles.cancelButton}
               >
                 <Text style={styles.cancelButtonText}>⌫</Text>
