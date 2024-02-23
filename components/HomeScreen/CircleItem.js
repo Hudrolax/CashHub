@@ -56,7 +56,7 @@ const CircleItem = ({
 
   const handlePress = () => {
     if (!pressible) return;
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     if (isPressed) {
       animationRef.current && animationRef.current.stop();
       scaleValue.setValue(1);

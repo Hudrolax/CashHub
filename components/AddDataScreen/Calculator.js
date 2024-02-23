@@ -89,7 +89,7 @@ export default function Calculator({ navigation, trz }) {
   const exchangeMode = !isEmpty(wallet2);
 
   const handlePress = (value) => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
 
     switch (activeField) {
       case "display1":
@@ -114,14 +114,14 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleResult = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     switch (activeField) {
       case "display1":
         try {
           setExpression(eval(expression));
           setExpression2(eval(expression) * rate);
         } catch {
-          Vibration.vibrate(10);
+          Vibration.vibrate(1);
           setExpression2("Error");
           return false;
         }
@@ -131,7 +131,7 @@ export default function Calculator({ navigation, trz }) {
           setExpression2(eval(expression2));
           setExpression(eval(expression2) / rate);
         } catch {
-          Vibration.vibrate(10);
+          Vibration.vibrate(1);
           setExpression("Error");
           return false;
         }
@@ -141,7 +141,7 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleDelete = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     setExpression("");
     if (exchangeMode) {
       setExpression2("");
@@ -149,25 +149,25 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleErase = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     console.log(expression)
     setExpression(expression ? expression.slice(0, -1) : "");
     console.log(expression)
   };
   const handleErase2 = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     setExpression2(expression2 ? expression2.slice(0, -1) : "");
     handleResult();
   };
 
   const handleDeleteRate = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     setRate("");
     handleResult();
   };
 
   const handleOk = async () => {
-    Vibration.vibrate(10);
+    Vibration.vibrate(1);
     setOkPressed(true);
     let _rate = rate;
     let _expression = expression;

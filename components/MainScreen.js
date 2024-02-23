@@ -13,6 +13,7 @@ import EditItemScreen from "./EditScreen/EditItemScreen";
 import CurrencySelector from "./HomeScreen/CurrencySelector";
 import CheckList from "./CheckList/CheckList";
 import ArchiveCheckList from "./CheckList/ArchiveCheckList";
+import AIAddScreen from "./AIAddScreen/AIAddScreen";
 
 import { fetchHomeData } from "./dataUpdater";
 
@@ -94,6 +95,11 @@ export default function MainScreen() {
         <Stack.Screen
           name="ArchiveChecklist"
           component={ArchiveCheckList}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AIAddScreen"
+          component={AIAddScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

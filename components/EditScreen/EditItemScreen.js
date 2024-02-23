@@ -32,7 +32,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onCancel = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     navigation.navigate("EditScreen");
     return true;
   };
@@ -48,7 +48,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onDelete = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
 
     Alert.alert(
       "Подтверждение действия", // Заголовок
@@ -71,7 +71,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onOk = (data) => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     if (data.balance) {
       const currency = currencies.find((c) => c.name === data.currencyName);
       const payload = {

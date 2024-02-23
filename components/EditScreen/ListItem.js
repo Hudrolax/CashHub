@@ -14,7 +14,7 @@ export default function ListItem({ navigation, item }) {
   const dispatch = useDispatch();
 
   const onPress = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     dispatch(setEditItem(item));
     navigation.navigate("EditItem");
   };

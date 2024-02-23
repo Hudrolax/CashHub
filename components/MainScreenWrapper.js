@@ -7,10 +7,20 @@ import { AppState } from "react-native";
 
 import LoginScreen from "./LoginScreen/LoginScreen";
 import MainScreen from "./MainScreen";
-import { setLoginData, setIsLoadin, updateData, setMainCurrency, resetAllPressStates } from "./actions";
+import {
+  setLoginData,
+  setIsLoading,
+  updateData,
+  setMainCurrency,
+  resetAllPressStates,
+  setOpenAPIKey,
+} from "./actions";
 import LoadingOverlay from "./loadingOverlay";
 import { getData } from "./data";
 import { setCheckList } from "./actions";
+import RecordOverlay from "./RecordOverlay";
+import GetAPIKey from "./GetAPIKey";
+import { isEmpty } from "./util";
 
 export default function MainScreenWrapper() {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -20,6 +30,7 @@ export default function MainScreenWrapper() {
   const isConnectionError = useSelector(
     (state) => state.stateReducer.isConnectionError
   );
+  const OPENAI_API_KEY = useSelector((state) => state.stateReducer.OPENAI_API_KEY);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -37,11 +48,12 @@ export default function MainScreenWrapper() {
 
   useEffect(() => {
     const loadData = async () => {
-      dispatch(setIsLoadin(true));
+      dispatch(setIsLoading(true));
 
       // load token
       const token = await SecureStore.getItemAsync("token");
       const user = JSON.parse(await SecureStore.getItemAsync("user"));
+      const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
       dispatch(setLoginData(token ? token : "", user));
 
       // load main currency
@@ -63,16 +75,24 @@ export default function MainScreenWrapper() {
           wallets ? wallets : [],
           exInItems ? exInItems : [],
           transactions ? transactions : [],
-          users ? users : [],
+          users ? users : []
         )
       );
-      dispatch(setMainCurrency(mainCurrency ? mainCurrency : 'USD'))
-      dispatch(setCheckList(checklist ? checklist : []))
+      dispatch(setMainCurrency(mainCurrency ? mainCurrency : "USD"));
+      dispatch(setCheckList(checklist ? checklist : []));
 
-      dispatch(setIsLoadin(false));
+      if (!isEmpty(OPENAI_API_KEY)) {
+        dispatch(setOpenAPIKey(OPENAI_API_KEY));
+      }
+
+      dispatch(setIsLoading(false));
     };
     loadData();
   }, []);
+
+  if (!OPENAI_API_KEY) {
+    return <GetAPIKey />;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>
@@ -82,6 +102,7 @@ export default function MainScreenWrapper() {
         visible={isLoading || isConnectionError}
         connectionError={isConnectionError}
       />
+      <RecordOverlay />
     </View>
   );
 }

@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Vibration } from "react-native";
 import { useSelector } from "react-redux";
 
 import HamburgerMenu from "../MenuBtn/MenuBtn";
 import { getRate, formatNumber } from "../util";
+import AIAddBtn from "./AIAddBtn";
 
 const Header = ({ navigation, style }) => {
   const user = useSelector((state) => state.login_screen.user);
@@ -22,22 +23,26 @@ const Header = ({ navigation, style }) => {
 
   const totalBalance = countTotalBalance(wallets);
 
+  const onAIAdd = () => {
+    Vibration.vibrate(1);
+    navigation.navigate("AIAddScreen")
+  };
+
   return (
     <View style={{ ...styles.container, ...style }}>
-          <HamburgerMenu navigation={navigation} style={styles.hamburger} />
+      <HamburgerMenu navigation={navigation} style={styles.hamburger} />
 
-          {/* top */}
-          <View style={styles.top}>
-            <Text style={styles.username}>{user ? user.name : ''}</Text>
-            <Text style={styles.totalBalance}>
-              {formatNumber(totalBalance, mainCurrency)}
-            </Text>
-          </View>
+      {/* top */}
+      <View style={styles.top}>
+        <Text style={styles.username}>{user ? user.name : ""}</Text>
+        <Text style={styles.totalBalance}>
+          {formatNumber(totalBalance, mainCurrency)}
+        </Text>
+      </View>
 
-          {/* bottom */}
-          <View styles={styles.bottom}>
-            {/* <Text style={{}}>Header</Text> */}
-          </View>
+      {/* bottom */}
+      <View styles={styles.bottom}>{/* <Text style={{}}>Header</Text> */}</View>
+      <AIAddBtn style={styles.AIBtn} onPress={onAIAdd} />
     </View>
   );
 };
@@ -70,6 +75,11 @@ const styles = StyleSheet.create({
   totalBalance: {
     fontSize: 32,
     color: "#fff",
+  },
+  AIBtn: {
+    position: "absolute",
+    bottom: 50,
+    right: 50,
   },
 });
 

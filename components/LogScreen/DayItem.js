@@ -69,7 +69,7 @@ const ExchangeDayItem = ({
   const my_user = useSelector((state) => state.login_screen.user);
 
   const onPress = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     dispatch(setEditDocId(doc_id));
   };
   return (
@@ -140,7 +140,7 @@ const DayItem = ({
   const trzColor = () => (exInItem.income ? greenColor : redColor);
 
   const onPress = () => {
-    Vibration.vibrate(2);
+    Vibration.vibrate(1);
     dispatch(setEditDocId(doc_id));
   };
 

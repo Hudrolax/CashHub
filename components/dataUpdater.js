@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { baseEndpoint } from "./requests";
 
-import { setIsLoadin, setLoginData } from "./actions";
+import { setIsLoading, setLoginData } from "./actions";
 import { showAlert } from "./util";
 import syncCurrencies from "./data/currencies";
 import syncExInItems from "./data/exInItems";
@@ -19,7 +19,7 @@ export const dispatchedFetchRequest = (
   queryParams
 ) => {
   return async (dispatch) => {
-    dispatch(setIsLoadin(true));
+    dispatch(setIsLoading(true));
     try {
       let headers = {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export const dispatchedFetchRequest = (
       showAlert((title = "Ошибка"), (text = error.message));
       console.error(error.message);
     }
-    dispatch(setIsLoadin(false));
+    dispatch(setIsLoading(false));
   };
 };
 

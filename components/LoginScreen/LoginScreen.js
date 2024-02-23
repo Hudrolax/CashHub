@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import * as SecureStore from "expo-secure-store";
 
 import { baseEndpoint } from "../requests";
-import { setIsLoadin, setLoginData } from "../actions";
+import { setIsLoading, setLoginData } from "../actions";
 import { fetchRequest } from "../requests";
 
 const LoginScreen = () => {
@@ -14,7 +14,7 @@ const LoginScreen = () => {
   const [error, setError] = useState("");
 
   const fetchLogin = async () => {
-    dispatch(setIsLoadin(true));
+    dispatch(setIsLoading(true));
     setError("");
     try {
       const response = await fetch(baseEndpoint + "/users/login", {
@@ -48,7 +48,7 @@ const LoginScreen = () => {
       setError(error.message);
       console.error(error.message);
     }
-    dispatch(setIsLoadin(false));
+    dispatch(setIsLoading(false));
   };
 
   return (

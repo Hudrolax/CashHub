@@ -1,4 +1,10 @@
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
+import { setIsLoading } from "./actions";
+import * as SecureStore from "expo-secure-store";
+import FormData from "form-data";
+import { Audio } from "expo-av";
+import * as FileSystem from "expo-file-system";
+import { AndroidOutputFormat, IOSAudioQuality } from "expo-av/build/Audio";
 
 function daysBetween(dateString) {
   const oneDay = 1000 * 60 * 60 * 24; // Количество миллисекунд в одном дне
@@ -73,13 +79,13 @@ const roundNumber = (number, currencyName) => {
       return parseFloat(number.toFixed(2));
     }
   } catch {
-    return number
+    return number;
   }
 };
 
 export const addCurrencySymbol = (expression, currencyName) => {
   // let _expression = roundNumber(expression)
-  let _expression = expression
+  let _expression = expression;
   switch (currencyName) {
     case "USD":
       return `$ ${_expression}`;
@@ -182,18 +188,18 @@ function calculateTotalAmountExInItem(transactions, exinItemId, currency_name) {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-    return transactions.reduce((sum, transaction) => {
-      if (
-        isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
-        transaction.exInItem.id === exinItemId
-      ) {
-        const amountFloat = parseFloat(
-          transaction[`amount${currency_name}1`] || transaction.amount1
-        );
-        return sum + (isNaN(amountFloat) ? 0 : amountFloat);
-      }
-      return sum;
-    }, 0);
+  return transactions.reduce((sum, transaction) => {
+    if (
+      isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
+      transaction.exInItem.id === exinItemId
+    ) {
+      const amountFloat = parseFloat(
+        transaction[`amount${currency_name}1`] || transaction.amount1
+      );
+      return sum + (isNaN(amountFloat) ? 0 : amountFloat);
+    }
+    return sum;
+  }, 0);
 }
 
 function isTransactionInCurrentMonth(transaction, currentMonth, currentYear) {
@@ -209,10 +215,10 @@ function calculateTotalAmount(transactions, currency_name) {
     const amountKey = `amount${currency_name}1`;
     const amountFloat = parseFloat(transaction[amountKey] || 0);
 
-    if (isEmpty(transaction.wallet2)){
+    if (isEmpty(transaction.wallet2)) {
       return sum + (isNaN(amountFloat) ? 0 : amountFloat);
     } else {
-      return sum
+      return sum;
     }
   }, 0);
 
@@ -274,7 +280,7 @@ export const prepareTrzs = (transactions, exInItems, wallets, users) => {
       const trz = group[0];
       const wallet = wallets.find((w) => w.id === trz.wallet_id);
       const exInItem = exInItems.find((e) => e.id === trz.exin_item_id);
-      const user = users.find((u) => u.id === trz.user_id)
+      const user = users.find((u) => u.id === trz.user_id);
 
       return createTransactionStructure(trz, wallet, exInItem, user);
     } else {
@@ -287,9 +293,15 @@ export const prepareTrzs = (transactions, exInItems, wallets, users) => {
       }
       const wallet1 = wallets.find((w) => w.id === trz1.wallet_id);
       const wallet2 = wallets.find((w) => w.id === trz2.wallet_id);
-      const user = users.find((u) => u.id === trz1.user_id)
+      const user = users.find((u) => u.id === trz1.user_id);
 
-      return createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2, user);
+      return createExchangeTransactionStructure(
+        trz1,
+        trz2,
+        wallet1,
+        wallet2,
+        user
+      );
     }
   });
 };
@@ -306,11 +318,17 @@ function createTransactionStructure(trz, wallet, exInItem, user) {
     doc_id: trz.doc_id,
     new: false,
     medified: false,
-    deleted: false
+    deleted: false,
   };
 }
 
-function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2, user) {
+function createExchangeTransactionStructure(
+  trz1,
+  trz2,
+  wallet1,
+  wallet2,
+  user
+) {
   return {
     wallet1,
     wallet2,
@@ -323,7 +341,7 @@ function createExchangeTransactionStructure(trz1, trz2, wallet1, wallet2, user) 
     doc_id: trz1.doc_id,
     new: false,
     medified: false,
-    deleted: false
+    deleted: false,
   };
 }
 
@@ -364,6 +382,229 @@ export function groupTransactionsByDay(preparedTrzs) {
   return Object.values(groupedByDay);
 }
 
+async function startRecording() {
+  try {
+    // Проверка разрешения на запись
+    const permission = await Audio.requestPermissionsAsync();
+    if (permission.status === "granted") {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
+        isMeteringEnabled: true,
+        android: {
+          extension: ".mp4",
+          outputFormat: AndroidOutputFormat.MPEG_4,
+          audioEncoder: AndroidOutputFormat.AMR_NB,
+          sampleRate: 16000, // Set to 16000 for 16 kHz sample rate
+          numberOfChannels: 1, // Set to 1 for mono channel
+          bitRate: 128000,
+        },
+        ios: {
+          extension: ".wav",
+          audioQuality: IOSAudioQuality.LOW,
+          sampleRate: 16000, // Set to 16000 for 16 kHz sample rate
+          numberOfChannels: 1, // Set to 1 for mono channel
+          linearPCMBitDepth: 16, // Set to 16 for 16-bit audio
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+        },
+      };
+      const { recording } = await Audio.Recording.createAsync(
+        RECORDING_OPTIONS_PRESET_LOW_QUALITY
+      );
+      return recording;
+    } else {
+      // Обработка случая отказа в разрешении
+      console.error("Permission to access microphone was denied");
+    }
+  } catch (err) {
+    console.error("Failed to start recording", err);
+  }
+}
+
+async function stopRecording(dispatch, recording, lang = null) {
+  await recording.stopAndUnloadAsync();
+  const uri = recording.getURI();
+  const result = await sendAudioToServer(dispatch, uri, lang);
+  return result;
+}
+
+async function sendAudioToServer(dispatch, uri) {
+  dispatch(setIsLoading(true));
+  const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
+  const filetype = uri.split(".").pop();
+  const filename = uri.split("/").pop();
+  const formData = new FormData();
+  formData.append("file", {
+    uri,
+    type: `audio/${filetype}`,
+    name: filename,
+  });
+  formData.append("model", "whisper-1");
+  formData.append("language", 'ru');
+  formData.append("prompt", 'Каррифур 25000б овощной 5000, хлеб 1500.');
+
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/audio/transcriptions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      }
+    );
+    const data = await response.json();
+
+    try {
+      await FileSystem.deleteAsync(uri);
+    } catch (error) {
+      console.error("Error deleting temporary audio file:", error);
+    }
+
+    dispatch(setIsLoading(false));
+    return data.text;
+  } catch (error) {
+    console.error("Error sending audio to server:", error);
+  }
+}
+
+const fetchRequest = async (dispatch, payload) => {
+  dispatch(setIsLoading(true));
+  const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
+  try {
+    let headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    };
+
+    let url = "https://api.openai.com/v1/chat/completions";
+
+    let params = {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload),
+    };
+
+    const response = await fetch(url, params);
+    const data = await response.json();
+
+    if (response.status === 401) {
+      throw new Error("Ошибка авторизации");
+    } else if (response.status !== 200) {
+      throw new Error(
+        JSON.stringify({ data, status_code: response.status }, null, 2)
+      );
+    }
+    dispatch(setIsLoading(false));
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const GPTTransactions = async (dispatch, text) => {
+  let system = `Товоя задача составить список покупок, для записи в базу данных.
+Правила и некоторые понятия для выбора статьи расходов:
+1. Сигареты, алкоголь, сладости, фастфуд, экскурсии относить к развлечениям.
+2. Расходы, связанные с оплатой коммунальных услуг, аренды и ремонтов в кваритре относить к ЖКУ.
+3. Расходы связанные с приобретением различных инструментов, посуды, мебели и прочих бытовых вещей относи к хоз. нуждам.
+4. SUBE (субе) - это транспортная карта в Аргентине.
+5. Могут использоваться различные аргентинские названия вещей и продуктов, таких, как "palta", "frutilla", и т.д.
+6. Если статья расходов не очевидна, то нужно указать "Прочее". 
+
+Не делай предположений о том, какие значения включать в функции. Попросите разъяснений, если запрос пользователя неоднозначен.`;
+
+  const tools = [
+    {
+      type: "function",
+      function: {
+        name: "get_transactions_items",
+        parameters: {
+          type: "object",
+          properties: {
+            transactions: {
+              type: "array",
+              description: "Массив транзакций расхода",
+              items: {
+                type: "object",
+                description: "Транзакция расхода",
+                properties: {
+                  expense_item: {
+                    type: "string",
+                    enum: [
+                      "Продукты",
+                      "Транспорт",
+                      "Здоровье",
+                      "Развлечения",
+                      "ЖКУ",
+                      "Хоз. нужды",
+                      "Одежда",
+                      "Налоги",
+                      "Корректировка",
+                      "Прочее",
+                    ],
+                    description: "Статья расходов",
+                  },
+                  summ: {
+                    type: "number",
+                    description: "Сумма расходов. Не может быть пустой.",
+                  },
+                  comment: {
+                    type: "string",
+                    description:
+                      "Короткий комментарий - описание или название того, что было куплено.",
+                  },
+                  wallet: {
+                    type: "string",
+                    enum: [
+                      "Galicia Sergei",
+                      "USD cash",
+                      "Belo card",
+                      "ARS cash",
+                    ],
+                    description: "Кошелек транзакции",
+                  }
+                },
+                required: ["expense_item", "summ", "comment"],
+              },
+            },
+          },
+          required: [],
+        },
+        description:
+          "Получение списка транзакций, для записи расходов по статьям.",
+      },
+    },
+  ];
+  const payload = {
+    model: "gpt-3.5-turbo-0125",
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: text },
+    ],
+    tools: tools,
+    tool_choice: "auto",
+  };
+  // console.log("payload", payload);
+  let result;
+  try {
+    let response = await fetchRequest(dispatch, payload);
+    // console.log("response", response)
+    response = response.choices[0].message.tool_calls[0].function.arguments;
+    // console.log("message", response)
+    result = JSON.parse(response).transactions
+    return result;
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+};
+
 export {
   showAlert,
   formatNumber,
@@ -372,4 +613,8 @@ export {
   calculateTotalAmount,
   getRate,
   daysBetween,
+  startRecording,
+  stopRecording,
+  fetchRequest,
+  GPTTransactions,
 };

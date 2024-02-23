@@ -14,7 +14,7 @@ import { isEmpty } from "../util";
 import ListItem from "./ListItem";
 import Header from "./Header";
 import { setCheckList } from "../actions";
-import { daysBetween } from "../util";
+// import { daysBetween } from "../util";
 
 function ArchiveCheckList({ navigation, route }) {
   const dispatch = useDispatch();

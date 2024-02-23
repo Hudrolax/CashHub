@@ -1,4 +1,4 @@
-export const setIsLoadin = (payload) => ({
+export const setIsLoading = (payload) => ({
   type: "IS_LOADING",
   payload: payload,
 });
@@ -126,3 +126,15 @@ export const setLoginData = (token, user) => {
     });
   };
 };
+export const setRecording = (payload) => ({
+  type: "SET_RECORDING",
+  payload: payload,
+});
+export const setRecognizedText = (payload) => ({
+  type: "SET_RECOGNIZED_TEXT",
+  payload: payload,
+});
+export const setOpenAPIKey = (payload) => ({
+  type: "SET_OPENAI_API_KEY",
+  payload: payload,
+});

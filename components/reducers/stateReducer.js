@@ -14,6 +14,9 @@ const initialState = {
   activeTab: undefined,
   checklistAddMode: false,
   checklistNewItemText: "",
+  recording: null,
+  recognizedText: "",
+  OPENAI_API_KEY: "",
 };
 
 const stateReducer = (state = initialState, action) => {
@@ -48,6 +51,12 @@ const stateReducer = (state = initialState, action) => {
         return { ...state, checklistAddMode: action.payload };
       case "SET_CHECKLIST_NEWITEM_TEXT":
         return { ...state, checklistNewItemText: action.payload };
+      case "SET_RECORDING":
+        return { ...state, recording: action.payload };
+      case "SET_RECOGNIZED_TEXT":
+        return { ...state, recognizedText: action.payload };
+      case "SET_OPENAI_API_KEY":
+        return { ...state, OPENAI_API_KEY: action.payload };
       case "RESET_ALL_PRESS_STATES":
         return {
           ...state,
