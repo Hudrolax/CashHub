@@ -41,13 +41,13 @@ export default function EditScreen({ navigation }) {
   }
 
   const onCancel = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     navigation.navigate("Tabs");
     return true;
   };
 
   const onAdd = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     let payload = {}
     if (contentType === "wallets") {
       payload.id = undefined

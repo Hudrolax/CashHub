@@ -36,7 +36,7 @@ function AIAddScreen({ navigation, route }) {
   const symbols = useSelector((state) => state.mainState.symbols);
 
   const onStartRecording = async () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     dispatch(setRecording(await startRecording()));
   };
 

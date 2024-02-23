@@ -22,7 +22,7 @@ function ArchiveCheckList({ navigation, route }) {
   const [checklist, setChecklist_local] = useState([]);
 
   const onUpdate = async (item) => {
-    Vibration.vibrate(3)
+    // Vibration.vibrate(3)
     const new_checklist = _checklist.map((i) => {
       if (i.id === item.id) {
         return item;

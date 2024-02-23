@@ -24,7 +24,7 @@ const Header = ({ navigation, style }) => {
   const totalBalance = countTotalBalance(wallets);
 
   const onAIAdd = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     navigation.navigate("AIAddScreen")
   };
 

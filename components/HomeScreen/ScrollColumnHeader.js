@@ -11,7 +11,7 @@ export default function ScrollColumnHeader({ navigation }) {
   const walletsInMainCurrency = useSelector((state) => state.stateReducer.walletsInMainCurrency);
 
   const onChangeIncome = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     dispatch(setIncome(!isIncome));
   };
 
@@ -22,7 +22,7 @@ export default function ScrollColumnHeader({ navigation }) {
         itemColor={walletsInMainCurrency ? walletsInMainCurColor : "#f9a60a"}
         onPress={() => dispatch(setWalletsInMainCurrency(!walletsInMainCurrency))}
         onLongPress={() => {
-          Vibration.vibrate(1);
+          // Vibration.vibrate(1);
           dispatch(setEditContentType("wallets"));
           navigation.navigate("EditScreen");
         }}
@@ -32,7 +32,7 @@ export default function ScrollColumnHeader({ navigation }) {
         itemColor={isIncome ? "#02af59" : "#cb1357"}
         onPress={onChangeIncome}
         onLongPress={() => {
-          Vibration.vibrate(1);
+          // Vibration.vibrate(1);
           dispatch(setEditContentType(isIncome ? "income" : "outcome"));
           navigation.navigate("EditScreen");
         }}

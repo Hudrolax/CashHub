@@ -24,7 +24,7 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   const transactions = useSelector((state) => state.mainState.transactions);
 
   const deleteAndReturn = async () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     const _trzs = transactions.map((trz) => trz.doc_id === doc_id ? {...trz, deleted: true} : trz)
     storeData("transactions", _trzs)
     dispatch(setTransactions(_trzs))
@@ -34,7 +34,7 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
   };
 
   const onPress = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
 
     Alert.alert(
       "Подтверждение действия", // Заголовок
@@ -77,7 +77,7 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
 
 const CancelBtn = ({ navigation, style }) => {
   const onCancel = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     navigation.navigate("Tabs");
     return true;
   };

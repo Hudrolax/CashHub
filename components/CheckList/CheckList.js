@@ -31,7 +31,7 @@ function CheckList({ navigation, route }) {
   const scrollViewRef = useRef();
 
   const onUpdate = async (item) => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     const new_checklist = _checklist.map((i) => {
       if (i.id === item.id) {
         return item;
@@ -44,13 +44,13 @@ function CheckList({ navigation, route }) {
   };
 
   const onAdd = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     scrollToTop();
     dispatch(setCheckAddMode(true));
   };
 
   const onCompleteAdd = async (text) => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     if (!isEmpty(text)) {
       const payload = {
         id: new Date().toString(),

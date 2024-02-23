@@ -22,7 +22,7 @@ export default function AddDataScreen({navigation}) {
   const onDelete = () => setIsDeleted(true)
 
   const onCancel = () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     navigation.navigate("Tabs");
     return true;
   };

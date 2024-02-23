@@ -16,7 +16,7 @@ function GetAPIKey() {
   const [api_key, setAPIKey] = useState("");
 
   const setApiKey = async () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     await SecureStore.setItemAsync("OPENAI_API_KEY", api_key);
     try {
       let response = await fetchRequest(dispatch, {

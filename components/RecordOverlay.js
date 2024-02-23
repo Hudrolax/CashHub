@@ -9,7 +9,7 @@ const RecordOverlay = () => {
   const recording = useSelector((state) => state.stateReducer.recording);
 
   const onStopRecording = async () => {
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
     const result = await stopRecording(dispatch, recording);
     dispatch(setRecognizedText(result))
     dispatch(setRecording(null));
