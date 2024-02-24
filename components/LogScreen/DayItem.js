@@ -99,7 +99,7 @@ const ExchangeDayItem = ({
             </View>
           </View>
           {/* right side */}
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View
               style={{
                 justifyContent: "center",
@@ -137,7 +137,7 @@ const DayItem = ({
   const dispatch = useDispatch();
   const my_user = useSelector((state) => state.login_screen.user);
 
-  const trzColor = () => (exInItem.income ? greenColor : redColor);
+  const trzColor = () => (exInItem && exInItem.income ? greenColor : redColor);
 
   const onPress = () => {
     // Vibration.vibrate(1);
@@ -152,7 +152,7 @@ const DayItem = ({
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <ColorCircle style={{ marginLeft: 10 }} color={trzColor()} />
             <View style={{ marginLeft: 5, justifyContent: "center" }}>
-              <Text style={styles.exInItemText}>{exInItem.name}</Text>
+              <Text style={styles.exInItemText}>{exInItem ? exInItem.name : ""}</Text>
 
               {/* wallet and name */}
               <View style={{ flexDirection: "row", alignItems: "center" }}>

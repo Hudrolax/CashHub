@@ -1,4 +1,4 @@
-import { Alert, Platform } from "react-native";
+import { Alert, Platform, Vibration } from "react-native";
 import { setIsLoading } from "./actions";
 import * as SecureStore from "expo-secure-store";
 import FormData from "form-data";
@@ -273,6 +273,8 @@ export const prepareTrzs = (transactions, exInItems, wallets, users) => {
     return acc;
   }, {});
 
+  console.log(transactions.find(i => i.doc_id = "786a20b2-349a-4eb1-8c5e-5c48e340f31b"))
+
   // Обработка каждой группы транзакций
   return Object.values(groupedTransactions).map((group) => {
     if (group.length === 1) {
@@ -443,8 +445,8 @@ async function sendAudioToServer(dispatch, uri) {
     name: filename,
   });
   formData.append("model", "whisper-1");
-  formData.append("language", 'ru');
-  formData.append("prompt", 'Каррифур 25000б овощной 5000, хлеб 1500.');
+  formData.append("language", "ru");
+  formData.append("prompt", "Каррифур 25000б овощной 5000, хлеб 1500.");
 
   try {
     const response = await fetch(
@@ -568,7 +570,7 @@ const GPTTransactions = async (dispatch, text) => {
                       "ARS cash",
                     ],
                     description: "Кошелек транзакции",
-                  }
+                  },
                 },
                 required: ["expense_item", "summ", "comment"],
               },
@@ -597,7 +599,7 @@ const GPTTransactions = async (dispatch, text) => {
     // console.log("response", response)
     response = response.choices[0].message.tool_calls[0].function.arguments;
     // console.log("message", response)
-    result = JSON.parse(response).transactions
+    result = JSON.parse(response).transactions;
     return result;
   } catch (error) {
     console.error(error.message);
