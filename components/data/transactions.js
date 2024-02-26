@@ -36,7 +36,7 @@ async function syncTransactions(dispatch) {
           }
         } catch (error) {
           const response = JSON.parse(error.message);
-          if (response.status === 404) {
+          if (response.status_code === 404) {
             deletedId.push(i);
             needStore = true;
           } else {

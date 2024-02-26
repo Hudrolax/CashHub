@@ -150,9 +150,9 @@ export default function Calculator({ navigation, trz }) {
 
   const handleErase = () => {
     // Vibration.vibrate(1);
-    console.log(expression)
+    // console.log(expression)
     setExpression(expression ? expression.slice(0, -1) : "");
-    console.log(expression)
+    // console.log(expression)
   };
   const handleErase2 = () => {
     // Vibration.vibrate(1);

@@ -273,7 +273,7 @@ export const prepareTrzs = (transactions, exInItems, wallets, users) => {
     return acc;
   }, {});
 
-  console.log(transactions.find(i => i.doc_id = "786a20b2-349a-4eb1-8c5e-5c48e340f31b"))
+  // console.log(transactions.find(i => i.doc_id = "786a20b2-349a-4eb1-8c5e-5c48e340f31b"))
 
   // Обработка каждой группы транзакций
   return Object.values(groupedTransactions).map((group) => {
