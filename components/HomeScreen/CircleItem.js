@@ -56,7 +56,7 @@ const CircleItem = ({
 
   const handlePress = () => {
     if (!pressible) return;
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (isPressed) {
       animationRef.current && animationRef.current.stop();
       scaleValue.setValue(1);

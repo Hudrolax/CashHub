@@ -141,7 +141,7 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleDelete = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     setExpression("");
     if (exchangeMode) {
       setExpression2("");
@@ -149,19 +149,19 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleErase = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     // console.log(expression)
     setExpression(expression ? expression.slice(0, -1) : "");
     // console.log(expression)
   };
   const handleErase2 = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     setExpression2(expression2 ? expression2.slice(0, -1) : "");
     handleResult();
   };
 
   const handleDeleteRate = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     setRate("");
     handleResult();
   };
