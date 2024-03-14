@@ -1,17 +1,24 @@
-import { StyleSheet, View, Vibration } from "react-native";
+import { StyleSheet, View } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useDispatch, useSelector } from "react-redux";
 
 import ElipseItem from "./Elipseitem";
-import { setEditContentType, setWalletsInMainCurrency, setIncome } from "../actions";
+import {
+  setEditContentType,
+  setWalletsInMainCurrency,
+  setIncome,
+} from "../actions";
 import { walletsInMainCurColor } from "../colors";
 
 export default function ScrollColumnHeader({ navigation }) {
   const dispatch = useDispatch();
   const isIncome = useSelector((state) => state.stateReducer.isIncome);
-  const walletsInMainCurrency = useSelector((state) => state.stateReducer.walletsInMainCurrency);
+  const walletsInMainCurrency = useSelector(
+    (state) => state.stateReducer.walletsInMainCurrency
+  );
 
   const onChangeIncome = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     dispatch(setIncome(!isIncome));
   };
 
@@ -20,9 +27,11 @@ export default function ScrollColumnHeader({ navigation }) {
       <ElipseItem
         title={"Счета"}
         itemColor={walletsInMainCurrency ? walletsInMainCurColor : "#f9a60a"}
-        onPress={() => dispatch(setWalletsInMainCurrency(!walletsInMainCurrency))}
+        onPress={() =>
+          dispatch(setWalletsInMainCurrency(!walletsInMainCurrency))
+        }
         onLongPress={() => {
-          // Vibration.vibrate(1);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           dispatch(setEditContentType("wallets"));
           navigation.navigate("EditScreen");
         }}
@@ -32,7 +41,7 @@ export default function ScrollColumnHeader({ navigation }) {
         itemColor={isIncome ? "#02af59" : "#cb1357"}
         onPress={onChangeIncome}
         onLongPress={() => {
-          // Vibration.vibrate(1);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           dispatch(setEditContentType(isIncome ? "income" : "outcome"));
           navigation.navigate("EditScreen");
         }}

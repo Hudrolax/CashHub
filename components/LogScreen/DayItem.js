@@ -3,9 +3,9 @@ import {
   View,
   StyleSheet,
   TouchableHighlight,
-  Vibration,
   Platform,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useDispatch, useSelector } from "react-redux";
 
 import { greenColor, redColor, orangeColor } from "../colors";
@@ -69,7 +69,7 @@ const ExchangeDayItem = ({
   const my_user = useSelector((state) => state.login_screen.user);
 
   const onPress = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     dispatch(setEditDocId(doc_id));
   };
   return (
@@ -140,7 +140,7 @@ const DayItem = ({
   const trzColor = () => (exInItem && exInItem.income ? greenColor : redColor);
 
   const onPress = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     dispatch(setEditDocId(doc_id));
   };
 

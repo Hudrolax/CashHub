@@ -4,8 +4,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Vibration,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { storeData } from "../data";
@@ -22,7 +22,7 @@ function ArchiveCheckList({ navigation, route }) {
   const [checklist, setChecklist_local] = useState([]);
 
   const onUpdate = async (item) => {
-    // Vibration.vibrate(3)
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     const new_checklist = _checklist.map((i) => {
       if (i.id === item.id) {
         return item;

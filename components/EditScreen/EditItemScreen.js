@@ -1,11 +1,11 @@
 import {
   StyleSheet,
-  Vibration,
   BackHandler,
   View,
   Text,
   Alert,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -32,7 +32,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onCancel = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     navigation.navigate("EditScreen");
     return true;
   };
@@ -48,7 +48,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onDelete = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
 
     Alert.alert(
       "Подтверждение действия", // Заголовок
@@ -56,7 +56,7 @@ export default function EditItemScreen({ navigation }) {
       [
         {
           text: "Отмена",
-          onPress: () => Vibration.vibrate(2),
+          onPress: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
           style: "cancel",
         },
         {
@@ -71,7 +71,7 @@ export default function EditItemScreen({ navigation }) {
   };
 
   const onOk = (data) => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     if (data.balance) {
       const currency = currencies.find((c) => c.name === data.currencyName);
       const payload = {

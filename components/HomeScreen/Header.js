@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Vibration } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useSelector } from "react-redux";
 
 import HamburgerMenu from "../MenuBtn/MenuBtn";
@@ -24,7 +25,7 @@ const Header = ({ navigation, style }) => {
   const totalBalance = countTotalBalance(wallets);
 
   const onAIAdd = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     navigation.navigate("AIAddScreen")
   };
 

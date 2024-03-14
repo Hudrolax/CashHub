@@ -3,9 +3,9 @@ import {
   ScrollView,
   View,
   Text,
-  Vibration,
   BackHandler,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect } from "react";
 
@@ -41,13 +41,13 @@ export default function EditScreen({ navigation }) {
   }
 
   const onCancel = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     navigation.navigate("Tabs");
     return true;
   };
 
   const onAdd = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     let payload = {}
     if (contentType === "wallets") {
       payload.id = undefined

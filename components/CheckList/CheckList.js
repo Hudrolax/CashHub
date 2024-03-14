@@ -5,8 +5,8 @@ import {
   ScrollView,
   Platform,
   Keyboard,
-  Vibration,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +31,7 @@ function CheckList({ navigation, route }) {
   const scrollViewRef = useRef();
 
   const onUpdate = async (item) => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     const new_checklist = _checklist.map((i) => {
       if (i.id === item.id) {
         return item;
@@ -44,13 +44,13 @@ function CheckList({ navigation, route }) {
   };
 
   const onAdd = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     scrollToTop();
     dispatch(setCheckAddMode(true));
   };
 
   const onCompleteAdd = async (text) => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     if (!isEmpty(text)) {
       const payload = {
         id: new Date().toString(),

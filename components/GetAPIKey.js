@@ -1,10 +1,10 @@
 import {
   View,
   TextInput,
-  Vibration,
   TouchableOpacity,
   Text,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
@@ -16,7 +16,7 @@ function GetAPIKey() {
   const [api_key, setAPIKey] = useState("");
 
   const setApiKey = async () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     await SecureStore.setItemAsync("OPENAI_API_KEY", api_key);
     try {
       let response = await fetchRequest(dispatch, {

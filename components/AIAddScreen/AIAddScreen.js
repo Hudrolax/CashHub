@@ -6,8 +6,8 @@ import {
   ScrollView,
   Platform,
   Text,
-  Vibration,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BackBtn from "../CheckList/BackBtn";
@@ -36,7 +36,7 @@ function AIAddScreen({ navigation, route }) {
   const symbols = useSelector((state) => state.mainState.symbols);
 
   const onStartRecording = async () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     dispatch(setRecording(await startRecording()));
   };
 

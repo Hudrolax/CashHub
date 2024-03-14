@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal, View, StyleSheet, Text, TouchableOpacity, Vibration } from "react-native";
+import { Modal, View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import * as Haptics from "expo-haptics";
 import { stopRecording, isEmpty } from "./util";
 import { useDispatch, useSelector } from "react-redux";
 import { setRecording, setRecognizedText } from "./actions";
@@ -9,7 +10,7 @@ const RecordOverlay = () => {
   const recording = useSelector((state) => state.stateReducer.recording);
 
   const onStopRecording = async () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     const result = await stopRecording(dispatch, recording);
     dispatch(setRecognizedText(result))
     dispatch(setRecording(null));

@@ -7,8 +7,8 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Easing,
-  Vibration,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import {
   setPressWallet1,
   setPressWallet2,
@@ -56,7 +56,7 @@ const CircleItem = ({
 
   const handlePress = () => {
     if (!pressible) return;
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     if (isPressed) {
       animationRef.current && animationRef.current.stop();
       scaleValue.setValue(1);

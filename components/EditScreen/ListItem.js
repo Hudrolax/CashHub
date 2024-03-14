@@ -2,9 +2,9 @@ import {
   StyleSheet,
   View,
   Text,
-  Vibration,
   TouchableHighlight,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useDispatch } from "react-redux";
 
 import { setEditItem } from "../actions";
@@ -14,7 +14,7 @@ export default function ListItem({ navigation, item }) {
   const dispatch = useDispatch();
 
   const onPress = () => {
-    // Vibration.vibrate(1);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     dispatch(setEditItem(item));
     navigation.navigate("EditItem");
   };
