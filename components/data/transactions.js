@@ -81,6 +81,8 @@ async function syncTransactions(dispatch) {
       if (!isEmpty(result) && result.length > 0 && result[0].doc_id) {
         transactions_local[i].doc_id = result[0].doc_id;
         needStore = true;
+        transactions_local[i].new = false
+        await storeData("transactions", transactions_local);
       }
     } else if (!transactions_local[i].new && transactions_local[i].modified) {
       // **************** modify a transaction ****************
@@ -122,9 +124,12 @@ async function syncTransactions(dispatch) {
       if (!isEmpty(result) && result.length > 0 && result[0].doc_id) {
         transactions_local[i].doc_id = result[0].doc_id;
         needStore = true;
+        transactions_local[i].modified = false
+        await storeData("transactions", transactions_local);
       }
     }
   }
+
   transactions_local = transactions_local.filter((element, index) => {
     return !deletedId.includes(index);
   });

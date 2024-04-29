@@ -1,4 +1,4 @@
-import { Alert, Platform, Vibration } from "react-native";
+import { Alert } from "react-native";
 import { setIsLoading } from "./actions";
 import * as SecureStore from "expo-secure-store";
 import FormData from "form-data";

@@ -89,7 +89,7 @@ export default function Calculator({ navigation, trz }) {
   const exchangeMode = !isEmpty(wallet2);
 
   const handlePress = (value) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     switch (activeField) {
       case "display1":
@@ -114,14 +114,14 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleResult = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     switch (activeField) {
       case "display1":
         try {
           setExpression(eval(expression));
           setExpression2(eval(expression) * rate);
         } catch {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setExpression2("Error");
           return false;
         }
@@ -131,7 +131,7 @@ export default function Calculator({ navigation, trz }) {
           setExpression2(eval(expression2));
           setExpression(eval(expression2) / rate);
         } catch {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setExpression("Error");
           return false;
         }
@@ -141,7 +141,7 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleDelete = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setExpression("");
     if (exchangeMode) {
       setExpression2("");
@@ -149,25 +149,25 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleErase = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // console.log(expression)
     setExpression(expression ? expression.slice(0, -1) : "");
     // console.log(expression)
   };
   const handleErase2 = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setExpression2(expression2 ? expression2.slice(0, -1) : "");
     handleResult();
   };
 
   const handleDeleteRate = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setRate("");
     handleResult();
   };
 
   const handleOk = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setOkPressed(true);
     let _rate = rate;
     let _expression = expression;
@@ -403,6 +403,17 @@ export default function Calculator({ navigation, trz }) {
 
   return (
     <View style={getDynamicStyles()}>
+      {/* ok btn */}
+      <View style={{ alignItems: "flex-end", height: 40, backgroundColor: '#181715'}}>
+        <TouchableOpacity
+          onPress={handleOk}
+          style={!isEvalFine ? styles.okButtonInactive : styles.okButton}
+          disabled={!isEvalFine || okPressed}
+        >
+          <Text style={styles.okButtonText}>OK</Text>
+        </TouchableOpacity>
+      </View>
+
       <View
         style={{
           justifyContent: "space-between",
@@ -548,16 +559,6 @@ export default function Calculator({ navigation, trz }) {
               );
             })}
           </View>
-
-          <View style={{ alignItems: "flex-end" }}>
-            <TouchableOpacity
-              onPress={handleOk}
-              style={!isEvalFine ? styles.okButtonInactive : styles.okButton}
-              disabled={!isEvalFine || okPressed}
-            >
-              <Text style={styles.okButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       )}
     </View>
@@ -645,15 +646,13 @@ const styles = StyleSheet.create({
   },
   okButton: {
     backgroundColor: greenColor,
-    marginTop: 20,
-    marginHorizontal: 10,
-    minWidth: 80,
+    width: 100,
+    height: 30
   },
   okButtonInactive: {
     backgroundColor: "#808080",
-    marginTop: 20,
-    marginHorizontal: 10,
-    minWidth: 80,
+    width: 100,
+    height: 30
   },
   okButtonText: {
     color: "white",

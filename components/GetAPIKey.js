@@ -20,7 +20,7 @@ function GetAPIKey() {
     await SecureStore.setItemAsync("OPENAI_API_KEY", api_key);
     try {
       let response = await fetchRequest(dispatch, {
-        model: 'gpt-3.5-turbo-1106',
+        model: 'gpt-3.5-turbo-0125',
         messages: [{ role: "user", content: "Сколько будт 2+2?" }],
       });
       if (!response) throw new Error("empty response");
