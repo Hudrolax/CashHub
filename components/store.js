@@ -1,12 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import loginScreenReducer from './LoginScreen/reducer';
-import mainReducer from './reducers/mainReducer'
+import loginScreenReducer from './reducers/loginReducer';
 import stateReducer from './reducers/stateReducer';
 
 const store = configureStore({
   reducer: {
     login_screen: loginScreenReducer,
-    mainState: mainReducer,
     stateReducer: stateReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({

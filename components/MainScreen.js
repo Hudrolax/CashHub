@@ -15,8 +15,6 @@ import CheckList from "./CheckList/CheckList";
 import ArchiveCheckList from "./CheckList/ArchiveCheckList";
 import AIAddScreen from "./AIAddScreen/AIAddScreen";
 
-import { fetchHomeData } from "./dataUpdater";
-
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
@@ -46,63 +44,43 @@ function TabScreen() {
 }
 
 export default function MainScreen() {
-  const dispatch = useDispatch();
-  const fetchTimerRef = useRef();
-
-  useEffect(() => {
-    // run sync
-    dispatch(fetchHomeData());
-    if (fetchTimerRef.current) {
-      clearInterval(fetchTimerRef.current);
-    }
-    fetchTimerRef.current = setInterval(() => dispatch(fetchHomeData()), 10000);
-
-    return () => {
-      if (fetchTimerRef.current) {
-        clearInterval(fetchTimerRef.current);
-      }
-    };
-  }, []);
-
   return (
-    <View style={{ flex: 1 }}>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={TabScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{ title: "Настройки" }}
-        />
-        <Stack.Screen
-          name="AddScreen"
-          component={AddDataScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="EditScreen"
-          component={EditScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="EditItem"
-          component={EditItemScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ArchiveChecklist"
-          component={ArchiveCheckList}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AIAddScreen"
-          component={AIAddScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Tabs"
+        component={TabScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: "Настройки" }}
+      />
+      <Stack.Screen
+        name="AddScreen"
+        component={AddDataScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditScreen"
+        component={EditScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditItem"
+        component={EditItemScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ArchiveChecklist"
+        component={ArchiveCheckList}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AIAddScreen"
+        component={AIAddScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 }

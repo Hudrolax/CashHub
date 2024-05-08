@@ -8,8 +8,8 @@ import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { fetchRequest } from "./util";
-import { setOpenAPIKey } from "./actions";
+import { fetchRequest } from "../util";
+import { setOpenAPIKey } from "../actions";
 
 function GetAPIKey() {
   const dispatch = useDispatch();

@@ -1,9 +1,9 @@
 import React from "react";
 import { Modal, View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import * as Haptics from "expo-haptics";
-import { stopRecording, isEmpty } from "./util";
+import { stopRecording, isEmpty } from "../util";
 import { useDispatch, useSelector } from "react-redux";
-import { setRecording, setRecognizedText } from "./actions";
+import { setRecording, setRecognizedText } from "../actions";
 
 const RecordOverlay = () => {
   const dispatch = useDispatch();

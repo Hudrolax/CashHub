@@ -26,22 +26,6 @@ export const setWalletsInMainCurrency = (payload) => ({
   type: "SET_WALLETS_IN_MAIN_CURRENCY",
   payload: payload,
 });
-export const setCurrencies = (payload) => ({
-  type: "SET_CURRENCIES",
-  payload: payload,
-});
-export const setWallets = (payload) => ({
-  type: "SET_WALLETS",
-  payload: payload,
-});
-export const setExInItems = (payload) => ({
-  type: "SET_ExInItems",
-  payload: payload,
-});
-export const setTransactions = (payload) => ({
-  type: "SET_TRANSACTIONS",
-  payload: payload,
-});
 export const setDates = (payload) => ({
   type: "SET_DATES",
   payload: payload,
@@ -69,14 +53,6 @@ export const setIncome = (payload) => ({
   type: "SET_INCOME",
   payload: payload,
 });
-export const setSymbols = (payload) => ({
-  type: "SET_SYMBOLS",
-  payload: payload,
-});
-export const setUsers = (payload) => ({
-  type: "SET_USERS",
-  payload: payload,
-});
 export const setActiveTab = (payload) => ({
   type: "SET_ACTIVE_TAB",
   payload: payload,
@@ -93,28 +69,6 @@ export const setCheckNewItemText = (payload) => ({
   type: "SET_CHECKLIST_NEWITEM_TEXT",
   payload: payload,
 });
-export const updateData = (
-  currencies,
-  symbols,
-  wallets,
-  exInItems,
-  transactions,
-  users,
-) => {
-  return (dispatch) => {
-    dispatch({
-      type: "UPDATE_ALL_DATA",
-      payload: {
-        currencies,
-        symbols,
-        wallets,
-        exInItems,
-        transactions,
-        users,
-      },
-    });
-  };
-};
 export const setLoginData = (token, user) => {
   return (dispatch) => {
     dispatch({

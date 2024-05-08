@@ -20,7 +20,6 @@ import Footer from "./Footer";
 import NewItem from "./NewItem";
 import { setCheckList, setCheckAddMode } from "../actions";
 import { setCheckNewItemText } from "../actions";
-// import { daysBetween } from "../util";
 
 function CheckList({ navigation, route }) {
   const dispatch = useDispatch();
