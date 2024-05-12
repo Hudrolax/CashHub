@@ -1,9 +1,9 @@
 const initialState = {
   isLoading: false,
-  pressedWallet1: {},
-  pressedWallet2: {},
-  pressedExInItem: {},
-  pressedDate: {},
+  pressedWallet1: null,
+  pressedWallet2: null,
+  pressedExInItem: null,
+  pressedDate: null,
   isIncome: false,
   mainCurrency: "USD",
   isConnectionError: false,
@@ -60,10 +60,10 @@ const stateReducer = (state = initialState, action) => {
       case "RESET_ALL_PRESS_STATES":
         return {
           ...state,
-          pressedWallet1: {},
-          pressedWallet2: {},
-          pressedExInItem: {},
-          pressedDate: {},
+          pressedWallet1: null,
+          pressedWallet2: null,
+          pressedExInItem: null,
+          pressedDate: null,
         };
       default:
         return state;

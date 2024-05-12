@@ -8,7 +8,7 @@ import { redColor, greenColor } from "../colors";
 import { formatNumber } from "../util";
 import { backendRequest, exin_items_home_endpoint } from "../requests";
 
-export default function ExInItems({ navigation, onPress, pressedExInItem, pressedWallet2 }) {
+export default function ExInItems({ navigation, onPress }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.loginReducer.token);
   const isIncome = useSelector((state) => state.stateReducer.isIncome);
@@ -57,8 +57,6 @@ export default function ExInItems({ navigation, onPress, pressedExInItem, presse
             object={item}
             onPress={onPress}
             btnType="exInItem"
-            pressedExInItem={pressedExInItem}
-            pressedWallet2={pressedWallet2}
           />
         )
       )}

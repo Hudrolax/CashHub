@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -18,14 +18,29 @@ const CircleItem = ({
   object,
   onPress,
   btnType,
-  pressedDate,
-  pressedExInItem,
-  pressedWallet1,
-  pressedWallet2,
 }) => {
-  const [isPressed, setIsPressed] = useState(false);
+  const pressedWallet1 = useSelector(
+    (state) => state.stateReducer.pressedWallet1
+  );
+  const pressedWallet2 = useSelector(
+    (state) => state.stateReducer.pressedWallet2
+  );
+  const pressedExInItem = useSelector(
+    (state) => state.stateReducer.pressedExInItem
+  );
+  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
+  // const [isPressed, setIsPressed] = useState(false);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const animationRef = useRef(null);
+
+  let isPressed = false;
+  if (
+    btnType === "date" && pressedDate && pressedDate.id === object.id
+    || btnType === 'exInItem' && pressedExInItem && pressedExInItem.id == object.id
+    || btnType === 'wallet' && pressedWallet1 && pressedWallet1.id == object.id
+    || btnType === 'wallet' && pressedWallet2 && pressedWallet2.id == object.id
+  )
+    isPressed = true;
 
   const pulseAnimation = Animated.sequence([
     Animated.timing(scaleValue, {
@@ -43,41 +58,40 @@ const CircleItem = ({
   ]);
 
   useEffect(() => {
-    if (btnType === 'date' && pressedDate && pressedDate.id !== object.id) {
-      setUnpress()
-    }
-
-    if (btnType === 'exInItem' && pressedExInItem && pressedExInItem.id !== object.id) {
-      setUnpress()
-    }
-
-  }, [btnType, pressedWallet1, pressedWallet2, pressedExInItem, pressedDate])
-
-  useEffect(() => {
     return () => {
-      setUnpress()
+      setUnpress();
     };
   }, []);
 
   const setUnpress = () => {
-      animationRef.current && animationRef.current.stop();
-      scaleValue.setValue(1);
-      setIsPressed(false)
+    animationRef.current && animationRef.current.stop();
+    scaleValue.setValue(1);
+  };
+
+  const setPress = () => {
+    animationRef.current = Animated.loop(pulseAnimation);
+    animationRef.current.start();
+  };
+
+  if (isPressed) {
+    setPress();
+  } else {
+    setUnpress();
   }
 
   const onPressBtn = () => {
-    const _isPressed = !isPressed;
-    const handlePress = () => {
-      if (_isPressed) {
-        animationRef.current = Animated.loop(pulseAnimation);
-        animationRef.current.start();
-      } else {
-        animationRef.current && animationRef.current.stop();
-        scaleValue.setValue(1);
-      }
-      setIsPressed(_isPressed);
-    }
-    onPress(_isPressed ? object : null, );
+    // const _isPressed = !isPressed;
+    // const handlePress = () => {
+    //   if (_isPressed) {
+    //     animationRef.current = Animated.loop(pulseAnimation);
+    //     animationRef.current.start();
+    //   } else {
+    //     animationRef.current && animationRef.current.stop();
+    //     scaleValue.setValue(1);
+    //   }
+    //   setIsPressed(_isPressed);
+    // };
+    onPress(object);
   };
 
   const sybtitleStyle = () => {

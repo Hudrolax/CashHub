@@ -8,7 +8,7 @@ import { setDates } from "../actions";
 import { blueColor } from "../colors";
 import { formatDateShort } from "../util";
 
-export default function Dates({ onPress, pressedDate }) {
+export default function Dates({ onPress }) {
   const dispatch = useDispatch();
 
   const makeDates = () => {
@@ -84,8 +84,7 @@ export default function Dates({ onPress, pressedDate }) {
           subtitle={""}
           object={item}
           onPress={onPress}
-          btnType="date"
-          pressedDate={pressedDate}
+          btnType={"date"}
         />
       ))}
     </ScrollView>

@@ -44,6 +44,7 @@ export default function Wallets({ navigation, data, onPress}) {
           }
           object={item}
           onPress={onPress}
+          btnType={"wallet"}
         />
       ))}
     </ScrollView>
