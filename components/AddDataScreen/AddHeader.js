@@ -95,20 +95,14 @@ const CancelBtn = ({ navigation, style }) => {
   );
 };
 
-export default function AddHeader({ navigation, trz, onDelete }) {
-  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
-  const pressedExInItem = useSelector(
-    (state) => state.stateReducer.pressedExInItem
-  );
-  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
+export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
   const _isIncome = useSelector((state) => state.stateReducer.isIncome);
 
-  const exchangeMode = !isEmpty(pressedWallet2) || (trz && !isEmpty(trz.wallet2));
-  const wallet1 = trz ? trz.wallet1 : pressedWallet1;
-  const wallet2 = trz ? trz.wallet2 : pressedWallet2;
-  const exInItem = trz ? trz.exInItem : pressedExInItem;
-  const isIncome = trz ? trz.amount1[0] !== "-" : _isIncome;
+  const exchangeMode = !isEmpty(pressedWallet2) || (trz && !isEmpty(trz.wallet_to.id));
+  const wallet1 = trz ? trz.wallet_from : pressedWallet1;
+  const wallet2 = trz ? trz.wallet_to : pressedWallet2;
+  const exInItem = trz ? trz.exin_item : pressedExInItem;
+  const isIncome = trz ? trz.amount_from >= 0 : _isIncome;
   const date = trz
     ? {
         id: 1,

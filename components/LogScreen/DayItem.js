@@ -5,7 +5,6 @@ import {
   TouchableHighlight,
   Platform,
 } from "react-native";
-import * as Haptics from "expo-haptics";
 import { useDispatch, useSelector } from "react-redux";
 
 import { greenColor, redColor, orangeColor } from "../colors";
@@ -62,16 +61,10 @@ const ExchangeDayItem = ({
   amount2,
   user,
   comment,
-  doc_id,
-  synchronized,
+  onPress,
 }) => {
-  const dispatch = useDispatch();
-  const my_user = useSelector((state) => state.login_screen.user);
+  const my_user = useSelector((state) => state.loginReducer.user);
 
-  const onPress = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    dispatch(setEditDocId(doc_id));
-  };
   return (
     <View>
       <TouchableHighlight onLongPress={onPress} style={{ paddingVertical: 5 }}>
@@ -108,15 +101,15 @@ const ExchangeDayItem = ({
               }}
             >
               <Text style={styles.exchangeTrzAmount}>
-                {formatNumber(amount1.slice(1), wallet1.currency.name) +
+                {formatNumber(-amount1, wallet1.currency) +
                   " → " +
-                  formatNumber(amount2, wallet2.currency.name)}
+                  formatNumber(amount2, wallet2.currency)}
               </Text>
               <Text style={styles.exchangeTrzWallets}>
                 {wallet1.name + " → " + wallet2.name}
               </Text>
             </View>
-            {!synchronized && <Text>⏳</Text>}
+            {/* {!synchronized && <Text>⏳</Text>} */}
           </View>
         </View>
       </TouchableHighlight>
@@ -131,18 +124,11 @@ const DayItem = ({
   amount,
   user,
   comment,
-  doc_id,
-  synchronized,
+  onPress,
 }) => {
-  const dispatch = useDispatch();
-  const my_user = useSelector((state) => state.login_screen.user);
+  const my_user = useSelector((state) => state.loginReducer.user);
 
   const trzColor = () => (exInItem && exInItem.income ? greenColor : redColor);
-
-  const onPress = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    dispatch(setEditDocId(doc_id));
-  };
 
   return (
     <View>
@@ -152,13 +138,13 @@ const DayItem = ({
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <ColorCircle style={{ marginLeft: 10 }} color={trzColor()} />
             <View style={{ marginLeft: 5, justifyContent: "center" }}>
-              <Text style={styles.exInItemText}>{exInItem ? exInItem.name : ""}</Text>
+              <Text style={styles.exInItemText}>{exInItem.name}</Text>
 
               {/* wallet and name */}
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={styles.walletText}>{wallet.name + "("}</Text>
                 <Text style={nameStyle(my_user, user)}>{user.name}</Text>
-                <Text style={styles.walletText}>)</Text>
+                <Text style={styles.walletText}>{")"}</Text>
               </View>
 
               {comment ? (
@@ -178,7 +164,7 @@ const DayItem = ({
             <Text style={{ ...styles.transactionAmount, color: trzColor() }}>
               {amount}
             </Text>
-            {!synchronized && <Text>⏳</Text>}
+            {/* {!synchronized && <Text>⏳</Text>} */}
           </View>
         </View>
       </TouchableHighlight>

@@ -1,18 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { setMainCurrency } from "../actions";
 import { greenColor } from "../colors";
 import { storeData } from "../data";
+import { backendRequest, currencies_endpoint } from "../requests";
 
 const CurrencySelector = ({ style }) => {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.loginReducer.token);
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
-  const currencies = useSelector((state) => state.mainState.currencies);
   const [isOpen, setIsOpen] = useState(false);
+  const [currencies, setCurrencies] = useState([]);
 
-  const options = currencies.map((item) => item.name);
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        try {
+          const result = await backendRequest({
+            dispatch,
+            token,
+            endpoint: currencies_endpoint,
+            method: "GET",
+            throwError: true,
+          });
+          setCurrencies(result)
+        } catch (e) {
+          console.error(`Не удалось загрузить валюты: ${e.message}`);
+        }
+      };
+
+      loadData();
+
+      return () => {};
+    }, [token])
+  );
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -34,13 +58,13 @@ const CurrencySelector = ({ style }) => {
 
       {isOpen && (
         <View style={styles.dropdown}>
-          {options.map((option, index) => (
+          {currencies.map(item => (
             <TouchableOpacity
-              key={index}
-              onPress={() => selectOption(option)}
+              key={item.id}
+              onPress={() => selectOption(item.name)}
               style={styles.option}
             >
-              <Text style={{ color: "#fff" }}>{option}</Text>
+              <Text style={{ color: "#fff" }}>{item.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -54,10 +78,8 @@ const styles = StyleSheet.create({
     width: 60,
   },
   button: {
-    // padding: 10,
-    // backgroundColor: '#dddddd',
     height: 30,
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderColor: "grey",
     justifyContent: "center",
@@ -70,7 +92,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     zIndex: 3000,
-    width: '100%'
+    width: "100%",
   },
   option: {
     padding: 10,

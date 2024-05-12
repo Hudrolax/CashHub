@@ -1,19 +1,19 @@
 import { useSelector } from "react-redux";
-
+import React from "react";
 import CircleItem from "./CircleItem";
 import { StyleSheet, ScrollView } from "react-native";
-
 import { orangeColor, walletsInMainCurColor } from "../colors";
 import { formatNumber } from "../util";
 import { getRate } from "../util";
 
-export default function Wallets({ navigation }) {
-  const wallets = useSelector((state) => state.mainState.wallets);
+export default function Wallets({ navigation, data, onPress}) {
+  const {wallets, symbols, currency} = data
+  const _wallets = wallets.map(item => ({...item, currency: currency.find(cur => cur.id === item.currency_id)}))
   const walletsInMainCurrency = useSelector(
     (state) => state.stateReducer.walletsInMainCurrency
   );
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
-  const symbols = useSelector((state) => state.mainState.symbols);
+
 
   const calculateBalance = (item) => {
     if (walletsInMainCurrency) {
@@ -30,7 +30,7 @@ export default function Wallets({ navigation }) {
       style={styles.column}
       contentContainerStyle={styles.columnContent}
     >
-      {wallets.map((item) => (
+      {_wallets.map((item) => (
         <CircleItem
           key={item.id}
           title={item.name}
@@ -43,8 +43,7 @@ export default function Wallets({ navigation }) {
               : undefined
           }
           object={item}
-          object_type={"wallet"}
-          pressible={true}
+          onPress={onPress}
         />
       ))}
     </ScrollView>

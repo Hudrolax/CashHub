@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import CircleItem from "./CircleItem";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { StyleSheet, ScrollView } from "react-native";
 
@@ -8,8 +8,7 @@ import { setDates } from "../actions";
 import { blueColor } from "../colors";
 import { formatDateShort } from "../util";
 
-
-export default function Dates() {
+export default function Dates({ onPress, pressedDate }) {
   const dispatch = useDispatch();
 
   const makeDates = () => {
@@ -84,8 +83,9 @@ export default function Dates() {
           circleText={item.text}
           subtitle={""}
           object={item}
-          object_type={"date"}
-          pressible={true}
+          onPress={onPress}
+          btnType="date"
+          pressedDate={pressedDate}
         />
       ))}
     </ScrollView>

@@ -3,7 +3,7 @@ const initialState = {
   user: undefined
 };
 
-const loginScreenReducer = (state = initialState, action) => {
+const loginReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'SET_LOGIN_DATA':
       return { ...state, token: action.payload.token, user: action.payload.user };
@@ -12,4 +12,4 @@ const loginScreenReducer = (state = initialState, action) => {
   }
 };
 
-export default loginScreenReducer;
+export default loginReducer;

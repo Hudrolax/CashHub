@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 import React, { useState } from "react";
 import * as SecureStore from "expo-secure-store";
 
-import { baseEndpoint } from "../requests";
 import { setIsLoading, setLoginData } from "../actions";
-import { fetchRequest } from "../requests";
+import { backendRequest, users_endpoint, baseEndpoint } from "../requests";
+import { showAlert } from "../util";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const LoginScreen = () => {
     dispatch(setIsLoading(true));
     setError("");
     try {
-      const response = await fetch(baseEndpoint + "/users/login", {
+      const response = await fetch(baseEndpoint + users_endpoint + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,18 +35,24 @@ const LoginScreen = () => {
         throw new Error(data.detail);
       }
 
-      const user = await fetchRequest(dispatch, data.token, null, `/users/${data.user_id}`, 'GET', null, true)
+      const user = await backendRequest({
+        dispatch,
+        token: data.token,
+        endpoint: `${users_endpoint}${data.user_id}`,
+        method: "GET",
+        throwError: true,
+      });
 
       // Сохранение токена в SecureStore
       await Promise.all([
         SecureStore.setItemAsync("token", data.token),
-        SecureStore.setItemAsync("user", JSON.stringify(user))
-    ]);
+        SecureStore.setItemAsync("user", JSON.stringify(user)),
+      ]);
 
-      dispatch(setLoginData(data.token, user))
+      dispatch(setLoginData(data.token, user));
     } catch (error) {
-      setError(error.message);
       console.error(error.message);
+      showAlert("Ошибка", `Ошибка: ${e.message}`);
     }
     dispatch(setIsLoading(false));
   };

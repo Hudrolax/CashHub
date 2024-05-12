@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -8,15 +8,6 @@ import {
   TouchableWithoutFeedback,
   Easing,
 } from "react-native";
-import * as Haptics from "expo-haptics";
-import {
-  setPressWallet1,
-  setPressWallet2,
-  setPressExInItem,
-  setPressDate,
-} from "../actions";
-
-import { isEmpty } from "../util";
 
 const CircleItem = ({
   title,
@@ -25,16 +16,13 @@ const CircleItem = ({
   subtitle,
   subtitleColor,
   object,
-  object_type,
-  pressible,
+  onPress,
+  btnType,
+  pressedDate,
+  pressedExInItem,
+  pressedWallet1,
+  pressedWallet2,
 }) => {
-  const dispatch = useDispatch();
-  const pressedWallet1 = useSelector((state) => state.stateReducer.pressedWallet1);
-  const pressedWallet2 = useSelector((state) => state.stateReducer.pressedWallet2);
-  const pressedExInItem = useSelector(
-    (state) => state.stateReducer.pressedExInItem
-  );
-  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
   const [isPressed, setIsPressed] = useState(false);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const animationRef = useRef(null);
@@ -54,84 +42,43 @@ const CircleItem = ({
     }),
   ]);
 
-  const handlePress = () => {
-    if (!pressible) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    if (isPressed) {
-      animationRef.current && animationRef.current.stop();
-      scaleValue.setValue(1);
-      setIsPressed(false);
-
-      switch (object_type) {
-        case "wallet":
-          if (isEmpty(pressedWallet2)) {
-            dispatch(setPressWallet1({}));
-          } else {
-            dispatch(setPressWallet2({}));
-          }
-          break;
-        case "exInItem":
-          dispatch(setPressExInItem({}));
-          break;
-        case "date":
-          dispatch(setPressDate({}));
-          break;
-      }
-    } else {
-      switch (object_type) {
-        case "wallet":
-          if (
-            !isEmpty(pressedWallet2) ||
-            (!isEmpty(pressedExInItem) && !isEmpty(pressedWallet1))
-          )
-            return;
-          if (isEmpty(pressedWallet1)) {
-            dispatch(setPressWallet1(object));
-          } else {
-            dispatch(setPressWallet2(object));
-          }
-          break;
-        case "exInItem":
-          if (
-            (!isEmpty(pressedExInItem) && pressedExInItem.name !== title) ||
-            !isEmpty(pressedWallet2)
-          )
-            return;
-          dispatch(setPressExInItem(object));
-          break;
-        case "date":
-          if (!isEmpty(pressedDate) && pressedDate.date !== object.date) return;
-          dispatch(setPressDate(object));
-          break;
-      }
-      animationRef.current = Animated.loop(pulseAnimation);
-      animationRef.current.start();
-      setIsPressed(true);
+  useEffect(() => {
+    if (btnType === 'date' && pressedDate && pressedDate.id !== object.id) {
+      setUnpress()
     }
-  };
+
+    if (btnType === 'exInItem' && pressedExInItem && pressedExInItem.id !== object.id) {
+      setUnpress()
+    }
+
+  }, [btnType, pressedWallet1, pressedWallet2, pressedExInItem, pressedDate])
 
   useEffect(() => {
     return () => {
-      // Очистка анимации
-      if (animationRef.current) {
-        animationRef.current.stop();
-        scaleValue.setValue(1);
-      }
+      setUnpress()
     };
   }, []);
 
-  useEffect(() => {
-    if (
-      ((!isEmpty(pressedWallet1) && !isEmpty(pressedExInItem)) ||
-        (!isEmpty(pressedWallet1) && !isEmpty(pressedWallet2))) &&
-      !isEmpty(pressedDate) &&
-      animationRef.current
-    ) {
-      animationRef.current.stop();
+  const setUnpress = () => {
+      animationRef.current && animationRef.current.stop();
       scaleValue.setValue(1);
-      setIsPressed(false);
+      setIsPressed(false)
+  }
+
+  const onPressBtn = () => {
+    const _isPressed = !isPressed;
+    const handlePress = () => {
+      if (_isPressed) {
+        animationRef.current = Animated.loop(pulseAnimation);
+        animationRef.current.start();
+      } else {
+        animationRef.current && animationRef.current.stop();
+        scaleValue.setValue(1);
+      }
+      setIsPressed(_isPressed);
     }
-  }, [pressedWallet1, pressedWallet2, pressedExInItem, pressedDate]);
+    onPress(_isPressed ? object : null, );
+  };
 
   const sybtitleStyle = () => {
     if (!subtitleColor) {
@@ -143,26 +90,24 @@ const CircleItem = ({
 
   const borderStyle = () => {
     let style = {
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       borderWidth: 1,
       borderColor: "#fff",
       borderRadius: 50,
       aspectRatio: 1,
-    }
+    };
     if (isPressed) {
-      style = {...style, height: 70, borderColor: '#fff', borderWidth: 2}
+      style = { ...style, height: 70, borderColor: "#fff", borderWidth: 2 };
     }
-    return style
-  }
+    return style;
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
+    <TouchableWithoutFeedback onPress={onPressBtn}>
       <View style={styles.itemContainer}>
         <Text style={styles.title}>{title}</Text>
-        <View
-          style={borderStyle()}
-        >
+        <View style={borderStyle()}>
           <Animated.View
             style={[
               styles.circle,

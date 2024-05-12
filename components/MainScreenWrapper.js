@@ -20,7 +20,7 @@ import { isEmpty } from "./util";
 
 export default function MainScreenWrapper() {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.login_screen.token);
+  const token = useSelector((state) => state.loginReducer.token);
   const isLoading = useSelector((state) => state.stateReducer.isLoading);
   const isConnectionError = useSelector(
     (state) => state.stateReducer.isConnectionError

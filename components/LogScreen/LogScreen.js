@@ -2,43 +2,50 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { StyleSheet, ScrollView, View } from "react-native";
-import { groupTransactionsByDay } from "../util";
+import { groupTransactionsByDay, showAlert } from "../util";
 
 import DayLog from "./DayLog";
 import { setActiveTab } from "../actions";
+import { backendRequest, wallet_transactions_endpoint } from "../requests";
 
 export default function LogScreen({ navigation, route }) {
   const dispatch = useDispatch();
-  const transactions = useSelector((state) => state.mainState.transactions);
-  const [preparedTrzs, setPreparedTrzs] = useState([]);
+  const token = useSelector((state) => state.loginReducer.token);
+  const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
+  const [transactions, setTransactions] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
       dispatch(setActiveTab(route.name));
 
-      return () => {};
-    }, [])
-  );
+      const loadData = async () => {
+        try {
+          const result = await backendRequest({
+            dispatch,
+            token,
+            endpoint: wallet_transactions_endpoint,
+            method: "GET",
+            queryParams: {currency_name: mainCurrency},
+            throwError: true,
+          });
+          setTransactions(result);
+        } catch (e) {
+          showAlert("Ошибка", `Не удалось загрузить транзакции: ${e.message}`);
+        }
+      };
 
-  useEffect(() => {
-    const preparedTrzs = groupTransactionsByDay(
-      transactions
-        .filter((trz) => !trz.deleted)
-        .sort((a, b) => {
-          let dateA = new Date(a.date);
-          let dateB = new Date(b.date);
-          return dateA - dateB;
-        })
-    );
-    setPreparedTrzs(preparedTrzs);
-  }, [transactions]);
+      loadData()
+
+      return () => {};
+    }, [token, mainCurrency])
+  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}/>
+      <View style={styles.header} />
       <ScrollView>
-        {preparedTrzs.map((trzDay) => (
-          <DayLog key={trzDay[0].date} dayTransactions={trzDay} />
+        {transactions.map((trzDay) => (
+          <DayLog key={trzDay.date} navigation={navigation} trzDay={trzDay} />
         ))}
       </ScrollView>
     </View>

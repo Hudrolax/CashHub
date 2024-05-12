@@ -7,16 +7,16 @@ import HamburgerMenu from "../MenuBtn/MenuBtn";
 import { getRate, formatNumber } from "../util";
 import AIAddBtn from "./AIAddBtn";
 
-const Header = ({ navigation, style }) => {
-  const user = useSelector((state) => state.login_screen.user);
-  const wallets = useSelector((state) => state.mainState.wallets);
-  const symbols = useSelector((state) => state.mainState.symbols);
+const Header = ({ navigation, style, data }) => {
+  const {wallets, currency, symbols} = data
+  const user = useSelector((state) => state.loginReducer.user);
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
 
-  const countTotalBalance = (wallets) => {
+  const countTotalBalance = () => {
     let totalBalance = 0;
     wallets.map((item) => {
-      const rate = getRate(item.currency.name, mainCurrency, symbols);
+      const currency_name = currency.find(cur => cur.id === item.currency_id)
+      const rate = getRate(currency_name, mainCurrency, symbols);
       totalBalance += item.balance * rate;
     });
     return totalBalance;

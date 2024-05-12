@@ -183,24 +183,24 @@ export function formatDateShort(date) {
   return `${day} ${formattedMonth}`;
 }
 
-function calculateTotalAmountExInItem(transactions, exinItemId, currency_name) {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+// function calculateTotalAmountExInItem(transactions, exinItemId, currency_name) {
+//   const currentDate = new Date();
+//   const currentMonth = currentDate.getMonth();
+//   const currentYear = currentDate.getFullYear();
 
-  return transactions.reduce((sum, transaction) => {
-    if (
-      isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
-      transaction.exInItem.id === exinItemId
-    ) {
-      const amountFloat = parseFloat(
-        transaction[`amount${currency_name}1`] || transaction.amount1
-      );
-      return sum + (isNaN(amountFloat) ? 0 : amountFloat);
-    }
-    return sum;
-  }, 0);
-}
+//   return transactions.reduce((sum, transaction) => {
+//     if (
+//       isTransactionInCurrentMonth(transaction, currentMonth, currentYear) &&
+//       transaction.exInItem.id === exinItemId
+//     ) {
+//       const amountFloat = parseFloat(
+//         transaction[`amount${currency_name}1`] || transaction.amount1
+//       );
+//       return sum + (isNaN(amountFloat) ? 0 : amountFloat);
+//     }
+//     return sum;
+//   }, 0);
+// }
 
 function isTransactionInCurrentMonth(transaction, currentMonth, currentYear) {
   const transactionDate = new Date(transaction.date);
@@ -611,7 +611,7 @@ export {
   showAlert,
   formatNumber,
   formatDate,
-  calculateTotalAmountExInItem,
+  // calculateTotalAmountExInItem,
   calculateTotalAmount,
   getRate,
   daysBetween,

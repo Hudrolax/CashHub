@@ -10,7 +10,8 @@ export const wallets_endpoint = "/wallets/";
 export const exin_items_endpoint = "/exin_items/"
 export const exin_items_home_endpoint = "/exin_items/home_screen_items/"
 export const checklist_endpoint = "/checklist/"
-export const currencies = "/currencies/"
+export const currencies_endpoint = "/currencies/"
+export const symbols_endpoint = "/symbols/"
 
 export { baseEndpoint };
 
