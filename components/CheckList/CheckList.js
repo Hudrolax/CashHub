@@ -11,93 +11,117 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../actions";
-import { storeData, getData } from "../data";
 
-import { isEmpty } from "../util";
+import { isEmpty, showAlert } from "../util";
 import ListItem from "./ListItem";
 import Header from "./Header";
 import Footer from "./Footer";
 import NewItem from "./NewItem";
-import { setCheckList, setCheckAddMode } from "../actions";
-import { setCheckNewItemText } from "../actions";
+import { backendRequest, checklist_endpoint } from "../requests";
 
 function CheckList({ navigation, route }) {
   const dispatch = useDispatch();
-  const _checklist = useSelector((state) => state.mainState.checklist);
-  const user = useSelector((state) => state.login_screen.user);
-  const [checklist, setChecklist_local] = useState([]);
-  const addMode = useSelector((state) => state.stateReducer.checklistAddMode);
+  const token = useSelector((state) => state.loginReducer.token);
+  const [checklist, setChecklist] = useState([]);
+  const [needUpdate, setNeedUpdate] = useState(false);
+  const [addMode, setAddMode] = useState(false)
   const scrollViewRef = useRef();
 
   const onUpdate = async (item) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    const new_checklist = _checklist.map((i) => {
-      if (i.id === item.id) {
-        return item;
-      } else {
-        return i;
-      }
-    });
-    await storeData("checklist", new_checklist);
-    dispatch(setCheckList(new_checklist));
+    try {
+      await backendRequest({
+        dispatch,
+        token,
+        endpoint: checklist_endpoint + `/${item.id}`,
+        method: "PATCH",
+        payload: { checked: item.checked },
+        throwError: true,
+        showLoadingOvarlay: true,
+      });
+      setNeedUpdate(!needUpdate);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      showAlert("Ошибка", "Похоже проблемы с подключением.");
+    }
+  };
+
+  const onDelete = async (item) => {
+    try {
+      await backendRequest({
+        dispatch,
+        token,
+        endpoint: checklist_endpoint + `/${item.id}`,
+        method: "DELETE",
+        throwError: true,
+        showLoadingOvarlay: true,
+      });
+      setNeedUpdate(!needUpdate);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      showAlert(
+        "Ошибка",
+        "Не удалось удалить элемент. Возможно нет интернета."
+      );
+    }
   };
 
   const onAdd = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    setAddMode(true)
     scrollToTop();
-    dispatch(setCheckAddMode(true));
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const onCompleteAdd = async (text) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     if (!isEmpty(text)) {
-      const payload = {
-        id: new Date().toString(),
-        text: text,
-        date: new Date().toString(),
-        checked: false,
-        user_id: user.id,
-        user: user,
-        new: true,
-        modified: true,
-        deleted: false,
-      };
-      let checklist_local = await getData("checklist");
-      if (!checklist_local) checklist_local = []
-      checklist_local.push(payload);
-      await storeData("checklist", checklist_local);
-      dispatch(setCheckList(checklist_local));
+      try {
+        const payload = {text}
+        await backendRequest({
+          dispatch,
+          token,
+          endpoint: checklist_endpoint,
+          method: "POST",
+          payload,
+          throwError: true,
+          showLoadingOvarlay: true,
+        });
+        setNeedUpdate(!needUpdate);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        showAlert(
+          "Ошибка",
+          "Не удалось удалить элемент. Возможно нет интернета."
+        );
+      } finally {
+        setAddMode(false)
+      }
     }
-
-    dispatch(setCheckAddMode(false));
-    dispatch(setCheckNewItemText(""));
   };
-
-  useEffect(() => {
-    if (!isEmpty(_checklist)) {
-      setChecklist_local(
-        _checklist
-          .slice() // создаем копию массива для безопасной сортировки
-          .filter((item) => !item.checked)
-          .sort((a, b) => {
-            // Сначала сортируем по checked, затем по дате
-            if (a.checked === b.checked) {
-              // Если элементы одинаково отмечены, сортируем по дате
-              const dateA = new Date(a.date);
-              const dateB = new Date(b.date);
-              return dateB - dateA; // для сортировки от новых к старым
-            }
-            return a.checked ? 1 : -1; // false элементы будут выше true
-          })
-      );
-    }
-  }, [_checklist]);
 
   useFocusEffect(
     useCallback(() => {
       dispatch(setActiveTab(route.name));
+      const loadData = async () => {
+        try {
+          const result = await backendRequest({
+            dispatch,
+            token,
+            endpoint: checklist_endpoint,
+            method: "GET",
+            queryParams: { archive: false },
+            throwError: true,
+            showLoadingOvarlay: true,
+          });
+          setChecklist(result);
+        } catch {
+          showAlert(
+            "Ошибка",
+            "Не удалось загрузить чеклист. Возможно нет интернета."
+          );
+        }
+      };
+      loadData();
       return () => {};
-    }, [])
+    }, [needUpdate])
   );
 
   useEffect(() => {
@@ -130,7 +154,12 @@ function CheckList({ navigation, route }) {
         {addMode && <NewItem onComplete={onCompleteAdd} />}
         <ScrollView ref={scrollViewRef}>
           {checklist.map((item) => (
-            <ListItem key={item.id} item={item} onUpdate={onUpdate} />
+            <ListItem
+              key={item.id}
+              item={item}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+            />
           ))}
         </ScrollView>
       </View>

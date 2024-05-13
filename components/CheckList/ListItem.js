@@ -10,7 +10,7 @@ import React, { useRef, useState } from "react";
 import CheckBox from "./CheckBox";
 import { daysBetween } from "../util";
 
-function ListItem({ item, onUpdate }) {
+function ListItem({ item, onUpdate, onDelete }) {
   const textStyle = () =>
     item.checked ? { textDecorationLine: "line-through", color: 'grey' } : {};
 
@@ -18,7 +18,7 @@ function ListItem({ item, onUpdate }) {
   const [swiped, setSwiped] = useState(false);
 
   const onSwipe = () => {
-    onUpdate({ ...item, deleted: true });
+    onDelete(item);
   };
 
   // Получаем ширину экрана
@@ -69,7 +69,7 @@ function ListItem({ item, onUpdate }) {
           style={{ marginRight: 10 }}
           checked={item.checked}
           onPress={() =>
-            onUpdate({ ...item, checked: !item.checked, modified: true })
+            onUpdate({ ...item, checked: !item.checked})
           }
         />
         {item.modified && <Text>⏳</Text>}

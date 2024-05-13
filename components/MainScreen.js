@@ -6,14 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import HomeScreen from "./HomeScreen/HomeScreen";
 import LogScreen from "./LogScreen/LogScreen";
-// import SettingsScreen from "./SettingsScreen/SettingsScreen";
+import SettingsScreen from "./SettingsScreen/SettingsScreen";
 import AddDataScreen from "./AddDataScreen/AddDataScreen";
 // import EditScreen from "./EditScreen/EditScreen";
 // import EditItemScreen from "./EditScreen/EditItemScreen";
 import CurrencySelector from "./HomeScreen/CurrencySelector";
-// import CheckList from "./CheckList/CheckList";
-// import ArchiveCheckList from "./CheckList/ArchiveCheckList";
-// import AIAddScreen from "./AIAddScreen/AIAddScreen";
+import CheckList from "./CheckList/CheckList";
+import ArchiveCheckList from "./CheckList/ArchiveCheckList";
+import AIAddScreen from "./AIAddScreen/AIAddScreen";
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -35,7 +35,7 @@ function TabScreen() {
           tabBarStyle: { display: "none" }, // Скрывает tabBar
         }}
       >
-        {/* <Tab.Screen name="CheckList" component={CheckList} /> */}
+        <Tab.Screen name="CheckList" component={CheckList} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Logs" component={LogScreen} />
       </Tab.Navigator>
@@ -51,11 +51,11 @@ export default function MainScreen() {
         component={TabScreen}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Settings"
         component={SettingsScreen}
         options={{ title: "Настройки" }}
-      /> */}
+      />
       <Stack.Screen
         name="AddScreen"
         component={AddDataScreen}
@@ -71,16 +71,16 @@ export default function MainScreen() {
         component={EditItemScreen}
         options={{ headerShown: false }}
       /> */}
-      {/* <Stack.Screen
+      <Stack.Screen
         name="ArchiveChecklist"
         component={ArchiveCheckList}
         options={{ headerShown: false }}
-      /> */}
-      {/* <Stack.Screen
+      />
+      <Stack.Screen
         name="AIAddScreen"
         component={AIAddScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }

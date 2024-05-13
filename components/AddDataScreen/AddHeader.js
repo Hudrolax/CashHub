@@ -1,48 +1,51 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useSelector, useDispatch } from "react-redux";
 
-import { setTransactions } from "../actions";
-import { storeData } from "../data";
 import {
   isEmpty,
   formatDate,
   formatDateShort,
   formatNumber,
+  showAlert,
 } from "../util";
 import CircleItem from "../HomeScreen/CircleItem";
 import { blueColor, greenColor, orangeColor, redColor } from "../colors";
+import {
+  backendRequest,
+  wallet_transactions_endpoint,
+} from "../requests";
 
-const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
+const DelBtn = ({ navigation, doc_id, style }) => {
   const dispatch = useDispatch();
-  const transactions = useSelector((state) => state.mainState.transactions);
+  const token = useSelector((state) => state.loginReducer.token);
 
   const deleteAndReturn = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    const _trzs = transactions.map((trz) => trz.doc_id === doc_id ? {...trz, deleted: true} : trz)
-    storeData("transactions", _trzs)
-    dispatch(setTransactions(_trzs))
-    
-    navigation.navigate("Tabs");
-    onDelete();
+    try {
+      await backendRequest({
+        dispatch,
+        token,
+        endpoint: wallet_transactions_endpoint + `/${doc_id}`,
+        method: "DELETE",
+        throwError: true,
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      showAlert(
+        "Ошибка",
+        "Не удалось удалить транзакцию. Возможно нет интернета."
+      );
+    }
+    navigation.goBack();
   };
 
   const onPress = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-
     Alert.alert(
       "Подтверждение действия", // Заголовок
       "Вы уверены, что хотите удалить транзакцию?", // Сообщение или вопрос
       [
         {
           text: "Отмена",
-          onPress: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
           style: "cancel",
         },
         {
@@ -77,9 +80,7 @@ const DelBtn = ({ navigation, doc_id, style, onDelete }) => {
 
 const CancelBtn = ({ navigation, style }) => {
   const onCancel = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    navigation.navigate("Tabs");
-    return true;
+    navigation.goBack();
   };
 
   return (
@@ -95,12 +96,20 @@ const CancelBtn = ({ navigation, style }) => {
   );
 };
 
-export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
+export default function AddHeader({
+  navigation,
+  trz,
+  pressedWallets,
+  pressedExInItem,
+  pressedDate,
+}) {
   const _isIncome = useSelector((state) => state.stateReducer.isIncome);
 
-  const exchangeMode = !isEmpty(pressedWallet2) || (trz && !isEmpty(trz.wallet_to.id));
-  const wallet1 = trz ? trz.wallet_from : pressedWallet1;
-  const wallet2 = trz ? trz.wallet_to : pressedWallet2;
+  const exchangeMode =
+    (pressedWallets && pressedWallets.length > 1) ||
+    (trz && !isEmpty(trz.wallet_to.id));
+  const wallet1 = trz ? trz.wallet_from : pressedWallets[0]
+  const wallet2 = trz ? trz.wallet_to : pressedWallets.length > 1 && pressedWallets[1]
   const exInItem = trz ? trz.exin_item : pressedExInItem;
   const isIncome = trz ? trz.amount_from >= 0 : _isIncome;
   const date = trz
@@ -111,8 +120,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
         date: trz.date,
       }
     : pressedDate;
-  
-  if (isEmpty(wallet1)) return null
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -121,7 +129,6 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             navigation={navigation}
             doc_id={trz.doc_id}
             style={styles.delBtn}
-            onDelete={onDelete}
           />
         ) : null}
         <CancelBtn navigation={navigation} style={styles.cancelBtn} />
@@ -137,6 +144,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             subtitle={wallet1.name}
             object={wallet1}
             object_type={"wallet"}
+            onPress={() => null}
           />
           <View style={styles.separatorArrows}>
             <Text style={{ color: "#fff", fontSize: 46 }}>→</Text>
@@ -149,6 +157,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             subtitle={wallet2.name}
             object={wallet2}
             object_type={"wallet"}
+            onPress={() => null}
           />
         </View>
       ) : (
@@ -161,6 +170,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             subtitle={wallet1.name}
             object={wallet1}
             object_type={"wallet"}
+            onPress={() => null}
           />
           <View style={styles.separator} />
           <CircleItem
@@ -171,6 +181,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             subtitle={exInItem.name}
             object={exInItem}
             object_type={"exInItem"}
+            onPress={() => null}
           />
           <View style={styles.separator} />
           <CircleItem
@@ -181,6 +192,7 @@ export default function AddHeader({ navigation, trz, pressedBtns, onDelete }) {
             subtitle={date.title}
             object={date}
             object_type={"date"}
+            onPress={() => null}
           />
         </View>
       )}
@@ -205,6 +217,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     right: 0,
+    borderRadius: 3,
   },
   confIcons: {
     flexDirection: "row",

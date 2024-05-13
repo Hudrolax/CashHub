@@ -2,12 +2,8 @@ import { StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Haptics from "expo-haptics";
-import {
-  setPressWallet1,
-  setPressWallet2,
-  setPressExInItem,
-  setPressDate,
-} from "../actions";
+import { setPressWallets, setPressExInItem, setPressDate, resetAllPressStates } from "../actions";
+import { isEmpty } from "../util";
 
 import Wallets from "./Wallets";
 import ExInItems from "./ExInItems";
@@ -15,72 +11,85 @@ import Dates from "./Dates";
 
 export default function ScrollColumns({ navigation, data }) {
   const dispatch = useDispatch();
-  const pressedWallet1 = useSelector(
-    (state) => state.stateReducer.pressedWallet1
-  );
-  const pressedWallet2 = useSelector(
-    (state) => state.stateReducer.pressedWallet2
+  const pressedWallets = useSelector(
+    (state) => state.stateReducer.pressedWallets
   );
   const pressedExInItem = useSelector(
     (state) => state.stateReducer.pressedExInItem
   );
   const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
 
-  const onPressWallet = (data) => {
-    if (pressedWallet1 && pressedWallet1.id === data.id) {
-      dispatch(setPressWallet1(null));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else if (!pressedWallet1) {
-      dispatch(setPressWallet1(data));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else if (pressedWallet1 && !pressedWallet2 && !pressedExInItem) {
-      dispatch(setPressWallet2(data));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const onPressWallet = (pressedItem) => {
+    const _pressedItem = {...pressedItem, currency: data.currency.find(cur => cur.id === pressedItem.currency_id)}
+
+    let _pressedWallets = pressedWallets.filter((item) => item.id !== _pressedItem.id);
+    if (_pressedWallets.length < pressedWallets.length) {
+      dispatch(setPressWallets(_pressedWallets));
     } else if (
-      pressedWallet1 &&
-      pressedWallet2 &&
-      pressedWallet2.id !== data.id &&
-      pressedWallet1.id !== data.id
+      (_pressedWallets.length === 1 && !pressedExInItem) ||
+      _pressedWallets.length === 0
     ) {
-      dispatch(setPressWallet2(data));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else if (pressedWallet2 && pressedWallet2.id === data.id) {
-      dispatch(setPressWallet2(null));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      _pressedWallets.push(_pressedItem);
+      dispatch(setPressWallets(_pressedWallets));
+    } else if (
+      _pressedWallets.length === 2 &&
+      !_pressedWallets.find((item) => item.id === _pressedItem.id)
+    ) {
+      _pressedWallets[1] = _pressedItem;
+      dispatch(setPressWallets(_pressedWallets));
+    } else {
+      return;
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const onPressExInItem = (data) => {
     if (pressedExInItem && pressedExInItem.id === data.id) {
       dispatch(setPressExInItem(null));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else if (!pressedWallet2) {
+    } else if (pressedWallets.length < 2) {
       dispatch(setPressExInItem(data));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      return;
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const onPressExDate = (data) => {
     if (pressedDate && pressedDate.id === data.id) {
       dispatch(setPressDate(null));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } else {
       dispatch(setPressDate(data));
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   useEffect(() => {
-    if (pressedWallet1 && pressedExInItem && pressedDate) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    // console.log("*********************");
+    // console.log(
+    //   "wallet1 ",
+    //   pressedWallets.length > 0 ? pressedWallets[0].name : "null"
+    // );
+    // console.log(
+    //   "wallet2 ",
+    //   pressedWallets.length > 1 ? pressedWallets[1].name : "null"
+    // );
+    // console.log("exInItem ", pressedExInItem ? pressedExInItem.name : "null");
+    // console.log("date ", pressedDate);
+    if (
+      ((pressedWallets.length === 1 && pressedExInItem) ||
+        (pressedWallets.length === 2 && !pressedExInItem)) &&
+      pressedDate
+    ) {
       navigation.navigate("AddScreen", {
-        pressedWallet1: { ...pressedWallet1 },
-        pressedWallet2: { ...pressedWallet2 },
+        symbols: data.symbols,
+        pressedWallets: [ ...pressedWallets ],
         pressedExInItem: { ...pressedExInItem },
         pressedDate: { ...pressedDate },
       });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      dispatch(resetAllPressStates())
     }
-  }, [pressedWallet1, pressedWallet2, pressedExInItem, pressedDate]);
+  }, [pressedWallets, pressedExInItem, pressedDate]);
 
   return (
     <View style={styles.container}>

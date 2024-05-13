@@ -1,10 +1,8 @@
 import { View, StyleSheet, TextInput } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { setCheckNewItemText } from "../actions";
+import React, { useState } from "react";
 
 function NewItem({ style, onComplete }) {
-  const dispatch = useDispatch();
-  const itemText = useSelector((state) => state.stateReducer.checklistNewItemText);
+  const [text, setText] = useState("")
 
   return (
     <View style={{ ...styles.container, ...style }}>
@@ -12,10 +10,10 @@ function NewItem({ style, onComplete }) {
         style={styles.input}
         placeholder="Что купить?"
         placeholderTextColor="grey"
-        value={itemText}
-        onChangeText={(text) => dispatch(setCheckNewItemText(text))}
+        value={text}
+        onChangeText={(text) => setText(text)}
         autoFocus={true}
-        onSubmitEditing={() => onComplete(itemText)}
+        onSubmitEditing={() => onComplete(text)}
       />
     </View>
   );
@@ -30,7 +28,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     width: "95%",
   },
-  input: {color: "#fff"}
+  input: {color: "yellow", fontSize: 18}
 });
 
 export default NewItem;

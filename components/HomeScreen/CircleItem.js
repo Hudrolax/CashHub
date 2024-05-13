@@ -19,17 +19,13 @@ const CircleItem = ({
   onPress,
   btnType,
 }) => {
-  const pressedWallet1 = useSelector(
-    (state) => state.stateReducer.pressedWallet1
-  );
-  const pressedWallet2 = useSelector(
-    (state) => state.stateReducer.pressedWallet2
+  const pressedWallets = useSelector(
+    (state) => state.stateReducer.pressedWallets
   );
   const pressedExInItem = useSelector(
     (state) => state.stateReducer.pressedExInItem
   );
   const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
-  // const [isPressed, setIsPressed] = useState(false);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const animationRef = useRef(null);
 
@@ -37,8 +33,7 @@ const CircleItem = ({
   if (
     btnType === "date" && pressedDate && pressedDate.id === object.id
     || btnType === 'exInItem' && pressedExInItem && pressedExInItem.id == object.id
-    || btnType === 'wallet' && pressedWallet1 && pressedWallet1.id == object.id
-    || btnType === 'wallet' && pressedWallet2 && pressedWallet2.id == object.id
+    || btnType === 'wallet' && pressedWallets.find(item => item.id === object.id)
   )
     isPressed = true;
 

@@ -30,12 +30,8 @@ export const setDates = (payload) => ({
   type: "SET_DATES",
   payload: payload,
 });
-export const setPressWallet1 = (payload) => ({
-  type: "SET_PRESS_WALLET1",
-  payload: payload,
-});
-export const setPressWallet2 = (payload) => ({
-  type: "SET_PRESS_WALLET2",
+export const setPressWallets = (payload) => ({
+  type: "SET_PRESS_WALLETS",
   payload: payload,
 });
 export const setPressExInItem = (payload) => ({
@@ -55,18 +51,6 @@ export const setIncome = (payload) => ({
 });
 export const setActiveTab = (payload) => ({
   type: "SET_ACTIVE_TAB",
-  payload: payload,
-});
-export const setCheckList = (payload) => ({
-  type: "SET_CHECKLIST",
-  payload: payload,
-});
-export const setCheckAddMode = (payload) => ({
-  type: "SET_CHECKLIST_ADD_MODE",
-  payload: payload,
-});
-export const setCheckNewItemText = (payload) => ({
-  type: "SET_CHECKLIST_NEWITEM_TEXT",
   payload: payload,
 });
 export const setLoginData = (token, user) => {

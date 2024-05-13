@@ -6,48 +6,84 @@ import {
   Platform,
 } from "react-native";
 import * as Haptics from "expo-haptics";
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { storeData } from "../data";
+import { useFocusEffect } from "@react-navigation/native";
+import { backendRequest, checklist_endpoint } from "../requests";
 
-import { isEmpty } from "../util";
 import ListItem from "./ListItem";
 import Header from "./Header";
-import { setCheckList } from "../actions";
-// import { daysBetween } from "../util";
+import { showAlert } from "../util";
 
 function ArchiveCheckList({ navigation, route }) {
   const dispatch = useDispatch();
-  const _checklist = useSelector((state) => state.mainState.checklist);
-  const [checklist, setChecklist_local] = useState([]);
+  const token = useSelector((state) => state.loginReducer.token);
+  const [needUpdate, setNeedUpdate] = useState(false);
+  const [checklist, setChecklist] = useState([]);
 
   const onUpdate = async (item) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    const new_checklist = _checklist.map((i) => {
-      if (i.id === item.id) {
-        return item;
-      } else {
-        return i;
-      }
-    });
-    await storeData("checklist", new_checklist);
-    dispatch(setCheckList(new_checklist));
+    try {
+      await backendRequest({
+        dispatch,
+        token,
+        endpoint: checklist_endpoint + `/${item.id}`,
+        method: "PATCH",
+        payload: { checked: item.checked },
+        throwError: true,
+        showLoadingOvarlay: true,
+      });
+      setNeedUpdate(!needUpdate)
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      showAlert("Ошибка", "Похоже проблемы с подключением.");
+    }
   };
 
-  useEffect(() => {
-    if (!isEmpty(_checklist)) {
-      setChecklist_local(
-        _checklist
-          .slice() // создаем копию массива для безопасной сортировки
-          .filter((item) => item.checked)
-          .sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateB - dateA; // для сортировки от новых к старым
-          })
+  const onDelete = async (item) => {
+    try {
+      await backendRequest({
+        dispatch,
+        token,
+        endpoint: checklist_endpoint + `/${item.id}`,
+        method: "DELETE",
+        throwError: true,
+        showLoadingOvarlay: true,
+      });
+      setNeedUpdate(!needUpdate)
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      showAlert(
+        "Ошибка",
+        "Не удалось удалить элемент. Возможно нет интернета."
       );
     }
-  }, [_checklist]);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        try {
+          const result = await backendRequest({
+            dispatch,
+            token,
+            endpoint: checklist_endpoint,
+            method: "GET",
+            queryParams: { archive: true },
+            throwError: true,
+            showLoadingOvarlay: true,
+          });
+          setChecklist(result);
+        } catch {
+          showAlert(
+            "Ошибка",
+            "Не удалось загрузить чеклист. Возможно нет интернета."
+          );
+        }
+      };
+      loadData();
+      return () => {};
+    }, [needUpdate])
+  );
 
   return (
     <KeyboardAvoidingView
@@ -59,7 +95,7 @@ function ArchiveCheckList({ navigation, route }) {
       <View style={{ flex: 1 }}>
         <ScrollView>
           {checklist.map((item) => (
-            <ListItem key={item.id} item={item} onUpdate={onUpdate} />
+            <ListItem key={item.id} item={item} onUpdate={onUpdate} onDelete={onDelete}/>
           ))}
         </ScrollView>
       </View>

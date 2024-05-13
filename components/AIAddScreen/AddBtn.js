@@ -1,14 +1,14 @@
 import React from "react";
 import { TouchableOpacity, Text } from "react-native";
 
-const AddButton = ({ style, onPress }) => {
+const AddButton = ({ style, onPress, disabled }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{
         width: 150,
         height: 30,
-        backgroundColor: "green",
+        backgroundColor: disabled ? "grey" : "green",
         borderColor: "#fff",
         borderWidth: 1,
         borderRadius: 10,
@@ -16,6 +16,7 @@ const AddButton = ({ style, onPress }) => {
         alignItems: 'center',
         ...style,
       }}
+      disabled={disabled}
     >
       <Text style={{color: "#fff", fontSize: 18, fontWeight: '600'}}>Добавить</Text>
     </TouchableOpacity>

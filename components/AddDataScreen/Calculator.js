@@ -1,4 +1,3 @@
-import * as SecureStore from "expo-secure-store";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -23,8 +22,7 @@ import {
   showAlert,
 } from "../util";
 import { greenColor } from "../colors";
-import { storeData, getData } from "../data";
-import { setTransactions, setWallets } from "../actions";
+import { backendRequest, wallet_transactions_endpoint } from "../requests";
 
 const getDisplayFontSize = (_expression) => {
   if (_expression.length > 21) {
@@ -38,23 +36,25 @@ const getDisplayFontSize = (_expression) => {
   }
 };
 
-export default function Calculator({ navigation, trz }) {
+export default function Calculator({
+  navigation,
+  trz,
+  symbols,
+  pressedWallets,
+  pressedExInItem,
+  pressedDate,
+}) {
   const dispatch = useDispatch();
-  const pressedWallet1 = useSelector(
-    (state) => state.stateReducer.pressedWallet1
-  );
-  const pressedWallet2 = useSelector(
-    (state) => state.stateReducer.pressedWallet2
-  );
-  const pressedExInItem = useSelector(
-    (state) => state.stateReducer.pressedExInItem
-  );
-  const pressedDate = useSelector((state) => state.stateReducer.pressedDate);
-  const symbols = useSelector((state) => state.mainState.symbols);
+  const token = useSelector((state) => state.loginReducer.token);
 
-  const wallet1 = trz ? trz.wallet1 : pressedWallet1;
-  const wallet2 = trz ? trz.wallet2 : pressedWallet2;
-  const exInItem = trz ? trz.exInItem : pressedExInItem;
+  const exchangeMode =
+    (pressedWallets && pressedWallets.length > 1) ||
+    (trz && !isEmpty(trz.wallet_to.id));
+  const wallet_from = trz ? trz.wallet_from : pressedWallets[0];
+  const wallet_to = trz
+    ? trz.wallet_to
+    : pressedWallets.length > 1 && pressedWallets[1];
+  const exInItem = trz ? trz.exin_item : pressedExInItem;
   const date = trz
     ? {
         id: 1,
@@ -65,18 +65,22 @@ export default function Calculator({ navigation, trz }) {
     : pressedDate;
 
   const [expression, setExpression] = useState(
-    trz ? (trz.amount1[0] === "-" ? trz.amount1.slice(1) : trz.amount1) : ""
+    trz ? (trz.amount_from < 0 ? -trz.amount_from : trz.amount_from) : ""
   );
-  const [expression2, setExpression2] = useState(trz ? trz.amount2 : "");
+  const [expression2, setExpression2] = useState(trz ? trz.amount_to : "");
   const [okPressed, setOkPressed] = useState(false);
 
   const pickRate = () => {
-    if (trz && trz.wallet2) {
-      return Math.abs(trz.amount2 / trz.amount1);
-    } else if (trz || isEmpty(wallet2)) {
+    if (trz && trz.wallet_to.id) {
+      return Math.abs(trz.amount_to / trz.amount_from);
+    } else if (trz || isEmpty(wallet_to.id)) {
       return 1;
     } else {
-      return getRate(wallet1.currency.name, wallet2.currency.name, symbols);
+      return getRate(
+        wallet_from.currency.name,
+        wallet_to.currency.name,
+        symbols
+      );
     }
   };
 
@@ -85,8 +89,6 @@ export default function Calculator({ navigation, trz }) {
   const [isEvalFine, setIsEvalFine] = useState(false);
   const [comment, setComment] = useState(trz ? trz.comment : "");
   const [activeField, setActiveField] = useState("display1");
-
-  const exchangeMode = !isEmpty(wallet2);
 
   const handlePress = (value) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -167,7 +169,6 @@ export default function Calculator({ navigation, trz }) {
   };
 
   const handleOk = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setOkPressed(true);
     let _rate = rate;
     let _expression = expression;
@@ -194,126 +195,57 @@ export default function Calculator({ navigation, trz }) {
       }
     }
 
-    // console.log(eval(expression).toString());
-    // console.log(JSON.stringify(pressedDate, null, 2));
+    let payload = {
+      wallet_from_id: wallet_from.id,
+      wallet_to_id: wallet_to ? wallet_to.id : null,
+      exin_item_id: exInItem ? exInItem.id : null,
+      amount: exchangeMode ? _expression : -_expression,
+      exchange_rate: _rate,
+      comment,
+      date: date.date,
+    };
 
-    const user = JSON.parse(await SecureStore.getItemAsync("user"));
-    const amount1 = parseFloat(
-      (exInItem && exInItem.income ? "" : "-") + _expression
-    );
-    const amount2 = parseFloat(_expression2);
-    if (!exchangeMode) {
-      payload = {
-        wallet1: wallet1,
-        wallet2: null,
-        exInItem: exInItem,
-        amount1: amount1.toString(),
-        amountARS1: (
-          amount1 * getRate(wallet1.currency.name, "ARS", symbols)
-        ).toString(),
-        amountUSD1: (
-          amount1 * getRate(wallet1.currency.name, "USD", symbols)
-        ).toString(),
-        amountBTC1: (
-          amount1 * getRate(wallet1.currency.name, "BTC", symbols)
-        ).toString(),
-        amountETH1: (
-          amount1 * getRate(wallet1.currency.name, "ETH", symbols)
-        ).toString(),
-        amountRUB1: (
-          amount1 * getRate(wallet1.currency.name, "RUB", symbols)
-        ).toString(),
-        amount2: null,
-        amountARS2: null,
-        amountUSD2: null,
-        amountBTC2: null,
-        amountETH2: null,
-        amountRUB2: null,
-        comment: comment,
-        date: date.date,
-        doc_id: trz ? trz.doc_id : date.date,
-        user: user,
-        new: trz ? false : true,
-        modified: true,
-        deleted: trz ? trz.deleted : false,
-      };
-    } else {
-      payload = {
-        wallet1: wallet1,
-        wallet2: wallet2,
-        exInItem: null,
-        amount1: amount1.toString(),
-        amountARS1: (
-          amount1 * getRate(wallet1.currency.name, "ARS", symbols)
-        ).toString(),
-        amountUSD1: (
-          amount1 * getRate(wallet1.currency.name, "USD", symbols)
-        ).toString(),
-        amountBTC1: (
-          amount1 * getRate(wallet1.currency.name, "BTC", symbols)
-        ).toString(),
-        amountETH1: (
-          amount1 * getRate(wallet1.currency.name, "ETH", symbols)
-        ).toString(),
-        amountRUB1: (
-          amount1 * getRate(wallet1.currency.name, "RUB", symbols)
-        ).toString(),
-        amount2: amount2.toString(),
-        amountARS2: (
-          amount2 * getRate(wallet1.currency.name, "ARS", symbols)
-        ).toString(),
-        amountUSD2: (
-          amount2 * getRate(wallet1.currency.name, "USD", symbols)
-        ).toString(),
-        amountBTC2: (
-          amount2 * getRate(wallet1.currency.name, "BTC", symbols)
-        ).toString(),
-        amountETH2: (
-          amount2 * getRate(wallet1.currency.name, "ETH", symbols)
-        ).toString(),
-        amountRUB2: (
-          amount2 * getRate(wallet1.currency.name, "RUB", symbols)
-        ).toString(),
-        comment: comment,
-        date: date.date,
-        doc_id: trz ? trz.doc_id : date.date,
-        user: user,
-        new: trz ? false : true,
-        modified: true,
-        deleted: trz ? trz.deleted : false,
-      };
-    }
-    // return
-    let new_transactions = await getData("transactions");
     if (trz) {
-      new_transactions = new_transactions.map((item) => {
-        if (item.doc_id === payload.doc_id) {
-          return payload;
-        } else {
-          return item;
-        }
-      });
+      payload.doc_id = trz.doc_id;
+      try {
+        await backendRequest({
+          dispatch,
+          token,
+          endpoint: wallet_transactions_endpoint + `/${trz.doc_id}`,
+          method: "PUT",
+          payload,
+          throwError: true,
+          showLoadingOvarlay: true,
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        showAlert(
+          "Ошибка",
+          "Не удалось изменить транзакцию. Возможно нет интернета?"
+        );
+      }
     } else {
-      new_transactions.push(payload);
+      try {
+        await backendRequest({
+          dispatch,
+          token,
+          endpoint: wallet_transactions_endpoint,
+          method: "POST",
+          payload,
+          throwError: true,
+          showLoadingOvarlay: true,
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        showAlert(
+          "Ошибка",
+          "Не удалось добавить транзакцию. Возможно нет интернета?"
+        );
+      }
     }
-
-    // update wallets
-    let wallets = await getData("wallets");
-    wallets.forEach((item) => {
-      if (item.id === wallet1.id)
-        item.balance = (
-          parseFloat(item.balance) + parseFloat(amount1)
-        ).toString();
-      if (exchangeMode && item.id === wallet2.id)
-        (parseFloat(item.balance) + parseFloat(amount2)).toString();
-    });
-
-    storeData("transactions", new_transactions);
-    storeData("wallets", wallets);
-    dispatch(setTransactions(new_transactions));
-    dispatch(setWallets(wallets));
-
-    navigation.navigate("Tabs");
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -399,12 +331,16 @@ export default function Calculator({ navigation, trz }) {
     return style;
   };
 
-  if (isEmpty(wallet1)) return null;
-
   return (
     <View style={getDynamicStyles()}>
       {/* ok btn */}
-      <View style={{ alignItems: "flex-end", height: 40, backgroundColor: '#181715'}}>
+      <View
+        style={{
+          alignItems: "flex-end",
+          height: 40,
+          backgroundColor: "#181715",
+        }}
+      >
         <TouchableOpacity
           onPress={handleOk}
           style={!isEvalFine ? styles.okButtonInactive : styles.okButton}
@@ -420,7 +356,6 @@ export default function Calculator({ navigation, trz }) {
           flexDirection: "row",
           alignItems: "center",
           backgroundColor: "#041515",
-          // borderBottomWidth: 2,
           borderTopWidth: 1,
           borderColor: "#797979",
         }}
@@ -450,7 +385,7 @@ export default function Calculator({ navigation, trz }) {
               >
                 <View style={displayStyle()}>
                   <Text style={displayTextStyle("display1")}>
-                    {addCurrencySymbol(expression, wallet1.currency.name)}
+                    {addCurrencySymbol(expression, wallet_from.currency.name)}
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
@@ -492,7 +427,7 @@ export default function Calculator({ navigation, trz }) {
               >
                 <View style={displayStyle()}>
                   <Text style={displayTextStyle("display2")}>
-                    {addCurrencySymbol(expression2, wallet2.currency.name)}
+                    {addCurrencySymbol(expression2, wallet_to.currency.name)}
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
@@ -510,7 +445,7 @@ export default function Calculator({ navigation, trz }) {
             // one display variante
             <View style={styles.display}>
               <Text style={displayTextStyle("display1")}>
-                {addCurrencySymbol(expression, wallet1.currency.name)}
+                {addCurrencySymbol(expression, wallet_from.currency.name)}
               </Text>
               <TouchableOpacity
                 onPress={handleErase}
@@ -647,12 +582,14 @@ const styles = StyleSheet.create({
   okButton: {
     backgroundColor: greenColor,
     width: 100,
-    height: 30
+    height: 30,
+    borderRadius: 3,
   },
   okButtonInactive: {
     backgroundColor: "#808080",
     width: 100,
-    height: 30
+    height: 30,
+    borderRadius: 3,
   },
   okButtonText: {
     color: "white",

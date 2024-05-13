@@ -502,10 +502,11 @@ const fetchRequest = async (dispatch, payload) => {
         JSON.stringify({ data, status_code: response.status }, null, 2)
       );
     }
-    dispatch(setIsLoading(false));
     return data;
   } catch (error) {
     console.error(error.message);
+  } finally {
+    dispatch(setIsLoading(false));
   }
 };
 
@@ -517,9 +518,9 @@ const GPTTransactions = async (dispatch, text) => {
 3. Расходы связанные с приобретением различных инструментов, посуды, мебели и прочих бытовых вещей относи к хоз. нуждам.
 4. SUBE (субе) - это транспортная карта в Аргентине.
 5. Могут использоваться различные аргентинские названия вещей и продуктов, таких, как "palta", "frutilla", и т.д.
-6. Если статья расходов не очевидна, то нужно указать "Прочее". 
-
-Не делай предположений о том, какие значения включать в функции. Попросите разъяснений, если запрос пользователя неоднозначен.`;
+6. Если статья расходов не очевидна, то нужно указать "Прочее".
+7. Кошелек по-умолчанию "ARS cash", он же называться "наличные"
+8. Не пиши в комментариях название кошелька. Если не понятно, что писать в комментариях, то оставь пустой строкой.`;
 
   const tools = [
     {
@@ -572,7 +573,7 @@ const GPTTransactions = async (dispatch, text) => {
                     description: "Кошелек транзакции",
                   },
                 },
-                required: ["expense_item", "summ", "comment"],
+                required: ["expense_item", "summ", "comment", "wallet"],
               },
             },
           },
@@ -584,13 +585,13 @@ const GPTTransactions = async (dispatch, text) => {
     },
   ];
   const payload = {
-    model: "gpt-3.5-turbo-0125",
+    model: "gpt-4o",
     messages: [
       { role: "system", content: system },
       { role: "user", content: text },
     ],
     tools: tools,
-    tool_choice: "auto",
+    tool_choice: {"type": "function", "function": {"name": "get_transactions_items"}},
   };
   // console.log("payload", payload);
   let result;

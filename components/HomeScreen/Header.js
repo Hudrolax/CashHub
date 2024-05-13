@@ -26,7 +26,7 @@ const Header = ({ navigation, style, data }) => {
 
   const onAIAdd = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    navigation.navigate("AIAddScreen")
+    navigation.navigate("AIAddScreen", { data })
   };
 
   return (

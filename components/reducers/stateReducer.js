@@ -1,7 +1,6 @@
 const initialState = {
   isLoading: false,
-  pressedWallet1: null,
-  pressedWallet2: null,
+  pressedWallets: [],
   pressedExInItem: null,
   pressedDate: null,
   isIncome: false,
@@ -12,8 +11,6 @@ const initialState = {
   editItem: undefined,
   walletsInMainCurrency: false,
   activeTab: undefined,
-  checklistAddMode: false,
-  checklistNewItemText: "",
   recording: null,
   recognizedText: "",
   OPENAI_API_KEY: "",
@@ -23,10 +20,8 @@ const stateReducer = (state = initialState, action) => {
     switch (action.type) {
       case "IS_LOADING":
         return { ...state, isLoading: action.payload };
-      case "SET_PRESS_WALLET1":
-        return { ...state, pressedWallet1: action.payload };
-      case "SET_PRESS_WALLET2":
-        return { ...state, pressedWallet2: action.payload };
+      case "SET_PRESS_WALLETS":
+        return { ...state, pressedWallets: action.payload };
       case "SET_PRESS_EXINITEM":
         return { ...state, pressedExInItem: action.payload };
       case "SET_PRESS_DATE":
@@ -47,10 +42,6 @@ const stateReducer = (state = initialState, action) => {
         return { ...state, walletsInMainCurrency: action.payload };
       case "SET_ACTIVE_TAB":
         return { ...state, activeTab: action.payload };
-      case "SET_CHECKLIST_ADD_MODE":
-        return { ...state, checklistAddMode: action.payload };
-      case "SET_CHECKLIST_NEWITEM_TEXT":
-        return { ...state, checklistNewItemText: action.payload };
       case "SET_RECORDING":
         return { ...state, recording: action.payload };
       case "SET_RECOGNIZED_TEXT":
@@ -60,8 +51,7 @@ const stateReducer = (state = initialState, action) => {
       case "RESET_ALL_PRESS_STATES":
         return {
           ...state,
-          pressedWallet1: null,
-          pressedWallet2: null,
+          pressedWallets: [],
           pressedExInItem: null,
           pressedDate: null,
         };

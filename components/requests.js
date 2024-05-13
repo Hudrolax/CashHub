@@ -79,13 +79,11 @@ export const backendRequest = async ({
       );
     }
 
-    // dispatch(setConnectionError(false));
-    if (showLoadingOvarlay) dispatch(setIsLoading(false));
-    if (showLoadingOvarlay) dispatch(setConnectionError(false));
     return data;
   } catch (error) {
     console.error(error.message);
-    if (showLoadingOvarlay) dispatch(setConnectionError(true));
     if (throwError) throw error;
+  } finally {
+    if (showLoadingOvarlay) dispatch(setIsLoading(false));
   }
 };
