@@ -1,8 +1,8 @@
 import * as SecureStore from "expo-secure-store";
 import { setLoginData, setIsLoading, setConnectionError } from "./actions";
 
-const baseEndpoint = "http://192.168.1.104/api/v2";
-// const baseEndpoint = "http://80.77.25.24/api/v2";
+// const baseEndpoint = "http://192.168.1.104/api/v2";
+const baseEndpoint = "http://80.77.25.24/api/v2";
 
 export const wallet_transactions_endpoint = "/wallet_transactions/";
 export const users_endpoint = "/users/";

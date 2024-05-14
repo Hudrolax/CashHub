@@ -60,7 +60,7 @@ export default function Calculator({
         id: 1,
         text: formatDateShort(new Date(trz.date)),
         title: formatDate(trz.date),
-        date: trz.date,
+        date: trz.datetime,
       }
     : pressedDate;
 
