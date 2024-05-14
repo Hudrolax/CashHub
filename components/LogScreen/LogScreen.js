@@ -5,6 +5,7 @@ import { StyleSheet, ScrollView, View } from "react-native";
 import { showAlert } from "../util";
 
 import DayLog from "./DayLog";
+import LogHeader from "./LogHeader";
 import { setActiveTab, setIsLoading } from "../actions";
 import {
   backendRequest,
@@ -18,6 +19,7 @@ export default function LogScreen({ navigation, route }) {
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
   const [transactions, setTransactions] = useState([]);
   const [symbols, setSymbols] = useState([]);
+  const [limit, setLimit] = useState(30)
 
   useFocusEffect(
     useCallback(() => {
@@ -32,7 +34,7 @@ export default function LogScreen({ navigation, route }) {
               token,
               endpoint: wallet_transactions_endpoint,
               method: "GET",
-              queryParams: { currency_name: mainCurrency },
+              queryParams: { currency_name: mainCurrency, limit },
               throwError: true,
             }),
             backendRequest({
@@ -55,12 +57,16 @@ export default function LogScreen({ navigation, route }) {
       loadData();
 
       return () => {};
-    }, [token, mainCurrency])
+    }, [mainCurrency, limit])
   );
+
+  const onSetLimit = (new_limit) => {
+    setLimit(new_limit)
+  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header} />
+      <LogHeader onSetLimit={onSetLimit}/>
       <ScrollView>
         {transactions.map((trzDay) => (
           <DayLog
@@ -74,12 +80,10 @@ export default function LogScreen({ navigation, route }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#181715",
-  },
-  header: {
-    height: 40,
   },
 });

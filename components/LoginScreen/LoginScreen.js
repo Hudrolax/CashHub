@@ -52,9 +52,10 @@ const LoginScreen = () => {
       dispatch(setLoginData(data.token, user));
     } catch (error) {
       console.error(error.message);
-      showAlert("Ошибка", `Ошибка: ${e.message}`);
+      showAlert("Ошибка", `Ошибка: ${error.message}`);
+    } finally {
+      dispatch(setIsLoading(false));
     }
-    dispatch(setIsLoading(false));
   };
 
   return (
