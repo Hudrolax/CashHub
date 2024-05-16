@@ -20,8 +20,11 @@ import AddButton from "./AddBtn";
 import { backendRequest, wallet_transactions_endpoint } from "../requests";
 
 function AIAddScreen({ navigation, route }) {
-  const { data } = route.params;
   const dispatch = useDispatch();
+  const homeScreenData = useSelector(
+    (state) => state.stateReducer.homeScreenData
+  );
+  const { wallets, exInItems } = homeScreenData;
   const token = useSelector((state) => state.loginReducer.token);
   const recognizedText = useSelector(
     (state) => state.stateReducer.recognizedText
@@ -74,14 +77,14 @@ function AIAddScreen({ navigation, route }) {
       if (!result[i].summ) {
         continue;
       }
-      const exin_item = data.exInItems.find(
+      const exin_item = exInItems.find(
         (item) => item.name == result[i].expense_item
       );
       let wallet = null;
       if (result[i].wallet) {
-        wallet = data.wallets.find((item) => item.name == result[i].wallet);
+        wallet = wallets.find((item) => item.name == result[i].wallet);
       } else {
-        wallet = data.wallets.find((item) => item.id == 2);
+        wallet = wallets.find((item) => item.id == 2);
       }
       const trz = {
         exin_item: exin_item,
@@ -108,7 +111,7 @@ function AIAddScreen({ navigation, route }) {
         const wallet = recognized_transactions[i].wallet;
         const exin_item = recognized_transactions[i].exin_item;
         payload = {
-          wallet_from_id: wallet,
+          wallet_from_id: wallet.id,
           exin_item_id: exin_item.id,
           amount: summ.toString(),
           comment: comment,
@@ -117,7 +120,8 @@ function AIAddScreen({ navigation, route }) {
           dispatch,
           token,
           endpoint: wallet_transactions_endpoint,
-          method: "GET",
+          method: "POST",
+          payload,
           throwError: true,
           showLoadingOvarlay: true,
         });
@@ -223,7 +227,7 @@ function AIAddScreen({ navigation, route }) {
         <CircleButton onPress={onStartRecording} />
       </View>
 
-      <BackBtn style={styles.backBtn} onPress={() => navigation.onBack()} />
+      <BackBtn style={styles.backBtn} onPress={() => navigation.goBack()} />
     </KeyboardAvoidingView>
   );
 }

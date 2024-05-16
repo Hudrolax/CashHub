@@ -10,6 +10,7 @@ import {
   wallets_endpoint,
   symbols_endpoint,
   currencies_endpoint,
+  exin_items_endpoint,
 } from "../requests";
 import { setIsLoading, setHomeScreenData, setHomeScreenDataUpdateTime } from "../actions";
 
@@ -47,11 +48,19 @@ export default function HomeScreen({ navigation }) {
               method: "GET",
               throwError: true,
             }),
+            backendRequest({
+              dispatch,
+              token,
+              endpoint: exin_items_endpoint,
+              method: "GET",
+              throwError: true,
+            }),
           ]);
           const _data = {
             wallets: results[0],
             symbols: results[1],
             currency: results[2],
+            exInItems: results[3]
           };
           dispatch(setHomeScreenData(_data));
           dispatch(setHomeScreenDataUpdateTime(new Date()));

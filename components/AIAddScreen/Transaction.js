@@ -17,8 +17,10 @@ function Transaction({
 }) {
   const [text_summ, setSumm] = useState(`${summ}`);
   const [text_comment, setComment] = useState(comment);
-  const exInItems = useSelector((state) => state.mainState.exInItems);
-  const wallets = useSelector((state) => state.mainState.wallets);
+  const homeScreenData = useSelector(
+    (state) => state.stateReducer.homeScreenData
+  );
+  const { wallets, exInItems } = homeScreenData;
 
   return (
     <View style={{ ...styles.container, ...style }}>

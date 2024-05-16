@@ -15,7 +15,7 @@ const initialState = {
   recording: null,
   recognizedText: "",
   OPENAI_API_KEY: "",
-  homeScreenData: {wallets: [], symbols: [], currency: [] },
+  homeScreenData: {wallets: [], symbols: [], currency: [], exInItems: [] },
   homeScreenDataUpdateTime: -1,
   checklist: [],
   checklistUpdateTime: -1,
