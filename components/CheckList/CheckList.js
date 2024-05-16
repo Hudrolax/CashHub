@@ -10,7 +10,7 @@ import * as Haptics from "expo-haptics";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveTab } from "../actions";
+import { setChecklist, setChecklistUpdateTime } from "../actions";
 
 import { isEmpty, showAlert } from "../util";
 import ListItem from "./ListItem";
@@ -22,9 +22,11 @@ import { backendRequest, checklist_endpoint } from "../requests";
 function CheckList({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.loginReducer.token);
-  const [checklist, setChecklist] = useState([]);
-  const [needUpdate, setNeedUpdate] = useState(false);
-  const [addMode, setAddMode] = useState(false)
+  const checklist = useSelector((state) => state.stateReducer.checklist);
+  const checklistUpdateTime = useSelector(
+    (state) => state.stateReducer.checklistUpdateTime
+  );
+  const [addMode, setAddMode] = useState(false);
   const scrollViewRef = useRef();
 
   const onUpdate = async (item) => {
@@ -38,7 +40,7 @@ function CheckList({ navigation, route }) {
         throwError: true,
         showLoadingOvarlay: true,
       });
-      setNeedUpdate(!needUpdate);
+      dispatch(setChecklistUpdateTime(null));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       showAlert("Ошибка", "Похоже проблемы с подключением.");
@@ -55,7 +57,7 @@ function CheckList({ navigation, route }) {
         throwError: true,
         showLoadingOvarlay: true,
       });
-      setNeedUpdate(!needUpdate);
+      dispatch(setChecklistUpdateTime(null));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       showAlert(
@@ -66,7 +68,7 @@ function CheckList({ navigation, route }) {
   };
 
   const onAdd = () => {
-    setAddMode(true)
+    setAddMode(true);
     scrollToTop();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
@@ -74,7 +76,7 @@ function CheckList({ navigation, route }) {
   const onCompleteAdd = async (text) => {
     if (!isEmpty(text)) {
       try {
-        const payload = {text}
+        const payload = { text };
         await backendRequest({
           dispatch,
           token,
@@ -84,7 +86,7 @@ function CheckList({ navigation, route }) {
           throwError: true,
           showLoadingOvarlay: true,
         });
-        setNeedUpdate(!needUpdate);
+        dispatch(setChecklistUpdateTime(null));
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } catch {
         showAlert(
@@ -92,14 +94,13 @@ function CheckList({ navigation, route }) {
           "Не удалось удалить элемент. Возможно нет интернета."
         );
       } finally {
-        setAddMode(false)
+        setAddMode(false);
       }
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(setActiveTab(route.name));
       const loadData = async () => {
         try {
           const result = await backendRequest({
@@ -109,9 +110,10 @@ function CheckList({ navigation, route }) {
             method: "GET",
             queryParams: { archive: false },
             throwError: true,
-            showLoadingOvarlay: true,
+            showLoadingOvarlay: checklistUpdateTime === -1,
           });
-          setChecklist(result);
+          dispatch(setChecklistUpdateTime(new Date()));
+          dispatch(setChecklist(result));
         } catch {
           showAlert(
             "Ошибка",
@@ -119,9 +121,9 @@ function CheckList({ navigation, route }) {
           );
         }
       };
-      loadData();
+      if (new Date() - checklistUpdateTime > 30000) loadData();
       return () => {};
-    }, [needUpdate])
+    }, [checklistUpdateTime])
   );
 
   useEffect(() => {

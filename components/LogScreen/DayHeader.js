@@ -1,25 +1,9 @@
 import { Text, View, StyleSheet } from "react-native";
 
-import { formatDate } from "../util";
+import { formatDate, getDayOfWeek } from "../util";
 import { redColor, greenColor } from "../colors";
 
 const DayHeader = ({ date, trzCount, totalAmount }) => {
-  function getDayOfWeek(dateString) {
-    const daysOfWeek = [
-      "Воскресенье",
-      "Понедельник",
-      "Вторник",
-      "Среда",
-      "Четверг",
-      "Пятница",
-      "Суббота",
-    ];
-    const date = new Date(dateString);
-    const dayOfWeek = date.getDay();
-
-    return daysOfWeek[dayOfWeek];
-  }
-
   const totalAmountColor =
     totalAmount[0] === "-" || (totalAmount[0] === "$" && totalAmount[2] === "-")
       ? redColor

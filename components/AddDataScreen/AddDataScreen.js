@@ -5,7 +5,7 @@ import Calculator from "./Calculator";
 import AddHeader from "./AddHeader";
 
 export default function AddDataScreen({ navigation, route }) {
-  const { trz, symbols, pressedWallets, pressedExInItem, pressedDate } = route.params;
+  const { trz, pressedWallets, pressedExInItem, pressedDate } = route.params;
 
   return (
     <View style={{ flex: 1 }}>
@@ -19,7 +19,6 @@ export default function AddDataScreen({ navigation, route }) {
       <Calculator
         navigation={navigation}
         trz={trz}
-        symbols={symbols}
         pressedWallets={pressedWallets}
         pressedExInItem={pressedExInItem}
         pressedDate={pressedDate}

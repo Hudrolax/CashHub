@@ -15,6 +15,7 @@ import {
   backendRequest,
   wallet_transactions_endpoint,
 } from "../requests";
+import { setTrzUpdateTime, setChecklistUpdateTime } from "../actions";
 
 const DelBtn = ({ navigation, doc_id, style }) => {
   const dispatch = useDispatch();
@@ -29,6 +30,8 @@ const DelBtn = ({ navigation, doc_id, style }) => {
         method: "DELETE",
         throwError: true,
       });
+      dispatch(setTrzUpdateTime(null))
+      dispatch(setChecklistUpdateTime(null))
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       showAlert(

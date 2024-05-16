@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import { setLoginData, setIsLoading, setConnectionError } from "./actions";
+import { setLoginData, setIsLoading } from "./actions";
 
 // const baseEndpoint = "http://192.168.1.104/api/v2";
 const baseEndpoint = "http://80.77.25.24/api/v2";

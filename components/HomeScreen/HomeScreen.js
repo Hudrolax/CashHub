@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { StyleSheet, View, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -10,19 +10,20 @@ import {
   wallets_endpoint,
   symbols_endpoint,
   currencies_endpoint,
-  exin_items_endpoint,
 } from "../requests";
-import { setIsLoading } from "../actions";
+import { setIsLoading, setHomeScreenData, setHomeScreenDataUpdateTime } from "../actions";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.loginReducer.token);
-  const [data, setData] = useState({ wallets: [], symbols: [], currency: [] });
+  const homeScreenDataUpdateTime = useSelector(
+    (state) => state.stateReducer.homeScreenDataUpdateTime
+  );
 
   useFocusEffect(
     useCallback(() => {
       const loadData = async () => {
-        dispatch(setIsLoading(true));
+        if (homeScreenDataUpdateTime === -1) dispatch(setIsLoading(true));
         try {
           const results = await Promise.all([
             backendRequest({
@@ -46,34 +47,27 @@ export default function HomeScreen({ navigation }) {
               method: "GET",
               throwError: true,
             }),
-            backendRequest({
-              dispatch,
-              token,
-              endpoint: exin_items_endpoint,
-              method: "GET",
-              throwError: true,
-            }),
           ]);
           const _data = {
             wallets: results[0],
             symbols: results[1],
             currency: results[2],
-            exInItems: results[3],
           };
-          setData(_data);
+          dispatch(setHomeScreenData(_data));
+          dispatch(setHomeScreenDataUpdateTime(new Date()));
         } catch (e) {
           console.error(
             `Не удалось загрузить кошельки и символы: ${e.message}`
           );
         } finally {
-          dispatch(setIsLoading(false));
+          if (homeScreenDataUpdateTime === -1) dispatch(setIsLoading(false));
         }
       };
 
-      loadData();
+      if (new Date() - homeScreenDataUpdateTime > 10000) loadData();
 
       return () => {};
-    }, [token])
+    }, [homeScreenDataUpdateTime])
   );
 
   return (
@@ -84,10 +78,10 @@ export default function HomeScreen({ navigation }) {
           style={styles.backgroudImage}
           resizeMode="cover"
         ></Image>
-        <Header navigation={navigation} style={{ flex: 1 }} data={data} />
+        <Header navigation={navigation} style={{ flex: 1 }} />
         <ScrollColumnHeader navigation={navigation} />
       </View>
-      <ScrollColumns navigation={navigation} data={data} />
+      <ScrollColumns navigation={navigation} />
     </View>
   );
 }

@@ -17,6 +17,21 @@ const LoadingOverlay = ({ visible, connectionError }) => {
   );
 };
 
+const NotModalLoadingOverlay = ({ visible, connectionError }) => {
+  return (
+    visible && (
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size="large" color="#B3DFFC" />
+        {connectionError && (
+          <Text style={styles.textStyle}>
+            Потеряно соединение с сервером. Проверьте работоспособность интернета.
+          </Text>
+        )}
+      </View>
+    )
+  );
+};
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -31,6 +46,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 20,
   },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
 });
 
 export default LoadingOverlay;
+export { NotModalLoadingOverlay }

@@ -1,3 +1,5 @@
+import { getPastDate } from "../util";
+
 const initialState = {
   isLoading: false,
   pressedWallets: [],
@@ -10,10 +12,16 @@ const initialState = {
   editContentType: undefined,
   editItem: undefined,
   walletsInMainCurrency: false,
-  activeTab: undefined,
   recording: null,
   recognizedText: "",
   OPENAI_API_KEY: "",
+  homeScreenData: {wallets: [], symbols: [], currency: [] },
+  homeScreenDataUpdateTime: -1,
+  checklist: [],
+  checklistUpdateTime: -1,
+  transactions: [],
+  trzUpdateTime: null,
+  trzLimit: getPastDate("Неделя"),
 };
 
 const stateReducer = (state = initialState, action) => {
@@ -40,8 +48,6 @@ const stateReducer = (state = initialState, action) => {
         return { ...state, editItem: action.payload };
       case "SET_WALLETS_IN_MAIN_CURRENCY":
         return { ...state, walletsInMainCurrency: action.payload };
-      case "SET_ACTIVE_TAB":
-        return { ...state, activeTab: action.payload };
       case "SET_RECORDING":
         return { ...state, recording: action.payload };
       case "SET_RECOGNIZED_TEXT":
@@ -55,6 +61,20 @@ const stateReducer = (state = initialState, action) => {
           pressedExInItem: null,
           pressedDate: null,
         };
+      case "SET_HOME_SCREEN_DATA":
+        return { ...state, homeScreenData: action.payload };
+      case "SET_TRZ_UPDATE_TIME":
+        return { ...state, trzUpdateTime: action.payload };
+      case "SET_CHECKLIST":
+        return { ...state, checklist: action.payload };
+      case "SET_CHECKLIST_UPDATE_TIME":
+        return { ...state, checklistUpdateTime: action.payload };
+      case "SET_TRANSACTIONS":
+        return { ...state, transactions: action.payload };
+      case "SET_HOME_SCREEN_DATA_UPDATE_TIME":
+        return { ...state, homeScreenDataUpdateTime: action.payload };
+      case "SET_TRZ_LIMIT":
+        return { ...state, trzLimit: action.payload };
       default:
         return state;
     }

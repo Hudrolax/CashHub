@@ -1,8 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 
 import HomeScreen from "./HomeScreen/HomeScreen";
 import LogScreen from "./LogScreen/LogScreen";
@@ -10,7 +9,6 @@ import SettingsScreen from "./SettingsScreen/SettingsScreen";
 import AddDataScreen from "./AddDataScreen/AddDataScreen";
 // import EditScreen from "./EditScreen/EditScreen";
 // import EditItemScreen from "./EditScreen/EditItemScreen";
-import CurrencySelector from "./HomeScreen/CurrencySelector";
 import CheckList from "./CheckList/CheckList";
 import ArchiveCheckList from "./CheckList/ArchiveCheckList";
 import AIAddScreen from "./AIAddScreen/AIAddScreen";
@@ -19,15 +17,8 @@ const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
 function TabScreen() {
-  const activeTabName = useSelector((state) => state.stateReducer.activeTab);
   return (
     <View style={{ flex: 1 }}>
-      {activeTabName !== "CheckList" && (
-        <CurrencySelector
-          style={{ position: "absolute", top: "1%", right: "3%", zIndex: 3000 }}
-        />
-      )}
-
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{

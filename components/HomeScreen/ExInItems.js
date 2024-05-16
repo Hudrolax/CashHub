@@ -38,7 +38,7 @@ export default function ExInItems({ navigation, onPress }) {
       loadData();
 
       return () => {};
-    }, [token, isIncome, mainCurrency])
+    }, [isIncome, mainCurrency])
   );
 
   return (

@@ -151,13 +151,18 @@ const formatNumber = (number, currencyName, addSymbol = true) => {
 };
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
+  const dateParts = dateString.split("-");
+  const year = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10) - 1; // Месяцы начинаются с 0
+  const day = parseInt(dateParts[2], 10);
 
-  const day = String(date.getDate()).padStart(2, "0"); // Добавляем ведущий ноль, если необходимо
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Месяцы начинаются с 0
-  const year = date.getFullYear();
+  const date = new Date(Date.UTC(year, month, day));
 
-  return `${day}.${month}.${year}`;
+  const dayFormatted = String(date.getUTCDate()).padStart(2, "0");
+  const monthFormatted = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const yearFormatted = date.getUTCFullYear();
+
+  return `${dayFormatted}.${monthFormatted}.${yearFormatted}`;
 }
 
 export function formatDateShort(date) {
@@ -591,7 +596,10 @@ const GPTTransactions = async (dispatch, text) => {
       { role: "user", content: text },
     ],
     tools: tools,
-    tool_choice: {"type": "function", "function": {"name": "get_transactions_items"}},
+    tool_choice: {
+      type: "function",
+      function: { name: "get_transactions_items" },
+    },
   };
   // console.log("payload", payload);
   let result;
@@ -608,6 +616,49 @@ const GPTTransactions = async (dispatch, text) => {
   }
 };
 
+function getDayOfWeek(dateString) {
+  const daysOfWeek = [
+    "Воскресенье",
+    "Понедельник",
+    "Вторник",
+    "Среда",
+    "Четверг",
+    "Пятница",
+    "Суббота",
+  ];
+
+  const dateParts = dateString.split("-");
+  const year = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10) - 1; // Месяцы начинаются с 0
+  const day = parseInt(dateParts[2], 10);
+
+  const date = new Date(Date.UTC(year, month, day));
+  const dayOfWeek = date.getUTCDay(); // Получаем день недели в UTC
+
+  return daysOfWeek[dayOfWeek];
+}
+
+function getPastDate(period) {
+  const now = new Date();
+  const newDate = new Date(now); // Создаем копию текущей даты
+
+  switch (period) {
+    case "Неделя":
+      newDate.setDate(now.getDate() - 7);
+      break;
+    case "Месяц":
+      newDate.setMonth(now.getMonth() - 1);
+      break;
+    case "Год":
+      newDate.setFullYear(now.getFullYear() - 1);
+      break;
+    default:
+      throw new Error("Неверный период. Пожалуйста, используйте 'Неделя', 'Месяц' или 'Год'.");
+  }
+
+  return newDate.toISOString();
+}
+
 export {
   showAlert,
   formatNumber,
@@ -620,4 +671,6 @@ export {
   stopRecording,
   fetchRequest,
   GPTTransactions,
+  getDayOfWeek,
+  getPastDate,
 };

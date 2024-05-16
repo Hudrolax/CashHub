@@ -6,8 +6,9 @@ import { orangeColor, walletsInMainCurColor } from "../colors";
 import { formatNumber } from "../util";
 import { getRate } from "../util";
 
-export default function Wallets({ navigation, data, onPress}) {
-  const {wallets, symbols, currency} = data
+export default function Wallets({ navigation, onPress}) {
+  const homeScreenData = useSelector((state) => state.stateReducer.homeScreenData);
+  const {wallets, symbols, currency} = homeScreenData
   const _wallets = wallets.map(item => ({...item, currency: currency.find(cur => cur.id === item.currency_id)}))
   const walletsInMainCurrency = useSelector(
     (state) => state.stateReducer.walletsInMainCurrency

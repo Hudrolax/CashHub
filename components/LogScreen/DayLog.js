@@ -6,7 +6,7 @@ import { DayItem, ExchangeDayItem } from "./DayItem";
 import { DayHeader } from "./DayHeader";
 import { formatNumber, isEmpty } from "../util";
 
-function DayLog({ navigation, trzDay, symbols }) {
+function DayLog({ navigation, trzDay }) {
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
 
   const getAmount = (trz, walletType) =>
@@ -14,7 +14,7 @@ function DayLog({ navigation, trzDay, symbols }) {
 
   const onPress = (trz) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    navigation.navigate("AddScreen", { trz, symbols });
+    navigation.navigate("AddScreen", { trz });
   };
 
   return (

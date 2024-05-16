@@ -6,16 +6,20 @@ import { useSelector } from "react-redux";
 import HamburgerMenu from "../MenuBtn/MenuBtn";
 import { getRate, formatNumber } from "../util";
 import AIAddBtn from "./AIAddBtn";
+import CurrencySelector from "./CurrencySelector";
 
-const Header = ({ navigation, style, data }) => {
-  const {wallets, currency, symbols} = data
+const Header = ({ navigation, style }) => {
+  const homeScreenData = useSelector(
+    (state) => state.stateReducer.homeScreenData
+  );
+  const { wallets, currency, symbols } = homeScreenData;
   const user = useSelector((state) => state.loginReducer.user);
   const mainCurrency = useSelector((state) => state.stateReducer.mainCurrency);
 
   const countTotalBalance = () => {
     let totalBalance = 0;
     wallets.map((item) => {
-      const currency_name = currency.find(cur => cur.id === item.currency_id)
+      const currency_name = currency.find((cur) => cur.id === item.currency_id);
       const rate = getRate(currency_name, mainCurrency, symbols);
       totalBalance += item.balance * rate;
     });
@@ -25,13 +29,14 @@ const Header = ({ navigation, style, data }) => {
   const totalBalance = countTotalBalance(wallets);
 
   const onAIAdd = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    navigation.navigate("AIAddScreen", { data })
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    navigation.navigate("AIAddScreen", { data });
   };
 
   return (
     <View style={{ ...styles.container, ...style }}>
       <HamburgerMenu navigation={navigation} style={styles.hamburger} />
+      <CurrencySelector style={{ position: "absolute", top: 5, right: 8, zIndex: 999 }} />
 
       {/* top */}
       <View style={styles.top}>

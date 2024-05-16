@@ -49,10 +49,6 @@ export const setIncome = (payload) => ({
   type: "SET_INCOME",
   payload: payload,
 });
-export const setActiveTab = (payload) => ({
-  type: "SET_ACTIVE_TAB",
-  payload: payload,
-});
 export const setLoginData = (token, user) => {
   return (dispatch) => {
     dispatch({
@@ -74,5 +70,33 @@ export const setRecognizedText = (payload) => ({
 });
 export const setOpenAPIKey = (payload) => ({
   type: "SET_OPENAI_API_KEY",
+  payload: payload,
+});
+export const setHomeScreenData = (payload) => ({
+  type: "SET_HOME_SCREEN_DATA",
+  payload: payload,
+});
+export const setTrzUpdateTime = (payload) => ({
+  type: "SET_TRZ_UPDATE_TIME",
+  payload: payload,
+});
+export const setChecklist = (payload) => ({
+  type: "SET_CHECKLIST",
+  payload: payload,
+});
+export const setChecklistUpdateTime = (payload) => ({
+  type: "SET_CHECKLIST_UPDATE_TIME",
+  payload: payload,
+});
+export const setTransactions = (payload) => ({
+  type: "SET_TRANSACTIONS",
+  payload: payload,
+});
+export const setHomeScreenDataUpdateTime = (payload) => ({
+  type: "SET_HOME_SCREEN_DATA_UPDATE_TIME",
+  payload: payload,
+});
+export const setTrzLimit = (payload) => ({
+  type: "SET_TRZ_LIMIT",
   payload: payload,
 });

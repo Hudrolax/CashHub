@@ -23,6 +23,7 @@ import {
 } from "../util";
 import { greenColor } from "../colors";
 import { backendRequest, wallet_transactions_endpoint } from "../requests";
+import { setTrzUpdateTime, setHomeScreenDataUpdateTime } from "../actions";
 
 const getDisplayFontSize = (_expression) => {
   if (_expression.length > 21) {
@@ -39,13 +40,13 @@ const getDisplayFontSize = (_expression) => {
 export default function Calculator({
   navigation,
   trz,
-  symbols,
   pressedWallets,
   pressedExInItem,
   pressedDate,
 }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.loginReducer.token);
+  const { symbols } = useSelector((state) => state.stateReducer.homeScreenData);
 
   const exchangeMode =
     (pressedWallets && pressedWallets.length > 1) ||
@@ -55,6 +56,7 @@ export default function Calculator({
     ? trz.wallet_to
     : pressedWallets.length > 1 && pressedWallets[1];
   const exInItem = trz ? trz.exin_item : pressedExInItem;
+  const isIncome = useSelector((state) => state.stateReducer.isIncome);
   const date = trz
     ? {
         id: 1,
@@ -156,11 +158,6 @@ export default function Calculator({
     setExpression(expression ? expression.slice(0, -1) : "");
     // console.log(expression)
   };
-  const handleErase2 = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setExpression2(expression2 ? expression2.slice(0, -1) : "");
-    handleResult();
-  };
 
   const handleDeleteRate = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -199,7 +196,10 @@ export default function Calculator({
       wallet_from_id: wallet_from.id,
       wallet_to_id: wallet_to ? wallet_to.id : null,
       exin_item_id: exInItem ? exInItem.id : null,
-      amount: exchangeMode ? _expression : -_expression,
+      amount:
+        exchangeMode || (exInItem && isIncome)
+          ? _expression
+          : -_expression,
       exchange_rate: _rate,
       comment,
       date: date.date,
@@ -217,6 +217,8 @@ export default function Calculator({
           throwError: true,
           showLoadingOvarlay: true,
         });
+        dispatch(setTrzUpdateTime(null))
+        dispatch(setHomeScreenDataUpdateTime(null))
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } catch {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -236,6 +238,8 @@ export default function Calculator({
           throwError: true,
           showLoadingOvarlay: true,
         });
+        dispatch(setTrzUpdateTime(null))
+        dispatch(setHomeScreenDataUpdateTime(null))
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } catch {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
