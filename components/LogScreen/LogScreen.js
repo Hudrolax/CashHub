@@ -73,13 +73,13 @@ export default function LogScreen({ navigation, route }) {
 
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-    if (offsetY < -100 && isTop.current === 0) {
+    if (offsetY < -20 && isTop.current === 0) {
       isTop.current = 1;
     } else if (offsetY === 0 && isTop.current === 1) {
       isTop.current = 2;
-    } else if (offsetY < -100 && isTop.current === 2) {
+    } else if (offsetY < -20 && isTop.current === 2) {
       setSearchView(true);
-    } else if (offsetY > 100) {
+    } else if (offsetY > 50) {
       isTop.current = 0;
       setSearchView(false);
       isTop.current = 0;

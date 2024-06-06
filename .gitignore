@@ -41,3 +41,4 @@ yarn-error.*
 # .apk
 *.apk
 .vscode/
+package-lock.json
