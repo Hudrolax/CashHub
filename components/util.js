@@ -590,7 +590,7 @@ const GPTTransactions = async (dispatch, text) => {
     },
   ];
   const payload = {
-    model: "gpt-4o",
+    model: "gpt-4o-mini",
     messages: [
       { role: "system", content: system },
       { role: "user", content: text },
