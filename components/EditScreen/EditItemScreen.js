@@ -117,18 +117,23 @@ export default function EditItemScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+
+      {/* header */}
       <View style={{ ...styles.header, backgroundColor: bgColor }}>
         <Text style={{ fontSize: 18, fontWeight: "bold", marginLeft: 20 }}>
           {getHeader()}
         </Text>
         <DeleteBtn onPress={onDelete} />
       </View>
+
+      {/* body */}
       {editItem.balance != undefined ? (
         <WalletEditItem wallet={editItem} style={{ flex: 1 }} onOk={onOk} />
       ) : (
         <ExInItemEdit exInItem={editItem} style={{ flex: 1 }} onOk={onOk} />
       )}
 
+      {/* cancel btn */}
       <View style={styles.footer}>
         <CancelBtn text={"Назад"} onPress={onCancel} />
       </View>

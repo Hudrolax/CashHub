@@ -154,8 +154,9 @@ export default function Calculator({
 
   const handleErase = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // console.log(expression)
-    setExpression(expression ? expression.slice(0, -1) : "");
+    // console.log("trz ", trz)
+    // console.log("expression ", expression)
+    setExpression(expression ? String(expression).slice(0, -1) : "");
     // console.log(expression)
   };
 
@@ -391,6 +392,8 @@ export default function Calculator({
                   <Text style={displayTextStyle("display1")}>
                     {addCurrencySymbol(expression, wallet_from.currency.name)}
                   </Text>
+
+                  {/* cancel btn */}
                   <TouchableOpacity
                     onPress={() => {
                       handleDelete();
@@ -400,6 +403,7 @@ export default function Calculator({
                   >
                     <Text style={styles.cancelButtonText}>⌫</Text>
                   </TouchableOpacity>
+
                 </View>
               </TouchableWithoutFeedback>
 
