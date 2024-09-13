@@ -10,13 +10,10 @@ import {
   setLoginData,
   setIsLoading,
   setMainCurrency,
-  setOpenAPIKey,
 } from "./actions";
 import LoadingOverlay from "./overlays/loadingOverlay";
 import { getData } from "./data";
 import RecordOverlay from "./overlays/RecordOverlay";
-import GetAPIKey from "./LoginScreen/GetAPIKey";
-import { isEmpty } from "./util";
 
 export default function MainScreenWrapper() {
   const dispatch = useDispatch();
@@ -25,7 +22,7 @@ export default function MainScreenWrapper() {
   const isConnectionError = useSelector(
     (state) => state.stateReducer.isConnectionError
   );
-  const OPENAI_API_KEY = useSelector((state) => state.stateReducer.OPENAI_API_KEY);
+  const OPENAI_API_KEY = useSelector((state) => state.loginReducer.OPENAI_API_KEY);
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,30 +32,22 @@ export default function MainScreenWrapper() {
       const token = await SecureStore.getItemAsync("token");
       const user = JSON.parse(await SecureStore.getItemAsync("user"));
       const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
-      dispatch(setLoginData(token ? token : "", user));
+      dispatch(setLoginData(token ? token : "", user, OPENAI_API_KEY ? OPENAI_API_KEY : ""));
 
       // load main currency
       const mainCurrency = await getData("mainCurrency");
 
       dispatch(setMainCurrency(mainCurrency ? mainCurrency : "USD"));
 
-      if (!isEmpty(OPENAI_API_KEY)) {
-        dispatch(setOpenAPIKey(OPENAI_API_KEY));
-      }
-
       dispatch(setIsLoading(false));
     };
     loadData();
   }, []);
 
-  if (!OPENAI_API_KEY) {
-    return <GetAPIKey />;
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
-      {token ? <MainScreen /> : <LoginScreen />}
+      {token && OPENAI_API_KEY ? <MainScreen /> : <LoginScreen />}
       <LoadingOverlay
         visible={isLoading || isConnectionError}
         connectionError={isConnectionError}

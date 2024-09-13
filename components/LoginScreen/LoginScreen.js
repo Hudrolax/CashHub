@@ -28,6 +28,7 @@ const LoginScreen = () => {
         }),
       });
       const data = await response.json();
+      console.log(data)
 
       if (response.status === 401 || response.status === 404) {
         throw new Error("Неверный логин или пароль");
@@ -47,9 +48,10 @@ const LoginScreen = () => {
       await Promise.all([
         SecureStore.setItemAsync("token", data.token),
         SecureStore.setItemAsync("user", JSON.stringify(user)),
+        SecureStore.setItemAsync("OPENAI_API_KEY", data.openai_api_key),
       ]);
 
-      dispatch(setLoginData(data.token, user));
+      dispatch(setLoginData(data.token, user, data.openai_api_key));
     } catch (error) {
       console.error(error.message);
       showAlert("Ошибка", `Ошибка: ${error.message}`);

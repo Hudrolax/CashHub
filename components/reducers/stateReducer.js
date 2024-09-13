@@ -14,7 +14,6 @@ const initialState = {
   walletsInMainCurrency: false,
   recording: null,
   recognizedText: "",
-  OPENAI_API_KEY: "",
   homeScreenData: {wallets: [], symbols: [], currency: [], exInItems: [] },
   homeScreenDataUpdateTime: -1,
   checklist: [],
@@ -52,8 +51,6 @@ const stateReducer = (state = initialState, action) => {
         return { ...state, recording: action.payload };
       case "SET_RECOGNIZED_TEXT":
         return { ...state, recognizedText: action.payload };
-      case "SET_OPENAI_API_KEY":
-        return { ...state, OPENAI_API_KEY: action.payload };
       case "RESET_ALL_PRESS_STATES":
         return {
           ...state,

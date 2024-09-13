@@ -71,7 +71,7 @@ export const backendRequest = async ({
     if (response.status === 401) {
       await SecureStore.setItemAsync("token", "");
       await SecureStore.setItemAsync("user", "");
-      dispatch(setLoginData("", undefined));
+      dispatch(setLoginData("", undefined, undefined));
       throw new Error("Ошибка авторизации");
     } else if (response.status !== 200) {
       throw new Error(

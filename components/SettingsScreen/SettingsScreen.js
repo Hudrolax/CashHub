@@ -13,7 +13,7 @@ export default function SettingsScreen() {
     {id: 1, title: 'Выйти', onPress: async () => {
       await SecureStore.setItemAsync("userToken", "");
       await SecureStore.setItemAsync("user", "");
-      dispatch(setLoginData('', undefined))
+      dispatch(setLoginData('', undefined, undefined))
     }},
   ]
 

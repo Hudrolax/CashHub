@@ -49,13 +49,14 @@ export const setIncome = (payload) => ({
   type: "SET_INCOME",
   payload: payload,
 });
-export const setLoginData = (token, user) => {
+export const setLoginData = (token, user, openai_api_key) => {
   return (dispatch) => {
     dispatch({
       type: "SET_LOGIN_DATA",
       payload: {
         token,
         user,
+        openai_api_key
       },
     });
   };
@@ -66,10 +67,6 @@ export const setRecording = (payload) => ({
 });
 export const setRecognizedText = (payload) => ({
   type: "SET_RECOGNIZED_TEXT",
-  payload: payload,
-});
-export const setOpenAPIKey = (payload) => ({
-  type: "SET_OPENAI_API_KEY",
   payload: payload,
 });
 export const setHomeScreenData = (payload) => ({

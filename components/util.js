@@ -451,7 +451,7 @@ async function sendAudioToServer(dispatch, uri) {
   });
   formData.append("model", "whisper-1");
   formData.append("language", "ru");
-  formData.append("prompt", "Каррифур 25000б овощной 5000, хлеб 1500.");
+  formData.append("prompt", "Каррифур 25000, овощной 5000, хлеб 1500.");
 
   try {
     const response = await fetch(
