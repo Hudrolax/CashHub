@@ -26,20 +26,22 @@ export default function MainScreenWrapper() {
 
   useEffect(() => {
     const loadData = async () => {
-      dispatch(setIsLoading(true));
+      try {
+        dispatch(setIsLoading(true));
 
-      // load token
-      const token = await SecureStore.getItemAsync("token");
-      const user = JSON.parse(await SecureStore.getItemAsync("user"));
-      const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
-      dispatch(setLoginData(token ? token : "", user, OPENAI_API_KEY ? OPENAI_API_KEY : ""));
+        // load token
+        const token = await SecureStore.getItemAsync("token");
+        const user = JSON.parse(await SecureStore.getItemAsync("user"));
+        const OPENAI_API_KEY = await SecureStore.getItemAsync("OPENAI_API_KEY");
+        dispatch(setLoginData(token ? token : "", user, OPENAI_API_KEY ? OPENAI_API_KEY : ""));
 
-      // load main currency
-      const mainCurrency = await getData("mainCurrency");
+        // load main currency
+        const mainCurrency = await getData("mainCurrency");
 
-      dispatch(setMainCurrency(mainCurrency ? mainCurrency : "USD"));
-
-      dispatch(setIsLoading(false));
+        dispatch(setMainCurrency(mainCurrency ? mainCurrency : "USD"));
+      } finally {
+        dispatch(setIsLoading(false));
+      }
     };
     loadData();
   }, []);

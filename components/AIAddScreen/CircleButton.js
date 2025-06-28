@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 50,
   },
 });
 

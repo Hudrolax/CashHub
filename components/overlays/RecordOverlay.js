@@ -26,7 +26,7 @@ const RecordOverlay = () => {
         <TouchableOpacity
           style={{
             position: 'absolute',
-            bottom: 75,
+            bottom: 300,
             height: 90,
             width: 90,
             backgroundColor: "red",

@@ -1,4 +1,3 @@
-import * as SecureStore from "expo-secure-store";
 import {
   View,
   StyleSheet,
@@ -190,6 +189,7 @@ function AIAddScreen({ navigation, route }) {
             style={{ marginTop: 20 }}
             disabled={isEmpty(recognized_transactions)}
           />
+        <CircleButton onPress={onStartRecording} />
         </View>
       )}
 
@@ -224,7 +224,7 @@ function AIAddScreen({ navigation, route }) {
 
       {/* # footer */}
       <View style={styles.footer}>
-        <CircleButton onPress={onStartRecording} />
+        {/* <CircleButton onPress={onStartRecording} /> */}
       </View>
 
       <BackBtn style={styles.backBtn} onPress={() => navigation.goBack()} />
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footer: {
-    height: "20%",
+    height: "30%",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
